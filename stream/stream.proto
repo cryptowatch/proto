@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package ProtobufStream;
+
+import "markets/market.proto";
+import "markets/pair.proto";
+
+message StreamMessage {
+  oneof body {
+    AuthenticationResult authenticationResult = 1;
+    ProtobufMarkets.MarketUpdateMessage marketUpdate = 2;
+    ProtobufMarkets.PairUpdateMessage pairUpdate = 3;
+  }
+}
+
+message AuthenticationResult {
+  Status status = 1;
+  enum Status {
+    UNKNOWN = 0;
+    AUTHENTICATED = 1;
+    BAD_NONCE = 2;
+    BAD_TOKEN = 3;
+    TOKEN_EXPIRED = 4;
+  }
+}

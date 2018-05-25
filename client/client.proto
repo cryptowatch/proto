@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package ProtobufClient;
+
+// ClientMessage is a wrapper message used to describe the supplied client message
+// and pass metadata about the client.
+message ClientMessage {
+  oneof body {
+    ClientIdentificationMessage identification = 1;
+    ClientSubscribeMessage subscribe = 2;
+    ClientUnsubscribeMessage unsubscribe = 3;
+    WebAuthenticationMessage webAuthentication = 4;
+    APIAuthenticationMessage apiAuthentication = 5;
+  }
+}
+
+// ClientIdentificationMessage is the first message sent is from the client to
+// the server, identifying itself and the subscriptions it desires.
+message ClientIdentificationMessage {
+  string useragent = 1;
+  string revision = 2;
+  string integration = 3;
+  string locale = 4;
+  repeated string subscriptions = 5;
+}
+
+message WebAuthenticationMessage {
+  ClientIdentificationMessage identification = 1;
+  string token = 2;
+  string nonce = 3;
+  repeated string access_list = 4;
+}
+
+message APIAuthenticationMessage {
+  string token = 1;
+  string nonce = 2;
+  string api_key = 3;
+  Source source = 4;
+
+  enum Source {
+    UNKNOWN = 0;
+    GOLANG_SDK = 1;
+    JAVASCRIPT_SDK = 2;
+  }
+}
+
+message ClientSessionMessage {
+  message Session {
+    string userId = 1;
+    int64 expires = 2;
+    string token = 3;
+    string mfaToken = 4;
+  }
+
+  message AnonymousTradingSession {
+    string exchange = 1;
+    string token = 2;
+    int64 expiration = 3;
+  }
+
+  oneof SessionConfig {
+    Session session = 1;
+    AnonymousTradingSession anonymousTradingSession = 2;
+  }
+}
+
+// SubscribeMessage informs the Stream Hub to subscribe the current web socket to
+// the supplied channel.
+message ClientSubscribeMessage {
+  repeated string subscriptionKeys = 1;
+}
+
+// UnsubscribeMessage informs the Stream Hub to unsubscribe the current web socket
+// from the supplied channel.
+message ClientUnsubscribeMessage {
+  repeated string subscriptionKeys = 1;
+}

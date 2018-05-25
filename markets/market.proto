@@ -1,0 +1,190 @@
+syntax = "proto3";
+
+// Package ProtobufMarkets contains definitions for market update messages;
+// the main wrapper messages is a MarketUpdateMessage.
+package ProtobufMarkets;
+
+// Market represents a currency pair on a particular exchange.
+message Market {
+  // DEPRECATED
+  string exchange = 1;
+  string currencyPair = 2;
+
+  // Prefer integer ids to string slugs (far fewer bytes)
+  uint64 exchangeId = 3;
+  uint64 currencyPairId = 4;
+
+  // New IDs from SQL; TODO remove 1,2,3,4 when migrationt o 5,6 is complete
+  uint64 marketId = 5;
+}
+
+// Order represents an ask or a bid.
+message Order {
+  float price = 1;
+  float amount = 2;
+
+  string priceStr = 3;
+  string amountStr = 4;
+}
+
+// Trade is a single trade in TradesUpdate
+message Trade {
+  // Exchange-specific ID
+  int64 id = 1;
+
+  int64 timestamp = 2;
+  int64 timestampMillis = 5;
+  float price = 3;
+  float amount = 4;
+
+  double priceDouble = 6;
+  double amountDouble = 7;
+
+  string priceStr = 8;
+  string amountStr = 9;
+}
+
+// MarketUpdateMessage is the primary message for market updates; it wraps all
+// other more specific update types.
+message MarketUpdateMessage {
+  reserved 8;
+
+  Market market = 9;
+
+  oneof Update {
+    OrderBookUpdate orderBookUpdate = 2;
+    OrderBookDeltaUpdate orderBookDeltaUpdate = 3;
+    TradesUpdate tradesUpdate = 4;
+    IntervalsUpdate intervalsUpdate = 5;
+    SummaryUpdate summaryUpdate = 6;
+    SparklineUpdate sparklineUpdate = 7;
+    SpreadHistoryUpdate spreadHistoryUpdate = 10;
+  }
+}
+
+// OrderBookUpdate represents a snapshot of the order book: a set of asks and
+// bids for the particular aggregation modulus.
+message OrderBookUpdate {
+  // Aggregation modulus is a value which all bids and asks in this particular
+  // OrderBookUpdate are divisible by. E.g. could be 1 (no aggregation), 5, 10,
+  // 50, 100, etc. Exact possible values are set for each market individually.
+  float aggregationModulus = 3;
+  string aggregationModulusStr = 4;
+
+  int32 seqNum = 5;
+
+  repeated Order bids = 1;
+  repeated Order asks = 2;
+}
+
+// OrderBookDeltaUpdate represents a delta which needs to be applied to the
+// local order book.
+message OrderBookDeltaUpdate {
+  // Aggregation modulus is a value which all bids and asks in this particular
+  // OrderBookUpdate are divisible by. E.g. could be 1 (no aggregation), 5, 10,
+  // 50, 100, etc. Exact possible values are set for each market individually.
+  float aggregationModulus = 3;
+  string aggregationModulusStr = 4;
+
+  int32 seqNum = 5;
+
+  message OrderDeltas {
+    // Either add a new order at a particular price, or replace existing one
+    // (with the new amount)
+    repeated Order set = 1;
+    // TODO: I see we don't really use deltas, and just use set?
+    repeated Order delta = 2;
+    // Remove order at a particular price
+    repeated float remove = 3 [packed = false];
+    repeated string removeStr = 4;
+  }
+
+  // Deltas for bids
+  OrderDeltas bids = 1;
+  // Deltas for asks
+  OrderDeltas asks = 2;
+}
+
+// TradesUpdate represents a set of new trades.
+message TradesUpdate {
+  repeated Trade trades = 1;
+}
+
+// Interval represents a single OHLC candle.
+message Interval {
+  message OHLC {
+    float open = 1;
+    float high = 2;
+    float low = 3;
+    float close = 4;
+
+    string openStr = 5;
+    string highStr = 6;
+    string lowStr = 7;
+    string closeStr = 8;
+  }
+
+  int64 closetime = 1;
+  int32 period = 4;
+
+  OHLC ohlc = 2;
+
+  float volumeBase = 3;
+  float volumeQuote = 5;
+
+  string volumeBaseStr = 6;
+  string volumeQuoteStr = 7;
+}
+
+// IntervalsUpdate represents a set of new Intervals (OHLC candles)
+message IntervalsUpdate {
+  repeated Interval intervals = 1;
+}
+
+// SummaryUpdate is a market summary update
+message SummaryUpdate {
+  reserved 1;
+
+  float last = 2;
+  float high = 3;
+  float low = 4;
+  float volumeBase = 5;
+  float volumeQuote = 9;
+  float changeAbsolute = 6;
+  float changePercent = 7;
+
+  string lastStr = 10;
+  string highStr = 11;
+  string lowStr = 12;
+  string volumeBaseStr = 13;
+  string volumeQuoteStr = 14;
+  string changeAbsoluteStr = 15;
+  string changePercentStr = 16;
+
+  int32 numTrades = 8;
+}
+
+message SparklineUpdate {
+  reserved 1;
+  int64 time = 2;
+  float price = 3;
+  string priceStr = 4;
+}
+
+message SpreadHistoryUpdate {
+  message SpreadHistoryPoint {
+    int64 timestamp = 1;
+    float price = 2;
+    float amount = 3;
+
+    string priceStr = 4;
+    string amountStr = 5;
+  }
+
+  repeated SpreadHistoryPoint asks = 1;
+  repeated SpreadHistoryPoint bids = 2;
+
+  int64 timestamp = 3;
+  Order bid = 4;
+  Order ask = 5;
+}
