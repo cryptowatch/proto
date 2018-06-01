@@ -34,11 +34,11 @@ message Trade {
 
   int64 timestamp = 2;
   int64 timestampMillis = 5;
-  float price = 3;
-  float amount = 4;
+  float price = 3;  // DEPRECATED; use priceStr
+  float amount = 4; // DEPRECATED; use amountStr
 
-  double priceDouble = 6;
-  double amountDouble = 7;
+  double priceDouble = 6;  // DEPRECATED; use priceStr
+  double amountDouble = 7; // DEPRECATED; use amountStr
 
   string priceStr = 8;
   string amountStr = 9;
@@ -113,10 +113,10 @@ message TradesUpdate {
 // Interval represents a single OHLC candle.
 message Interval {
   message OHLC {
-    float open = 1;
-    float high = 2;
-    float low = 3;
-    float close = 4;
+    float open = 1;  // DEPRECATED; use openStr
+    float high = 2;  // DEPRECATED; use highStr
+    float low = 3;   // DEPRECATED; use lowStr
+    float close = 4; // DEPRECATED; use closeStr
 
     string openStr = 5;
     string highStr = 6;
@@ -129,8 +129,8 @@ message Interval {
 
   OHLC ohlc = 2;
 
-  float volumeBase = 3;
-  float volumeQuote = 5;
+  float volumeBase = 3;  // DEPRECATED; use volumeBaseStr
+  float volumeQuote = 5; // DEPRECATED; use volumeQuoteStr
 
   string volumeBaseStr = 6;
   string volumeQuoteStr = 7;
@@ -145,13 +145,13 @@ message IntervalsUpdate {
 message SummaryUpdate {
   reserved 1;
 
-  float last = 2;
-  float high = 3;
-  float low = 4;
-  float volumeBase = 5;
-  float volumeQuote = 9;
-  float changeAbsolute = 6;
-  float changePercent = 7;
+  float last = 2;           // DEPRECATED; use lastStr
+  float high = 3;           // DEPRECATED; use highStr
+  float low = 4;            // DEPRECATED; use lowStr
+  float volumeBase = 5;     // DEPRECATED; use volumeBaseStr
+  float volumeQuote = 9;    // DEPRECATED; use volumeQuoteStr
+  float changeAbsolute = 6; // DEPRECATED; use changeAbsoluteStr
+  float changePercent = 7;  // DEPRECATED; use changePercentStr
 
   string lastStr = 10;
   string highStr = 11;
