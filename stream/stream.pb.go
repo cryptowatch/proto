@@ -16,8 +16,8 @@ package ProtobufStream
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import ProtobufMarkets "github.com/cryptowatch/proto/markets"
-import ProtobufMarkets1 "github.com/cryptowatch/proto/markets"
+import ProtobufMarkets "code.cryptowat.ch/proto/markets"
+import ProtobufMarkets1 "code.cryptowat.ch/proto/markets"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
