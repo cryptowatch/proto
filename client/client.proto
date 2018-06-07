@@ -44,26 +44,6 @@ message APIAuthenticationMessage {
   }
 }
 
-message ClientSessionMessage {
-  message Session {
-    string userId = 1;
-    int64 expires = 2;
-    string token = 3;
-    string mfaToken = 4;
-  }
-
-  message AnonymousTradingSession {
-    string exchange = 1;
-    string token = 2;
-    int64 expiration = 3;
-  }
-
-  oneof SessionConfig {
-    Session session = 1;
-    AnonymousTradingSession anonymousTradingSession = 2;
-  }
-}
-
 // SubscribeMessage informs the Stream Hub to subscribe the current web socket to
 // the supplied channel.
 message ClientSubscribeMessage {
