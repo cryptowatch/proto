@@ -36,6 +36,7 @@ message APIAuthenticationMessage {
   string nonce = 2;
   string api_key = 3;
   Source source = 4;
+  string version = 5;
 
   enum Source {
     UNKNOWN = 0;
