@@ -54,11 +54,13 @@ message MarketUpdateMessage {
   oneof Update {
     OrderBookUpdate orderBookUpdate = 2;
     OrderBookDeltaUpdate orderBookDeltaUpdate = 3;
+    OrderBookSpreadUpdate orderBookSpreadUpdate = 11;
+
     TradesUpdate tradesUpdate = 4;
     IntervalsUpdate intervalsUpdate = 5;
     SummaryUpdate summaryUpdate = 6;
     SparklineUpdate sparklineUpdate = 7;
-    SpreadHistoryUpdate spreadHistoryUpdate = 10;
+
   }
 }
 
@@ -103,6 +105,14 @@ message OrderBookDeltaUpdate {
   OrderDeltas bids = 1;
   // Deltas for asks
   OrderDeltas asks = 2;
+}
+
+// OrderBookSpreadUpdate represents only the best bid & ask
+message OrderBookSpreadUpdate {
+  int64 timestamp = 1;
+  int32 seqNum = 2;
+  Order bid = 3;
+  Order ask = 4;
 }
 
 // TradesUpdate represents a set of new trades.
@@ -171,20 +181,4 @@ message SparklineUpdate {
   string priceStr = 4;
 }
 
-message SpreadHistoryUpdate {
-  message SpreadHistoryPoint {
-    int64 timestamp = 1;
-    float price = 2;
-    float amount = 3;
 
-    string priceStr = 4;
-    string amountStr = 5;
-  }
-
-  repeated SpreadHistoryPoint asks = 1;
-  repeated SpreadHistoryPoint bids = 2;
-
-  int64 timestamp = 3;
-  Order bid = 4;
-  Order ask = 5;
-}
