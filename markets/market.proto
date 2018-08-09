@@ -110,9 +110,8 @@ message OrderBookDeltaUpdate {
 // OrderBookSpreadUpdate represents only the best bid & ask
 message OrderBookSpreadUpdate {
   int64 timestamp = 1;
-  int32 seqNum = 2;
-  Order bid = 3;
-  Order ask = 4;
+  Order bid = 2;
+  Order ask = 3;
 }
 
 // TradesUpdate represents a set of new trades.
