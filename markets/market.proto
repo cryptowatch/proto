@@ -6,42 +6,43 @@ package ProtobufMarkets;
 
 // Market represents a currency pair on a particular exchange.
 message Market {
-  // DEPRECATED
-  string exchange = 1;
-  string currencyPair = 2;
-
   // Prefer integer ids to string slugs (far fewer bytes)
   uint64 exchangeId = 3;
   uint64 currencyPairId = 4;
 
   // New IDs from SQL; TODO remove 1,2,3,4 when migrationt o 5,6 is complete
   uint64 marketId = 5;
+
+  // Deprecated
+  string exchange = 1;
+  string currencyPair = 2;
 }
 
 // Order represents an ask or a bid.
 message Order {
-  float price = 1;
-  float amount = 2;
-
   string priceStr = 3;
   string amountStr = 4;
+
+  // Deprecated
+  float price = 1;
+  float amount = 2;
 }
 
 // Trade is a single trade in TradesUpdate
 message Trade {
   // Exchange-specific ID
   int64 id = 1;
-
   int64 timestamp = 2;
   int64 timestampMillis = 5;
-  float price = 3;
-  float amount = 4;
-
-  double priceDouble = 6;
-  double amountDouble = 7;
 
   string priceStr = 8;
   string amountStr = 9;
+
+  // Deprecated
+  float price = 3;
+  float amount = 4;
+  double priceDouble = 6;
+  double amountDouble = 7;
 }
 
 // MarketUpdateMessage is the primary message for market updates; it wraps all
@@ -70,13 +71,15 @@ message OrderBookUpdate {
   // Aggregation modulus is a value which all bids and asks in this particular
   // OrderBookUpdate are divisible by. E.g. could be 1 (no aggregation), 5, 10,
   // 50, 100, etc. Exact possible values are set for each market individually.
-  float aggregationModulus = 3;
   string aggregationModulusStr = 4;
 
   int32 seqNum = 5;
 
   repeated Order bids = 1;
   repeated Order asks = 2;
+
+  // Deprecated
+  float aggregationModulus = 3;
 }
 
 // OrderBookDeltaUpdate represents a delta which needs to be applied to the
@@ -122,15 +125,16 @@ message TradesUpdate {
 // Interval represents a single OHLC candle.
 message Interval {
   message OHLC {
-    float open = 1;
-    float high = 2;
-    float low = 3;
-    float close = 4;
-
     string openStr = 5;
     string highStr = 6;
     string lowStr = 7;
     string closeStr = 8;
+
+    // Deprecated
+    float open = 1;
+    float high = 2;
+    float low = 3;
+    float close = 4;
   }
 
   int64 closetime = 1;
@@ -138,11 +142,12 @@ message Interval {
 
   OHLC ohlc = 2;
 
-  float volumeBase = 3;
-  float volumeQuote = 5;
-
   string volumeBaseStr = 6;
   string volumeQuoteStr = 7;
+
+  // Deprecated
+  float volumeBase = 3;
+  float volumeQuote = 5;
 }
 
 // IntervalsUpdate represents a set of new Intervals (OHLC candles)
@@ -154,14 +159,6 @@ message IntervalsUpdate {
 message SummaryUpdate {
   reserved 1;
 
-  float last = 2;
-  float high = 3;
-  float low = 4;
-  float volumeBase = 5;
-  float volumeQuote = 9;
-  float changeAbsolute = 6;
-  float changePercent = 7;
-
   string lastStr = 10;
   string highStr = 11;
   string lowStr = 12;
@@ -171,6 +168,15 @@ message SummaryUpdate {
   string changePercentStr = 16;
 
   int32 numTrades = 8;
+
+  // Deprecated
+  float last = 2;
+  float high = 3;
+  float low = 4;
+  float volumeBase = 5;
+  float volumeQuote = 9;
+  float changeAbsolute = 6;
+  float changePercent = 7;
 }
 
 message SparklineUpdate {
