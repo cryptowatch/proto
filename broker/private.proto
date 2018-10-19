@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package ProtobufBroker;
+
+enum FundingType {
+  Spot = 0;
+  Margin = 1;
+}
+
+message PrivateOrder {
+  string id = 1;
+  int64 time = 2;
+  float price = 3; // Deprecated; use priceParams
+
+  float amount = 4; // Deprecated; use amountParam
+  int32 side = 5;
+
+  enum Type {
+    Market = 0;
+    Limit = 1;
+    StopLoss = 2;
+    StopLossLimit = 3;
+    TakeProfit = 4;
+    TakeProfitLimit = 5;
+    StopLossTakeProfit = 6;
+    StopLossTakeProfitLimit = 7;
+    TrailingStopLoss = 8;
+    TrailingStopLossLimit = 9;
+    StopLossAndLimit = 10;
+    FillOrKill = 11;
+    SettlePosition = 12;
+  }
+
+  Type type = 6;
+
+  FundingType fundingType = 7;
+
+  enum PriceParamType {
+    AbsoluteValue = 0;
+    OffsetValue = 1;
+    PrecentageOffsetValue = 2;
+  }
+
+  message PriceParam {
+    float value = 1; // DEPRECATED; use valueString (later to be renamed to just "value")
+    string valueString = 3;
+    PriceParamType type = 2;
+  }
+
+  repeated PriceParam priceParams = 8; // The order of these matters
+
+  float amountParam = 9; // DEPRECATED; use amountParamString (later to be renamed to just "amountParam")
+  string amountParamString = 16;
+
+  string amountFilledString = 17;
+
+  string leverage = 10;
+
+  // For trailing orders
+  // DEPRECATED; use strings instead
+  float currentStop = 11;
+  float initialStop = 12;
+  string currentStopString = 18;
+  string initialStopString = 19;
+
+  int64 startTime = 13;
+  int64 expireTime = 14;
+
+  float rate = 15;
+
+  bool  hasClosingOrder = 20;
+  Type  closingOrderType = 21;
+  repeated PriceParam closingOrderPriceParams = 22; // The order of these matters
+
+}
+
+message PrivateTrade {
+  int64 id = 1;
+  string idString = 7;
+  string orderId = 8;
+
+  int64 time = 2;
+  int64 timeMillis = 6;
+
+  float price = 3;
+  string priceString = 9;
+  float amount = 4;
+  string amountString = 10;
+
+  int32 side = 5;
+}
+
+message PrivatePosition {
+  string id = 1;
+  int64 time = 2;
+  int32 side = 3;
+
+  float avgPrice = 4;
+  string avgPriceString = 9;
+
+  // DEPRECATED; use strings instead
+  float amountOpen = 5;
+  float amountClosed = 6;
+
+  string amountOpenString = 10;
+  string amountClosedString = 11;
+
+  repeated string orderIds = 7;
+
+  // NOTE:
+  // Trade ids are sent as strings here, while historically they
+  // have been represented as integers. We need to transition to using
+  // strings everywhere because of the rectangle/square rule; using
+  // ints is simply not compatible with some exchanges which use UUIDs (like Kraken lol)
+  repeated string tradeIds = 8;
+}
+
+message Balance {
+  string currency = 1;
+  float amount = 2;
+  string amountString = 3;
+}
+
+message Balances {
+  FundingType fundingType = 1;
+  repeated Balance balances = 2;
+
+  reserved 3;
+  reserved 4;
+}

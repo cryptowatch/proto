@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package ProtobufBroker;
+
+import "broker/private.proto";
+import "stream/stream.proto";
+
+message BrokerSessionMessage {
+  message Session {
+    string userId = 1;
+    int64 expires = 2;
+    string token = 3;
+    string mfaToken = 4;
+  }
+
+  message AnonymousTradingSession {
+    string exchange = 1;
+    string token = 2;
+    int64 expiration = 3;
+  }
+
+  oneof SessionConfig {
+    Session session = 1;
+    AnonymousTradingSession anonymousTradingSession = 2;
+  }
+
+  int64 marketId = 3;
+}
+
+message PlaceOrderRequest {
+  PrivateOrder order = 2;
+  PrivateOrder closingOrder = 3;
+}
+
+message PlaceOrderResult {
+  string orderId = 1;
+}
+
+message CancelOrderRequest {
+  string orderId = 2;
+}
+
+message CancelOrderResult {
+  string orderId = 1;
+}
+
+message ReplaceOrderRequest {
+  string orderId = 1;
+  PrivateOrder replacement = 2;
+  PrivateOrder replacementClosingOrder = 3;
+}
+
+message ClosePositionRequest {
+  string positionId = 2;
+}
+
+message SyncRequest {}
+
+message BrokerRequest {
+  string id = 1;
+  oneof Request {
+    PlaceOrderRequest placeOrderRequest = 2;
+    CancelOrderRequest cancelOrderRequest = 3;
+    ReplaceOrderRequest replaceOrderRequest = 6;
+    SyncRequest syncRequest = 4;
+    ClosePositionRequest closePositionRequest = 5;
+  }
+}
+
+message OrdersUpdate {
+  repeated PrivateOrder orders = 1;
+}
+
+message TradesUpdate {
+  repeated PrivateTrade trades = 1;
+}
+
+message PositionsUpdate {
+  repeated PrivatePosition positions = 1;
+}
+
+message BalancesUpdate {
+  repeated Balances balances = 1;
+}
+
+message RequestResolutionUpdate {
+  string id = 1;
+  int32 error = 2;
+  string message = 3;
+
+  oneof Result {
+    PlaceOrderResult placeOrderResult = 4;
+    CancelOrderResult cancelOrderResult = 5;
+  }
+}
+
+message AnonymousSessionStatusUpdate {
+  int64 expiration = 1;
+  string token = 2;
+}
+
+message SessionStatusUpdate {
+  bool initialized = 1;
+
+  // Syncing means poller is running
+  bool syncing = 2;
+  // Last sync is last time poller finished running
+  int64 lastSyncTime = 3;
+  // Expose error from poller
+  int32 syncError = 4;
+}
+
+message PermissionsUpdate {
+  repeated PrivateOrder.Type orderTypes = 1 [packed = false];
+  repeated FundingType fundingTypes = 2 [packed = false];
+
+  message Agreement {
+    string key = 1;
+    string body = 2;
+  }
+  repeated Agreement agreements = 4;
+
+  bool currencyPairAllowed = 5;
+
+  message LeverageLevels {
+    repeated string buy = 1;
+    repeated string sell = 2;
+  }
+
+  LeverageLevels leverageLevels = 6;
+
+  bool supportsOrderExpiry = 7;
+}
+
+message APIAccessorStatusUpdate {
+  bool hasAccess = 1;
+  int32 status = 2;
+  string statusString = 3;
+}
+
+message BrokerUpdateMessage {
+  oneof Update {
+    OrdersUpdate ordersUpdate = 1;
+    TradesUpdate tradesUpdate = 2;
+    BalancesUpdate balancesUpdate = 3;
+    PositionsUpdate positionsUpdate = 8;
+    RequestResolutionUpdate requestResolutionUpdate = 4;
+    AnonymousSessionStatusUpdate anonymousSessionStatusUpdate = 5;
+    PermissionsUpdate permissionsUpdate = 6;
+    SessionStatusUpdate sessionStatusUpdate = 7;
+    APIAccessorStatusUpdate apiAccessorStatusUpdate = 9;
+    ProtobufStream.AuthenticationResult authenticationResult = 10;
+  }
+}
