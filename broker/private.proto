@@ -76,7 +76,7 @@ message PrivateOrder {
 
 message PrivateTrade {
   int64 id = 1;
-  string idString = 7;
+  string externalId = 7;
   string orderId = 8;
 
   int64 time = 2;
