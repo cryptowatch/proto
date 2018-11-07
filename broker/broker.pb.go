@@ -3,10 +3,12 @@
 
 package ProtobufBroker
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import stream "code.cryptowat.ch/proto/stream"
+import (
+	stream "code.cryptowat.ch/proto/stream"
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -24,7 +26,7 @@ type BrokerSessionMessage struct {
 	//	*BrokerSessionMessage_Session_
 	//	*BrokerSessionMessage_AnonymousTradingSession_
 	SessionConfig        isBrokerSessionMessage_SessionConfig `protobuf_oneof:"SessionConfig"`
-	MarketId             int64                                `protobuf:"varint,3,opt,name=marketId" json:"marketId,omitempty"`
+	MarketId             int64                                `protobuf:"varint,3,opt,name=marketId,proto3" json:"marketId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                             `json:"-"`
 	XXX_unrecognized     []byte                               `json:"-"`
 	XXX_sizecache        int32                                `json:"-"`
@@ -34,16 +36,17 @@ func (m *BrokerSessionMessage) Reset()         { *m = BrokerSessionMessage{} }
 func (m *BrokerSessionMessage) String() string { return proto.CompactTextString(m) }
 func (*BrokerSessionMessage) ProtoMessage()    {}
 func (*BrokerSessionMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{0}
+	return fileDescriptor_09a300fef54c4624, []int{0}
 }
+
 func (m *BrokerSessionMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BrokerSessionMessage.Unmarshal(m, b)
 }
 func (m *BrokerSessionMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BrokerSessionMessage.Marshal(b, m, deterministic)
 }
-func (dst *BrokerSessionMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BrokerSessionMessage.Merge(dst, src)
+func (m *BrokerSessionMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BrokerSessionMessage.Merge(m, src)
 }
 func (m *BrokerSessionMessage) XXX_Size() int {
 	return xxx_messageInfo_BrokerSessionMessage.Size(m)
@@ -59,13 +62,15 @@ type isBrokerSessionMessage_SessionConfig interface {
 }
 
 type BrokerSessionMessage_Session_ struct {
-	Session *BrokerSessionMessage_Session `protobuf:"bytes,1,opt,name=session,oneof"`
-}
-type BrokerSessionMessage_AnonymousTradingSession_ struct {
-	AnonymousTradingSession *BrokerSessionMessage_AnonymousTradingSession `protobuf:"bytes,2,opt,name=anonymousTradingSession,oneof"`
+	Session *BrokerSessionMessage_Session `protobuf:"bytes,1,opt,name=session,proto3,oneof"`
 }
 
-func (*BrokerSessionMessage_Session_) isBrokerSessionMessage_SessionConfig()                 {}
+type BrokerSessionMessage_AnonymousTradingSession_ struct {
+	AnonymousTradingSession *BrokerSessionMessage_AnonymousTradingSession `protobuf:"bytes,2,opt,name=anonymousTradingSession,proto3,oneof"`
+}
+
+func (*BrokerSessionMessage_Session_) isBrokerSessionMessage_SessionConfig() {}
+
 func (*BrokerSessionMessage_AnonymousTradingSession_) isBrokerSessionMessage_SessionConfig() {}
 
 func (m *BrokerSessionMessage) GetSessionConfig() isBrokerSessionMessage_SessionConfig {
@@ -171,10 +176,10 @@ func _BrokerSessionMessage_OneofSizer(msg proto.Message) (n int) {
 }
 
 type BrokerSessionMessage_Session struct {
-	UserId               string   `protobuf:"bytes,1,opt,name=userId" json:"userId,omitempty"`
-	Expires              int64    `protobuf:"varint,2,opt,name=expires" json:"expires,omitempty"`
-	Token                string   `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
-	MfaToken             string   `protobuf:"bytes,4,opt,name=mfaToken" json:"mfaToken,omitempty"`
+	UserId               string   `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	Expires              int64    `protobuf:"varint,2,opt,name=expires,proto3" json:"expires,omitempty"`
+	Token                string   `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	MfaToken             string   `protobuf:"bytes,4,opt,name=mfaToken,proto3" json:"mfaToken,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -184,16 +189,17 @@ func (m *BrokerSessionMessage_Session) Reset()         { *m = BrokerSessionMessa
 func (m *BrokerSessionMessage_Session) String() string { return proto.CompactTextString(m) }
 func (*BrokerSessionMessage_Session) ProtoMessage()    {}
 func (*BrokerSessionMessage_Session) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{0, 0}
+	return fileDescriptor_09a300fef54c4624, []int{0, 0}
 }
+
 func (m *BrokerSessionMessage_Session) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BrokerSessionMessage_Session.Unmarshal(m, b)
 }
 func (m *BrokerSessionMessage_Session) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BrokerSessionMessage_Session.Marshal(b, m, deterministic)
 }
-func (dst *BrokerSessionMessage_Session) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BrokerSessionMessage_Session.Merge(dst, src)
+func (m *BrokerSessionMessage_Session) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BrokerSessionMessage_Session.Merge(m, src)
 }
 func (m *BrokerSessionMessage_Session) XXX_Size() int {
 	return xxx_messageInfo_BrokerSessionMessage_Session.Size(m)
@@ -233,9 +239,9 @@ func (m *BrokerSessionMessage_Session) GetMfaToken() string {
 }
 
 type BrokerSessionMessage_AnonymousTradingSession struct {
-	Exchange             string   `protobuf:"bytes,1,opt,name=exchange" json:"exchange,omitempty"`
-	Token                string   `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
-	Expiration           int64    `protobuf:"varint,3,opt,name=expiration" json:"expiration,omitempty"`
+	Exchange             string   `protobuf:"bytes,1,opt,name=exchange,proto3" json:"exchange,omitempty"`
+	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	Expiration           int64    `protobuf:"varint,3,opt,name=expiration,proto3" json:"expiration,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -249,16 +255,17 @@ func (m *BrokerSessionMessage_AnonymousTradingSession) String() string {
 }
 func (*BrokerSessionMessage_AnonymousTradingSession) ProtoMessage() {}
 func (*BrokerSessionMessage_AnonymousTradingSession) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{0, 1}
+	return fileDescriptor_09a300fef54c4624, []int{0, 1}
 }
+
 func (m *BrokerSessionMessage_AnonymousTradingSession) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BrokerSessionMessage_AnonymousTradingSession.Unmarshal(m, b)
 }
 func (m *BrokerSessionMessage_AnonymousTradingSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BrokerSessionMessage_AnonymousTradingSession.Marshal(b, m, deterministic)
 }
-func (dst *BrokerSessionMessage_AnonymousTradingSession) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BrokerSessionMessage_AnonymousTradingSession.Merge(dst, src)
+func (m *BrokerSessionMessage_AnonymousTradingSession) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BrokerSessionMessage_AnonymousTradingSession.Merge(m, src)
 }
 func (m *BrokerSessionMessage_AnonymousTradingSession) XXX_Size() int {
 	return xxx_messageInfo_BrokerSessionMessage_AnonymousTradingSession.Size(m)
@@ -291,8 +298,8 @@ func (m *BrokerSessionMessage_AnonymousTradingSession) GetExpiration() int64 {
 }
 
 type PlaceOrderRequest struct {
-	Order                *PrivateOrder `protobuf:"bytes,2,opt,name=order" json:"order,omitempty"`
-	ClosingOrder         *PrivateOrder `protobuf:"bytes,3,opt,name=closingOrder" json:"closingOrder,omitempty"`
+	Order                *PrivateOrder `protobuf:"bytes,2,opt,name=order,proto3" json:"order,omitempty"`
+	ClosingOrder         *PrivateOrder `protobuf:"bytes,3,opt,name=closingOrder,proto3" json:"closingOrder,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
@@ -302,16 +309,17 @@ func (m *PlaceOrderRequest) Reset()         { *m = PlaceOrderRequest{} }
 func (m *PlaceOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*PlaceOrderRequest) ProtoMessage()    {}
 func (*PlaceOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{1}
+	return fileDescriptor_09a300fef54c4624, []int{1}
 }
+
 func (m *PlaceOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PlaceOrderRequest.Unmarshal(m, b)
 }
 func (m *PlaceOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PlaceOrderRequest.Marshal(b, m, deterministic)
 }
-func (dst *PlaceOrderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlaceOrderRequest.Merge(dst, src)
+func (m *PlaceOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PlaceOrderRequest.Merge(m, src)
 }
 func (m *PlaceOrderRequest) XXX_Size() int {
 	return xxx_messageInfo_PlaceOrderRequest.Size(m)
@@ -337,7 +345,7 @@ func (m *PlaceOrderRequest) GetClosingOrder() *PrivateOrder {
 }
 
 type PlaceOrderResult struct {
-	OrderId              string   `protobuf:"bytes,1,opt,name=orderId" json:"orderId,omitempty"`
+	OrderId              string   `protobuf:"bytes,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -347,16 +355,17 @@ func (m *PlaceOrderResult) Reset()         { *m = PlaceOrderResult{} }
 func (m *PlaceOrderResult) String() string { return proto.CompactTextString(m) }
 func (*PlaceOrderResult) ProtoMessage()    {}
 func (*PlaceOrderResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{2}
+	return fileDescriptor_09a300fef54c4624, []int{2}
 }
+
 func (m *PlaceOrderResult) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PlaceOrderResult.Unmarshal(m, b)
 }
 func (m *PlaceOrderResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PlaceOrderResult.Marshal(b, m, deterministic)
 }
-func (dst *PlaceOrderResult) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlaceOrderResult.Merge(dst, src)
+func (m *PlaceOrderResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PlaceOrderResult.Merge(m, src)
 }
 func (m *PlaceOrderResult) XXX_Size() int {
 	return xxx_messageInfo_PlaceOrderResult.Size(m)
@@ -375,7 +384,7 @@ func (m *PlaceOrderResult) GetOrderId() string {
 }
 
 type CancelOrderRequest struct {
-	OrderId              string   `protobuf:"bytes,2,opt,name=orderId" json:"orderId,omitempty"`
+	OrderId              string   `protobuf:"bytes,2,opt,name=orderId,proto3" json:"orderId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -385,16 +394,17 @@ func (m *CancelOrderRequest) Reset()         { *m = CancelOrderRequest{} }
 func (m *CancelOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*CancelOrderRequest) ProtoMessage()    {}
 func (*CancelOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{3}
+	return fileDescriptor_09a300fef54c4624, []int{3}
 }
+
 func (m *CancelOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CancelOrderRequest.Unmarshal(m, b)
 }
 func (m *CancelOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_CancelOrderRequest.Marshal(b, m, deterministic)
 }
-func (dst *CancelOrderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelOrderRequest.Merge(dst, src)
+func (m *CancelOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelOrderRequest.Merge(m, src)
 }
 func (m *CancelOrderRequest) XXX_Size() int {
 	return xxx_messageInfo_CancelOrderRequest.Size(m)
@@ -413,7 +423,7 @@ func (m *CancelOrderRequest) GetOrderId() string {
 }
 
 type CancelOrderResult struct {
-	OrderId              string   `protobuf:"bytes,1,opt,name=orderId" json:"orderId,omitempty"`
+	OrderId              string   `protobuf:"bytes,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -423,16 +433,17 @@ func (m *CancelOrderResult) Reset()         { *m = CancelOrderResult{} }
 func (m *CancelOrderResult) String() string { return proto.CompactTextString(m) }
 func (*CancelOrderResult) ProtoMessage()    {}
 func (*CancelOrderResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{4}
+	return fileDescriptor_09a300fef54c4624, []int{4}
 }
+
 func (m *CancelOrderResult) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CancelOrderResult.Unmarshal(m, b)
 }
 func (m *CancelOrderResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_CancelOrderResult.Marshal(b, m, deterministic)
 }
-func (dst *CancelOrderResult) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelOrderResult.Merge(dst, src)
+func (m *CancelOrderResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelOrderResult.Merge(m, src)
 }
 func (m *CancelOrderResult) XXX_Size() int {
 	return xxx_messageInfo_CancelOrderResult.Size(m)
@@ -451,9 +462,9 @@ func (m *CancelOrderResult) GetOrderId() string {
 }
 
 type ReplaceOrderRequest struct {
-	OrderId                 string        `protobuf:"bytes,1,opt,name=orderId" json:"orderId,omitempty"`
-	Replacement             *PrivateOrder `protobuf:"bytes,2,opt,name=replacement" json:"replacement,omitempty"`
-	ReplacementClosingOrder *PrivateOrder `protobuf:"bytes,3,opt,name=replacementClosingOrder" json:"replacementClosingOrder,omitempty"`
+	OrderId                 string        `protobuf:"bytes,1,opt,name=orderId,proto3" json:"orderId,omitempty"`
+	Replacement             *PrivateOrder `protobuf:"bytes,2,opt,name=replacement,proto3" json:"replacement,omitempty"`
+	ReplacementClosingOrder *PrivateOrder `protobuf:"bytes,3,opt,name=replacementClosingOrder,proto3" json:"replacementClosingOrder,omitempty"`
 	XXX_NoUnkeyedLiteral    struct{}      `json:"-"`
 	XXX_unrecognized        []byte        `json:"-"`
 	XXX_sizecache           int32         `json:"-"`
@@ -463,16 +474,17 @@ func (m *ReplaceOrderRequest) Reset()         { *m = ReplaceOrderRequest{} }
 func (m *ReplaceOrderRequest) String() string { return proto.CompactTextString(m) }
 func (*ReplaceOrderRequest) ProtoMessage()    {}
 func (*ReplaceOrderRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{5}
+	return fileDescriptor_09a300fef54c4624, []int{5}
 }
+
 func (m *ReplaceOrderRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReplaceOrderRequest.Unmarshal(m, b)
 }
 func (m *ReplaceOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ReplaceOrderRequest.Marshal(b, m, deterministic)
 }
-func (dst *ReplaceOrderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReplaceOrderRequest.Merge(dst, src)
+func (m *ReplaceOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReplaceOrderRequest.Merge(m, src)
 }
 func (m *ReplaceOrderRequest) XXX_Size() int {
 	return xxx_messageInfo_ReplaceOrderRequest.Size(m)
@@ -505,7 +517,7 @@ func (m *ReplaceOrderRequest) GetReplacementClosingOrder() *PrivateOrder {
 }
 
 type ClosePositionRequest struct {
-	PositionId           string   `protobuf:"bytes,2,opt,name=positionId" json:"positionId,omitempty"`
+	PositionId           string   `protobuf:"bytes,2,opt,name=positionId,proto3" json:"positionId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -515,16 +527,17 @@ func (m *ClosePositionRequest) Reset()         { *m = ClosePositionRequest{} }
 func (m *ClosePositionRequest) String() string { return proto.CompactTextString(m) }
 func (*ClosePositionRequest) ProtoMessage()    {}
 func (*ClosePositionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{6}
+	return fileDescriptor_09a300fef54c4624, []int{6}
 }
+
 func (m *ClosePositionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClosePositionRequest.Unmarshal(m, b)
 }
 func (m *ClosePositionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClosePositionRequest.Marshal(b, m, deterministic)
 }
-func (dst *ClosePositionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClosePositionRequest.Merge(dst, src)
+func (m *ClosePositionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClosePositionRequest.Merge(m, src)
 }
 func (m *ClosePositionRequest) XXX_Size() int {
 	return xxx_messageInfo_ClosePositionRequest.Size(m)
@@ -552,16 +565,17 @@ func (m *SyncRequest) Reset()         { *m = SyncRequest{} }
 func (m *SyncRequest) String() string { return proto.CompactTextString(m) }
 func (*SyncRequest) ProtoMessage()    {}
 func (*SyncRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{7}
+	return fileDescriptor_09a300fef54c4624, []int{7}
 }
+
 func (m *SyncRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SyncRequest.Unmarshal(m, b)
 }
 func (m *SyncRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_SyncRequest.Marshal(b, m, deterministic)
 }
-func (dst *SyncRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SyncRequest.Merge(dst, src)
+func (m *SyncRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SyncRequest.Merge(m, src)
 }
 func (m *SyncRequest) XXX_Size() int {
 	return xxx_messageInfo_SyncRequest.Size(m)
@@ -573,7 +587,7 @@ func (m *SyncRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_SyncRequest proto.InternalMessageInfo
 
 type BrokerRequest struct {
-	Id string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Types that are valid to be assigned to Request:
 	//	*BrokerRequest_PlaceOrderRequest
 	//	*BrokerRequest_CancelOrderRequest
@@ -590,16 +604,17 @@ func (m *BrokerRequest) Reset()         { *m = BrokerRequest{} }
 func (m *BrokerRequest) String() string { return proto.CompactTextString(m) }
 func (*BrokerRequest) ProtoMessage()    {}
 func (*BrokerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{8}
+	return fileDescriptor_09a300fef54c4624, []int{8}
 }
+
 func (m *BrokerRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BrokerRequest.Unmarshal(m, b)
 }
 func (m *BrokerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BrokerRequest.Marshal(b, m, deterministic)
 }
-func (dst *BrokerRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BrokerRequest.Merge(dst, src)
+func (m *BrokerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BrokerRequest.Merge(m, src)
 }
 func (m *BrokerRequest) XXX_Size() int {
 	return xxx_messageInfo_BrokerRequest.Size(m)
@@ -610,30 +625,45 @@ func (m *BrokerRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BrokerRequest proto.InternalMessageInfo
 
+func (m *BrokerRequest) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
 type isBrokerRequest_Request interface {
 	isBrokerRequest_Request()
 }
 
 type BrokerRequest_PlaceOrderRequest struct {
-	PlaceOrderRequest *PlaceOrderRequest `protobuf:"bytes,2,opt,name=placeOrderRequest,oneof"`
-}
-type BrokerRequest_CancelOrderRequest struct {
-	CancelOrderRequest *CancelOrderRequest `protobuf:"bytes,3,opt,name=cancelOrderRequest,oneof"`
-}
-type BrokerRequest_ReplaceOrderRequest struct {
-	ReplaceOrderRequest *ReplaceOrderRequest `protobuf:"bytes,6,opt,name=replaceOrderRequest,oneof"`
-}
-type BrokerRequest_SyncRequest struct {
-	SyncRequest *SyncRequest `protobuf:"bytes,4,opt,name=syncRequest,oneof"`
-}
-type BrokerRequest_ClosePositionRequest struct {
-	ClosePositionRequest *ClosePositionRequest `protobuf:"bytes,5,opt,name=closePositionRequest,oneof"`
+	PlaceOrderRequest *PlaceOrderRequest `protobuf:"bytes,2,opt,name=placeOrderRequest,proto3,oneof"`
 }
 
-func (*BrokerRequest_PlaceOrderRequest) isBrokerRequest_Request()    {}
-func (*BrokerRequest_CancelOrderRequest) isBrokerRequest_Request()   {}
-func (*BrokerRequest_ReplaceOrderRequest) isBrokerRequest_Request()  {}
-func (*BrokerRequest_SyncRequest) isBrokerRequest_Request()          {}
+type BrokerRequest_CancelOrderRequest struct {
+	CancelOrderRequest *CancelOrderRequest `protobuf:"bytes,3,opt,name=cancelOrderRequest,proto3,oneof"`
+}
+
+type BrokerRequest_ReplaceOrderRequest struct {
+	ReplaceOrderRequest *ReplaceOrderRequest `protobuf:"bytes,6,opt,name=replaceOrderRequest,proto3,oneof"`
+}
+
+type BrokerRequest_SyncRequest struct {
+	SyncRequest *SyncRequest `protobuf:"bytes,4,opt,name=syncRequest,proto3,oneof"`
+}
+
+type BrokerRequest_ClosePositionRequest struct {
+	ClosePositionRequest *ClosePositionRequest `protobuf:"bytes,5,opt,name=closePositionRequest,proto3,oneof"`
+}
+
+func (*BrokerRequest_PlaceOrderRequest) isBrokerRequest_Request() {}
+
+func (*BrokerRequest_CancelOrderRequest) isBrokerRequest_Request() {}
+
+func (*BrokerRequest_ReplaceOrderRequest) isBrokerRequest_Request() {}
+
+func (*BrokerRequest_SyncRequest) isBrokerRequest_Request() {}
+
 func (*BrokerRequest_ClosePositionRequest) isBrokerRequest_Request() {}
 
 func (m *BrokerRequest) GetRequest() isBrokerRequest_Request {
@@ -641,13 +671,6 @@ func (m *BrokerRequest) GetRequest() isBrokerRequest_Request {
 		return m.Request
 	}
 	return nil
-}
-
-func (m *BrokerRequest) GetId() string {
-	if m != nil {
-		return m.Id
-	}
-	return ""
 }
 
 func (m *BrokerRequest) GetPlaceOrderRequest() *PlaceOrderRequest {
@@ -817,7 +840,7 @@ func _BrokerRequest_OneofSizer(msg proto.Message) (n int) {
 }
 
 type OrdersUpdate struct {
-	Orders               []*PrivateOrder `protobuf:"bytes,1,rep,name=orders" json:"orders,omitempty"`
+	Orders               []*PrivateOrder `protobuf:"bytes,1,rep,name=orders,proto3" json:"orders,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
@@ -827,16 +850,17 @@ func (m *OrdersUpdate) Reset()         { *m = OrdersUpdate{} }
 func (m *OrdersUpdate) String() string { return proto.CompactTextString(m) }
 func (*OrdersUpdate) ProtoMessage()    {}
 func (*OrdersUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{9}
+	return fileDescriptor_09a300fef54c4624, []int{9}
 }
+
 func (m *OrdersUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OrdersUpdate.Unmarshal(m, b)
 }
 func (m *OrdersUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_OrdersUpdate.Marshal(b, m, deterministic)
 }
-func (dst *OrdersUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OrdersUpdate.Merge(dst, src)
+func (m *OrdersUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OrdersUpdate.Merge(m, src)
 }
 func (m *OrdersUpdate) XXX_Size() int {
 	return xxx_messageInfo_OrdersUpdate.Size(m)
@@ -855,7 +879,7 @@ func (m *OrdersUpdate) GetOrders() []*PrivateOrder {
 }
 
 type TradesUpdate struct {
-	Trades               []*PrivateTrade `protobuf:"bytes,1,rep,name=trades" json:"trades,omitempty"`
+	Trades               []*PrivateTrade `protobuf:"bytes,1,rep,name=trades,proto3" json:"trades,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_unrecognized     []byte          `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
@@ -865,16 +889,17 @@ func (m *TradesUpdate) Reset()         { *m = TradesUpdate{} }
 func (m *TradesUpdate) String() string { return proto.CompactTextString(m) }
 func (*TradesUpdate) ProtoMessage()    {}
 func (*TradesUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{10}
+	return fileDescriptor_09a300fef54c4624, []int{10}
 }
+
 func (m *TradesUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_TradesUpdate.Unmarshal(m, b)
 }
 func (m *TradesUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_TradesUpdate.Marshal(b, m, deterministic)
 }
-func (dst *TradesUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TradesUpdate.Merge(dst, src)
+func (m *TradesUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TradesUpdate.Merge(m, src)
 }
 func (m *TradesUpdate) XXX_Size() int {
 	return xxx_messageInfo_TradesUpdate.Size(m)
@@ -893,7 +918,7 @@ func (m *TradesUpdate) GetTrades() []*PrivateTrade {
 }
 
 type PositionsUpdate struct {
-	Positions            []*PrivatePosition `protobuf:"bytes,1,rep,name=positions" json:"positions,omitempty"`
+	Positions            []*PrivatePosition `protobuf:"bytes,1,rep,name=positions,proto3" json:"positions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
@@ -903,16 +928,17 @@ func (m *PositionsUpdate) Reset()         { *m = PositionsUpdate{} }
 func (m *PositionsUpdate) String() string { return proto.CompactTextString(m) }
 func (*PositionsUpdate) ProtoMessage()    {}
 func (*PositionsUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{11}
+	return fileDescriptor_09a300fef54c4624, []int{11}
 }
+
 func (m *PositionsUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PositionsUpdate.Unmarshal(m, b)
 }
 func (m *PositionsUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PositionsUpdate.Marshal(b, m, deterministic)
 }
-func (dst *PositionsUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PositionsUpdate.Merge(dst, src)
+func (m *PositionsUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PositionsUpdate.Merge(m, src)
 }
 func (m *PositionsUpdate) XXX_Size() int {
 	return xxx_messageInfo_PositionsUpdate.Size(m)
@@ -931,7 +957,7 @@ func (m *PositionsUpdate) GetPositions() []*PrivatePosition {
 }
 
 type BalancesUpdate struct {
-	Balances             []*Balances `protobuf:"bytes,1,rep,name=balances" json:"balances,omitempty"`
+	Balances             []*Balances `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -941,16 +967,17 @@ func (m *BalancesUpdate) Reset()         { *m = BalancesUpdate{} }
 func (m *BalancesUpdate) String() string { return proto.CompactTextString(m) }
 func (*BalancesUpdate) ProtoMessage()    {}
 func (*BalancesUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{12}
+	return fileDescriptor_09a300fef54c4624, []int{12}
 }
+
 func (m *BalancesUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BalancesUpdate.Unmarshal(m, b)
 }
 func (m *BalancesUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BalancesUpdate.Marshal(b, m, deterministic)
 }
-func (dst *BalancesUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BalancesUpdate.Merge(dst, src)
+func (m *BalancesUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BalancesUpdate.Merge(m, src)
 }
 func (m *BalancesUpdate) XXX_Size() int {
 	return xxx_messageInfo_BalancesUpdate.Size(m)
@@ -969,9 +996,9 @@ func (m *BalancesUpdate) GetBalances() []*Balances {
 }
 
 type RequestResolutionUpdate struct {
-	Id      string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Error   int32  `protobuf:"varint,2,opt,name=error" json:"error,omitempty"`
-	Message string `protobuf:"bytes,3,opt,name=message" json:"message,omitempty"`
+	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Error   int32  `protobuf:"varint,2,opt,name=error,proto3" json:"error,omitempty"`
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	// Types that are valid to be assigned to Result:
 	//	*RequestResolutionUpdate_PlaceOrderResult
 	//	*RequestResolutionUpdate_CancelOrderResult
@@ -985,16 +1012,17 @@ func (m *RequestResolutionUpdate) Reset()         { *m = RequestResolutionUpdate
 func (m *RequestResolutionUpdate) String() string { return proto.CompactTextString(m) }
 func (*RequestResolutionUpdate) ProtoMessage()    {}
 func (*RequestResolutionUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{13}
+	return fileDescriptor_09a300fef54c4624, []int{13}
 }
+
 func (m *RequestResolutionUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RequestResolutionUpdate.Unmarshal(m, b)
 }
 func (m *RequestResolutionUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_RequestResolutionUpdate.Marshal(b, m, deterministic)
 }
-func (dst *RequestResolutionUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RequestResolutionUpdate.Merge(dst, src)
+func (m *RequestResolutionUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RequestResolutionUpdate.Merge(m, src)
 }
 func (m *RequestResolutionUpdate) XXX_Size() int {
 	return xxx_messageInfo_RequestResolutionUpdate.Size(m)
@@ -1004,27 +1032,6 @@ func (m *RequestResolutionUpdate) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_RequestResolutionUpdate proto.InternalMessageInfo
-
-type isRequestResolutionUpdate_Result interface {
-	isRequestResolutionUpdate_Result()
-}
-
-type RequestResolutionUpdate_PlaceOrderResult struct {
-	PlaceOrderResult *PlaceOrderResult `protobuf:"bytes,4,opt,name=placeOrderResult,oneof"`
-}
-type RequestResolutionUpdate_CancelOrderResult struct {
-	CancelOrderResult *CancelOrderResult `protobuf:"bytes,5,opt,name=cancelOrderResult,oneof"`
-}
-
-func (*RequestResolutionUpdate_PlaceOrderResult) isRequestResolutionUpdate_Result()  {}
-func (*RequestResolutionUpdate_CancelOrderResult) isRequestResolutionUpdate_Result() {}
-
-func (m *RequestResolutionUpdate) GetResult() isRequestResolutionUpdate_Result {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
 
 func (m *RequestResolutionUpdate) GetId() string {
 	if m != nil {
@@ -1045,6 +1052,29 @@ func (m *RequestResolutionUpdate) GetMessage() string {
 		return m.Message
 	}
 	return ""
+}
+
+type isRequestResolutionUpdate_Result interface {
+	isRequestResolutionUpdate_Result()
+}
+
+type RequestResolutionUpdate_PlaceOrderResult struct {
+	PlaceOrderResult *PlaceOrderResult `protobuf:"bytes,4,opt,name=placeOrderResult,proto3,oneof"`
+}
+
+type RequestResolutionUpdate_CancelOrderResult struct {
+	CancelOrderResult *CancelOrderResult `protobuf:"bytes,5,opt,name=cancelOrderResult,proto3,oneof"`
+}
+
+func (*RequestResolutionUpdate_PlaceOrderResult) isRequestResolutionUpdate_Result() {}
+
+func (*RequestResolutionUpdate_CancelOrderResult) isRequestResolutionUpdate_Result() {}
+
+func (m *RequestResolutionUpdate) GetResult() isRequestResolutionUpdate_Result {
+	if m != nil {
+		return m.Result
+	}
+	return nil
 }
 
 func (m *RequestResolutionUpdate) GetPlaceOrderResult() *PlaceOrderResult {
@@ -1136,8 +1166,8 @@ func _RequestResolutionUpdate_OneofSizer(msg proto.Message) (n int) {
 }
 
 type AnonymousSessionStatusUpdate struct {
-	Expiration           int64    `protobuf:"varint,1,opt,name=expiration" json:"expiration,omitempty"`
-	Token                string   `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
+	Expiration           int64    `protobuf:"varint,1,opt,name=expiration,proto3" json:"expiration,omitempty"`
+	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1147,16 +1177,17 @@ func (m *AnonymousSessionStatusUpdate) Reset()         { *m = AnonymousSessionSt
 func (m *AnonymousSessionStatusUpdate) String() string { return proto.CompactTextString(m) }
 func (*AnonymousSessionStatusUpdate) ProtoMessage()    {}
 func (*AnonymousSessionStatusUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{14}
+	return fileDescriptor_09a300fef54c4624, []int{14}
 }
+
 func (m *AnonymousSessionStatusUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AnonymousSessionStatusUpdate.Unmarshal(m, b)
 }
 func (m *AnonymousSessionStatusUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_AnonymousSessionStatusUpdate.Marshal(b, m, deterministic)
 }
-func (dst *AnonymousSessionStatusUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AnonymousSessionStatusUpdate.Merge(dst, src)
+func (m *AnonymousSessionStatusUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AnonymousSessionStatusUpdate.Merge(m, src)
 }
 func (m *AnonymousSessionStatusUpdate) XXX_Size() int {
 	return xxx_messageInfo_AnonymousSessionStatusUpdate.Size(m)
@@ -1182,13 +1213,13 @@ func (m *AnonymousSessionStatusUpdate) GetToken() string {
 }
 
 type SessionStatusUpdate struct {
-	Initialized bool `protobuf:"varint,1,opt,name=initialized" json:"initialized,omitempty"`
+	Initialized bool `protobuf:"varint,1,opt,name=initialized,proto3" json:"initialized,omitempty"`
 	// Syncing means poller is running
-	Syncing bool `protobuf:"varint,2,opt,name=syncing" json:"syncing,omitempty"`
+	Syncing bool `protobuf:"varint,2,opt,name=syncing,proto3" json:"syncing,omitempty"`
 	// Last sync is last time poller finished running
-	LastSyncTime int64 `protobuf:"varint,3,opt,name=lastSyncTime" json:"lastSyncTime,omitempty"`
+	LastSyncTime int64 `protobuf:"varint,3,opt,name=lastSyncTime,proto3" json:"lastSyncTime,omitempty"`
 	// Expose error from poller
-	SyncError            int32    `protobuf:"varint,4,opt,name=syncError" json:"syncError,omitempty"`
+	SyncError            int32    `protobuf:"varint,4,opt,name=syncError,proto3" json:"syncError,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1198,16 +1229,17 @@ func (m *SessionStatusUpdate) Reset()         { *m = SessionStatusUpdate{} }
 func (m *SessionStatusUpdate) String() string { return proto.CompactTextString(m) }
 func (*SessionStatusUpdate) ProtoMessage()    {}
 func (*SessionStatusUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{15}
+	return fileDescriptor_09a300fef54c4624, []int{15}
 }
+
 func (m *SessionStatusUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_SessionStatusUpdate.Unmarshal(m, b)
 }
 func (m *SessionStatusUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_SessionStatusUpdate.Marshal(b, m, deterministic)
 }
-func (dst *SessionStatusUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionStatusUpdate.Merge(dst, src)
+func (m *SessionStatusUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SessionStatusUpdate.Merge(m, src)
 }
 func (m *SessionStatusUpdate) XXX_Size() int {
 	return xxx_messageInfo_SessionStatusUpdate.Size(m)
@@ -1247,12 +1279,12 @@ func (m *SessionStatusUpdate) GetSyncError() int32 {
 }
 
 type PermissionsUpdate struct {
-	OrderTypes           []PrivateOrder_Type               `protobuf:"varint,1,rep,name=orderTypes,enum=ProtobufBroker.PrivateOrder_Type" json:"orderTypes,omitempty"`
-	FundingTypes         []FundingType                     `protobuf:"varint,2,rep,name=fundingTypes,enum=ProtobufBroker.FundingType" json:"fundingTypes,omitempty"`
-	Agreements           []*PermissionsUpdate_Agreement    `protobuf:"bytes,4,rep,name=agreements" json:"agreements,omitempty"`
-	CurrencyPairAllowed  bool                              `protobuf:"varint,5,opt,name=currencyPairAllowed" json:"currencyPairAllowed,omitempty"`
-	LeverageLevels       *PermissionsUpdate_LeverageLevels `protobuf:"bytes,6,opt,name=leverageLevels" json:"leverageLevels,omitempty"`
-	SupportsOrderExpiry  bool                              `protobuf:"varint,7,opt,name=supportsOrderExpiry" json:"supportsOrderExpiry,omitempty"`
+	OrderTypes           []PrivateOrder_Type               `protobuf:"varint,1,rep,name=orderTypes,proto3,enum=ProtobufBroker.PrivateOrder_Type" json:"orderTypes,omitempty"`
+	FundingTypes         []FundingType                     `protobuf:"varint,2,rep,name=fundingTypes,proto3,enum=ProtobufBroker.FundingType" json:"fundingTypes,omitempty"`
+	Agreements           []*PermissionsUpdate_Agreement    `protobuf:"bytes,4,rep,name=agreements,proto3" json:"agreements,omitempty"`
+	CurrencyPairAllowed  bool                              `protobuf:"varint,5,opt,name=currencyPairAllowed,proto3" json:"currencyPairAllowed,omitempty"`
+	LeverageLevels       *PermissionsUpdate_LeverageLevels `protobuf:"bytes,6,opt,name=leverageLevels,proto3" json:"leverageLevels,omitempty"`
+	SupportsOrderExpiry  bool                              `protobuf:"varint,7,opt,name=supportsOrderExpiry,proto3" json:"supportsOrderExpiry,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                          `json:"-"`
 	XXX_unrecognized     []byte                            `json:"-"`
 	XXX_sizecache        int32                             `json:"-"`
@@ -1262,16 +1294,17 @@ func (m *PermissionsUpdate) Reset()         { *m = PermissionsUpdate{} }
 func (m *PermissionsUpdate) String() string { return proto.CompactTextString(m) }
 func (*PermissionsUpdate) ProtoMessage()    {}
 func (*PermissionsUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{16}
+	return fileDescriptor_09a300fef54c4624, []int{16}
 }
+
 func (m *PermissionsUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermissionsUpdate.Unmarshal(m, b)
 }
 func (m *PermissionsUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PermissionsUpdate.Marshal(b, m, deterministic)
 }
-func (dst *PermissionsUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PermissionsUpdate.Merge(dst, src)
+func (m *PermissionsUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PermissionsUpdate.Merge(m, src)
 }
 func (m *PermissionsUpdate) XXX_Size() int {
 	return xxx_messageInfo_PermissionsUpdate.Size(m)
@@ -1325,8 +1358,8 @@ func (m *PermissionsUpdate) GetSupportsOrderExpiry() bool {
 }
 
 type PermissionsUpdate_Agreement struct {
-	Key                  string   `protobuf:"bytes,1,opt,name=key" json:"key,omitempty"`
-	Body                 string   `protobuf:"bytes,2,opt,name=body" json:"body,omitempty"`
+	Key                  string   `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Body                 string   `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1336,16 +1369,17 @@ func (m *PermissionsUpdate_Agreement) Reset()         { *m = PermissionsUpdate_A
 func (m *PermissionsUpdate_Agreement) String() string { return proto.CompactTextString(m) }
 func (*PermissionsUpdate_Agreement) ProtoMessage()    {}
 func (*PermissionsUpdate_Agreement) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{16, 0}
+	return fileDescriptor_09a300fef54c4624, []int{16, 0}
 }
+
 func (m *PermissionsUpdate_Agreement) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermissionsUpdate_Agreement.Unmarshal(m, b)
 }
 func (m *PermissionsUpdate_Agreement) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PermissionsUpdate_Agreement.Marshal(b, m, deterministic)
 }
-func (dst *PermissionsUpdate_Agreement) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PermissionsUpdate_Agreement.Merge(dst, src)
+func (m *PermissionsUpdate_Agreement) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PermissionsUpdate_Agreement.Merge(m, src)
 }
 func (m *PermissionsUpdate_Agreement) XXX_Size() int {
 	return xxx_messageInfo_PermissionsUpdate_Agreement.Size(m)
@@ -1371,8 +1405,8 @@ func (m *PermissionsUpdate_Agreement) GetBody() string {
 }
 
 type PermissionsUpdate_LeverageLevels struct {
-	Buy                  []string `protobuf:"bytes,1,rep,name=buy" json:"buy,omitempty"`
-	Sell                 []string `protobuf:"bytes,2,rep,name=sell" json:"sell,omitempty"`
+	Buy                  []string `protobuf:"bytes,1,rep,name=buy,proto3" json:"buy,omitempty"`
+	Sell                 []string `protobuf:"bytes,2,rep,name=sell,proto3" json:"sell,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1382,16 +1416,17 @@ func (m *PermissionsUpdate_LeverageLevels) Reset()         { *m = PermissionsUpd
 func (m *PermissionsUpdate_LeverageLevels) String() string { return proto.CompactTextString(m) }
 func (*PermissionsUpdate_LeverageLevels) ProtoMessage()    {}
 func (*PermissionsUpdate_LeverageLevels) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{16, 1}
+	return fileDescriptor_09a300fef54c4624, []int{16, 1}
 }
+
 func (m *PermissionsUpdate_LeverageLevels) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PermissionsUpdate_LeverageLevels.Unmarshal(m, b)
 }
 func (m *PermissionsUpdate_LeverageLevels) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PermissionsUpdate_LeverageLevels.Marshal(b, m, deterministic)
 }
-func (dst *PermissionsUpdate_LeverageLevels) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PermissionsUpdate_LeverageLevels.Merge(dst, src)
+func (m *PermissionsUpdate_LeverageLevels) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PermissionsUpdate_LeverageLevels.Merge(m, src)
 }
 func (m *PermissionsUpdate_LeverageLevels) XXX_Size() int {
 	return xxx_messageInfo_PermissionsUpdate_LeverageLevels.Size(m)
@@ -1417,9 +1452,9 @@ func (m *PermissionsUpdate_LeverageLevels) GetSell() []string {
 }
 
 type APIAccessorStatusUpdate struct {
-	HasAccess            bool     `protobuf:"varint,1,opt,name=hasAccess" json:"hasAccess,omitempty"`
-	Status               int32    `protobuf:"varint,2,opt,name=status" json:"status,omitempty"`
-	StatusString         string   `protobuf:"bytes,3,opt,name=statusString" json:"statusString,omitempty"`
+	HasAccess            bool     `protobuf:"varint,1,opt,name=hasAccess,proto3" json:"hasAccess,omitempty"`
+	Status               int32    `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
+	StatusString         string   `protobuf:"bytes,3,opt,name=statusString,proto3" json:"statusString,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -1429,16 +1464,17 @@ func (m *APIAccessorStatusUpdate) Reset()         { *m = APIAccessorStatusUpdate
 func (m *APIAccessorStatusUpdate) String() string { return proto.CompactTextString(m) }
 func (*APIAccessorStatusUpdate) ProtoMessage()    {}
 func (*APIAccessorStatusUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{17}
+	return fileDescriptor_09a300fef54c4624, []int{17}
 }
+
 func (m *APIAccessorStatusUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_APIAccessorStatusUpdate.Unmarshal(m, b)
 }
 func (m *APIAccessorStatusUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_APIAccessorStatusUpdate.Marshal(b, m, deterministic)
 }
-func (dst *APIAccessorStatusUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_APIAccessorStatusUpdate.Merge(dst, src)
+func (m *APIAccessorStatusUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_APIAccessorStatusUpdate.Merge(m, src)
 }
 func (m *APIAccessorStatusUpdate) XXX_Size() int {
 	return xxx_messageInfo_APIAccessorStatusUpdate.Size(m)
@@ -1492,16 +1528,17 @@ func (m *BrokerUpdateMessage) Reset()         { *m = BrokerUpdateMessage{} }
 func (m *BrokerUpdateMessage) String() string { return proto.CompactTextString(m) }
 func (*BrokerUpdateMessage) ProtoMessage()    {}
 func (*BrokerUpdateMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_broker_3cd57c23f6c12752, []int{18}
+	return fileDescriptor_09a300fef54c4624, []int{18}
 }
+
 func (m *BrokerUpdateMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BrokerUpdateMessage.Unmarshal(m, b)
 }
 func (m *BrokerUpdateMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_BrokerUpdateMessage.Marshal(b, m, deterministic)
 }
-func (dst *BrokerUpdateMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BrokerUpdateMessage.Merge(dst, src)
+func (m *BrokerUpdateMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BrokerUpdateMessage.Merge(m, src)
 }
 func (m *BrokerUpdateMessage) XXX_Size() int {
 	return xxx_messageInfo_BrokerUpdateMessage.Size(m)
@@ -1517,46 +1554,64 @@ type isBrokerUpdateMessage_Update interface {
 }
 
 type BrokerUpdateMessage_OrdersUpdate struct {
-	OrdersUpdate *OrdersUpdate `protobuf:"bytes,1,opt,name=ordersUpdate,oneof"`
-}
-type BrokerUpdateMessage_TradesUpdate struct {
-	TradesUpdate *TradesUpdate `protobuf:"bytes,2,opt,name=tradesUpdate,oneof"`
-}
-type BrokerUpdateMessage_BalancesUpdate struct {
-	BalancesUpdate *BalancesUpdate `protobuf:"bytes,3,opt,name=balancesUpdate,oneof"`
-}
-type BrokerUpdateMessage_PositionsUpdate struct {
-	PositionsUpdate *PositionsUpdate `protobuf:"bytes,8,opt,name=positionsUpdate,oneof"`
-}
-type BrokerUpdateMessage_RequestResolutionUpdate struct {
-	RequestResolutionUpdate *RequestResolutionUpdate `protobuf:"bytes,4,opt,name=requestResolutionUpdate,oneof"`
-}
-type BrokerUpdateMessage_AnonymousSessionStatusUpdate struct {
-	AnonymousSessionStatusUpdate *AnonymousSessionStatusUpdate `protobuf:"bytes,5,opt,name=anonymousSessionStatusUpdate,oneof"`
-}
-type BrokerUpdateMessage_PermissionsUpdate struct {
-	PermissionsUpdate *PermissionsUpdate `protobuf:"bytes,6,opt,name=permissionsUpdate,oneof"`
-}
-type BrokerUpdateMessage_SessionStatusUpdate struct {
-	SessionStatusUpdate *SessionStatusUpdate `protobuf:"bytes,7,opt,name=sessionStatusUpdate,oneof"`
-}
-type BrokerUpdateMessage_ApiAccessorStatusUpdate struct {
-	ApiAccessorStatusUpdate *APIAccessorStatusUpdate `protobuf:"bytes,9,opt,name=apiAccessorStatusUpdate,oneof"`
-}
-type BrokerUpdateMessage_AuthenticationResult struct {
-	AuthenticationResult *stream.AuthenticationResult `protobuf:"bytes,10,opt,name=authenticationResult,oneof"`
+	OrdersUpdate *OrdersUpdate `protobuf:"bytes,1,opt,name=ordersUpdate,proto3,oneof"`
 }
 
-func (*BrokerUpdateMessage_OrdersUpdate) isBrokerUpdateMessage_Update()                 {}
-func (*BrokerUpdateMessage_TradesUpdate) isBrokerUpdateMessage_Update()                 {}
-func (*BrokerUpdateMessage_BalancesUpdate) isBrokerUpdateMessage_Update()               {}
-func (*BrokerUpdateMessage_PositionsUpdate) isBrokerUpdateMessage_Update()              {}
-func (*BrokerUpdateMessage_RequestResolutionUpdate) isBrokerUpdateMessage_Update()      {}
+type BrokerUpdateMessage_TradesUpdate struct {
+	TradesUpdate *TradesUpdate `protobuf:"bytes,2,opt,name=tradesUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_BalancesUpdate struct {
+	BalancesUpdate *BalancesUpdate `protobuf:"bytes,3,opt,name=balancesUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_PositionsUpdate struct {
+	PositionsUpdate *PositionsUpdate `protobuf:"bytes,8,opt,name=positionsUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_RequestResolutionUpdate struct {
+	RequestResolutionUpdate *RequestResolutionUpdate `protobuf:"bytes,4,opt,name=requestResolutionUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_AnonymousSessionStatusUpdate struct {
+	AnonymousSessionStatusUpdate *AnonymousSessionStatusUpdate `protobuf:"bytes,5,opt,name=anonymousSessionStatusUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_PermissionsUpdate struct {
+	PermissionsUpdate *PermissionsUpdate `protobuf:"bytes,6,opt,name=permissionsUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_SessionStatusUpdate struct {
+	SessionStatusUpdate *SessionStatusUpdate `protobuf:"bytes,7,opt,name=sessionStatusUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_ApiAccessorStatusUpdate struct {
+	ApiAccessorStatusUpdate *APIAccessorStatusUpdate `protobuf:"bytes,9,opt,name=apiAccessorStatusUpdate,proto3,oneof"`
+}
+
+type BrokerUpdateMessage_AuthenticationResult struct {
+	AuthenticationResult *stream.AuthenticationResult `protobuf:"bytes,10,opt,name=authenticationResult,proto3,oneof"`
+}
+
+func (*BrokerUpdateMessage_OrdersUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_TradesUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_BalancesUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_PositionsUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_RequestResolutionUpdate) isBrokerUpdateMessage_Update() {}
+
 func (*BrokerUpdateMessage_AnonymousSessionStatusUpdate) isBrokerUpdateMessage_Update() {}
-func (*BrokerUpdateMessage_PermissionsUpdate) isBrokerUpdateMessage_Update()            {}
-func (*BrokerUpdateMessage_SessionStatusUpdate) isBrokerUpdateMessage_Update()          {}
-func (*BrokerUpdateMessage_ApiAccessorStatusUpdate) isBrokerUpdateMessage_Update()      {}
-func (*BrokerUpdateMessage_AuthenticationResult) isBrokerUpdateMessage_Update()         {}
+
+func (*BrokerUpdateMessage_PermissionsUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_SessionStatusUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_ApiAccessorStatusUpdate) isBrokerUpdateMessage_Update() {}
+
+func (*BrokerUpdateMessage_AuthenticationResult) isBrokerUpdateMessage_Update() {}
 
 func (m *BrokerUpdateMessage) GetUpdate() isBrokerUpdateMessage_Update {
 	if m != nil {
@@ -1887,9 +1942,9 @@ func init() {
 	proto.RegisterType((*BrokerUpdateMessage)(nil), "ProtobufBroker.BrokerUpdateMessage")
 }
 
-func init() { proto.RegisterFile("broker/broker.proto", fileDescriptor_broker_3cd57c23f6c12752) }
+func init() { proto.RegisterFile("broker/broker.proto", fileDescriptor_09a300fef54c4624) }
 
-var fileDescriptor_broker_3cd57c23f6c12752 = []byte{
+var fileDescriptor_09a300fef54c4624 = []byte{
 	// 1264 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0x5b, 0x8f, 0xdb, 0x44,
 	0x14, 0x76, 0x92, 0xdd, 0x4d, 0x72, 0xb2, 0x4d, 0x77, 0x27, 0x11, 0x6b, 0x85, 0x55, 0xd9, 0x1a,

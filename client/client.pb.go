@@ -3,9 +3,11 @@
 
 package ProtobufClient
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -35,6 +37,7 @@ var APIAuthenticationMessage_Source_name = map[int32]string{
 	3: "NODE_SDK",
 	4: "CW_WEB",
 }
+
 var APIAuthenticationMessage_Source_value = map[string]int32{
 	"UNKNOWN":        0,
 	"GOLANG_SDK":     1,
@@ -46,8 +49,9 @@ var APIAuthenticationMessage_Source_value = map[string]int32{
 func (x APIAuthenticationMessage_Source) String() string {
 	return proto.EnumName(APIAuthenticationMessage_Source_name, int32(x))
 }
+
 func (APIAuthenticationMessage_Source) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{3, 0}
+	return fileDescriptor_4d3551c163a1d198, []int{3, 0}
 }
 
 // ClientMessage is a wrapper message used to describe the supplied client message
@@ -69,16 +73,17 @@ func (m *ClientMessage) Reset()         { *m = ClientMessage{} }
 func (m *ClientMessage) String() string { return proto.CompactTextString(m) }
 func (*ClientMessage) ProtoMessage()    {}
 func (*ClientMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{0}
+	return fileDescriptor_4d3551c163a1d198, []int{0}
 }
+
 func (m *ClientMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientMessage.Unmarshal(m, b)
 }
 func (m *ClientMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientMessage.Marshal(b, m, deterministic)
 }
-func (dst *ClientMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientMessage.Merge(dst, src)
+func (m *ClientMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientMessage.Merge(m, src)
 }
 func (m *ClientMessage) XXX_Size() int {
 	return xxx_messageInfo_ClientMessage.Size(m)
@@ -94,25 +99,33 @@ type isClientMessage_Body interface {
 }
 
 type ClientMessage_Identification struct {
-	Identification *ClientIdentificationMessage `protobuf:"bytes,1,opt,name=identification,oneof"`
-}
-type ClientMessage_Subscribe struct {
-	Subscribe *ClientSubscribeMessage `protobuf:"bytes,2,opt,name=subscribe,oneof"`
-}
-type ClientMessage_Unsubscribe struct {
-	Unsubscribe *ClientUnsubscribeMessage `protobuf:"bytes,3,opt,name=unsubscribe,oneof"`
-}
-type ClientMessage_WebAuthentication struct {
-	WebAuthentication *WebAuthenticationMessage `protobuf:"bytes,4,opt,name=webAuthentication,oneof"`
-}
-type ClientMessage_ApiAuthentication struct {
-	ApiAuthentication *APIAuthenticationMessage `protobuf:"bytes,5,opt,name=apiAuthentication,oneof"`
+	Identification *ClientIdentificationMessage `protobuf:"bytes,1,opt,name=identification,proto3,oneof"`
 }
 
-func (*ClientMessage_Identification) isClientMessage_Body()    {}
-func (*ClientMessage_Subscribe) isClientMessage_Body()         {}
-func (*ClientMessage_Unsubscribe) isClientMessage_Body()       {}
+type ClientMessage_Subscribe struct {
+	Subscribe *ClientSubscribeMessage `protobuf:"bytes,2,opt,name=subscribe,proto3,oneof"`
+}
+
+type ClientMessage_Unsubscribe struct {
+	Unsubscribe *ClientUnsubscribeMessage `protobuf:"bytes,3,opt,name=unsubscribe,proto3,oneof"`
+}
+
+type ClientMessage_WebAuthentication struct {
+	WebAuthentication *WebAuthenticationMessage `protobuf:"bytes,4,opt,name=webAuthentication,proto3,oneof"`
+}
+
+type ClientMessage_ApiAuthentication struct {
+	ApiAuthentication *APIAuthenticationMessage `protobuf:"bytes,5,opt,name=apiAuthentication,proto3,oneof"`
+}
+
+func (*ClientMessage_Identification) isClientMessage_Body() {}
+
+func (*ClientMessage_Subscribe) isClientMessage_Body() {}
+
+func (*ClientMessage_Unsubscribe) isClientMessage_Body() {}
+
 func (*ClientMessage_WebAuthentication) isClientMessage_Body() {}
+
 func (*ClientMessage_ApiAuthentication) isClientMessage_Body() {}
 
 func (m *ClientMessage) GetBody() isClientMessage_Body {
@@ -291,11 +304,11 @@ func _ClientMessage_OneofSizer(msg proto.Message) (n int) {
 // ClientIdentificationMessage is the first message sent is from the client to
 // the server, identifying itself and the subscriptions it desires.
 type ClientIdentificationMessage struct {
-	Useragent            string   `protobuf:"bytes,1,opt,name=useragent" json:"useragent,omitempty"`
-	Revision             string   `protobuf:"bytes,2,opt,name=revision" json:"revision,omitempty"`
-	Integration          string   `protobuf:"bytes,3,opt,name=integration" json:"integration,omitempty"`
-	Locale               string   `protobuf:"bytes,4,opt,name=locale" json:"locale,omitempty"`
-	Subscriptions        []string `protobuf:"bytes,5,rep,name=subscriptions" json:"subscriptions,omitempty"`
+	Useragent            string   `protobuf:"bytes,1,opt,name=useragent,proto3" json:"useragent,omitempty"`
+	Revision             string   `protobuf:"bytes,2,opt,name=revision,proto3" json:"revision,omitempty"`
+	Integration          string   `protobuf:"bytes,3,opt,name=integration,proto3" json:"integration,omitempty"`
+	Locale               string   `protobuf:"bytes,4,opt,name=locale,proto3" json:"locale,omitempty"`
+	Subscriptions        []string `protobuf:"bytes,5,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -305,16 +318,17 @@ func (m *ClientIdentificationMessage) Reset()         { *m = ClientIdentificatio
 func (m *ClientIdentificationMessage) String() string { return proto.CompactTextString(m) }
 func (*ClientIdentificationMessage) ProtoMessage()    {}
 func (*ClientIdentificationMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{1}
+	return fileDescriptor_4d3551c163a1d198, []int{1}
 }
+
 func (m *ClientIdentificationMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientIdentificationMessage.Unmarshal(m, b)
 }
 func (m *ClientIdentificationMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientIdentificationMessage.Marshal(b, m, deterministic)
 }
-func (dst *ClientIdentificationMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientIdentificationMessage.Merge(dst, src)
+func (m *ClientIdentificationMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientIdentificationMessage.Merge(m, src)
 }
 func (m *ClientIdentificationMessage) XXX_Size() int {
 	return xxx_messageInfo_ClientIdentificationMessage.Size(m)
@@ -361,10 +375,10 @@ func (m *ClientIdentificationMessage) GetSubscriptions() []string {
 }
 
 type WebAuthenticationMessage struct {
-	Identification       *ClientIdentificationMessage `protobuf:"bytes,1,opt,name=identification" json:"identification,omitempty"`
-	Token                string                       `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
-	Nonce                string                       `protobuf:"bytes,3,opt,name=nonce" json:"nonce,omitempty"`
-	AccessList           []string                     `protobuf:"bytes,4,rep,name=access_list,json=accessList" json:"access_list,omitempty"`
+	Identification       *ClientIdentificationMessage `protobuf:"bytes,1,opt,name=identification,proto3" json:"identification,omitempty"`
+	Token                string                       `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	Nonce                string                       `protobuf:"bytes,3,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	AccessList           []string                     `protobuf:"bytes,4,rep,name=access_list,json=accessList,proto3" json:"access_list,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                     `json:"-"`
 	XXX_unrecognized     []byte                       `json:"-"`
 	XXX_sizecache        int32                        `json:"-"`
@@ -374,16 +388,17 @@ func (m *WebAuthenticationMessage) Reset()         { *m = WebAuthenticationMessa
 func (m *WebAuthenticationMessage) String() string { return proto.CompactTextString(m) }
 func (*WebAuthenticationMessage) ProtoMessage()    {}
 func (*WebAuthenticationMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{2}
+	return fileDescriptor_4d3551c163a1d198, []int{2}
 }
+
 func (m *WebAuthenticationMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_WebAuthenticationMessage.Unmarshal(m, b)
 }
 func (m *WebAuthenticationMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_WebAuthenticationMessage.Marshal(b, m, deterministic)
 }
-func (dst *WebAuthenticationMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WebAuthenticationMessage.Merge(dst, src)
+func (m *WebAuthenticationMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WebAuthenticationMessage.Merge(m, src)
 }
 func (m *WebAuthenticationMessage) XXX_Size() int {
 	return xxx_messageInfo_WebAuthenticationMessage.Size(m)
@@ -423,12 +438,12 @@ func (m *WebAuthenticationMessage) GetAccessList() []string {
 }
 
 type APIAuthenticationMessage struct {
-	Token                string                          `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
-	Nonce                string                          `protobuf:"bytes,2,opt,name=nonce" json:"nonce,omitempty"`
-	ApiKey               string                          `protobuf:"bytes,3,opt,name=api_key,json=apiKey" json:"api_key,omitempty"`
-	Source               APIAuthenticationMessage_Source `protobuf:"varint,4,opt,name=source,enum=ProtobufClient.APIAuthenticationMessage_Source" json:"source,omitempty"`
-	Version              string                          `protobuf:"bytes,5,opt,name=version" json:"version,omitempty"`
-	Subscriptions        []string                        `protobuf:"bytes,6,rep,name=subscriptions" json:"subscriptions,omitempty"`
+	Token                string                          `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
+	Nonce                string                          `protobuf:"bytes,2,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	ApiKey               string                          `protobuf:"bytes,3,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	Source               APIAuthenticationMessage_Source `protobuf:"varint,4,opt,name=source,proto3,enum=ProtobufClient.APIAuthenticationMessage_Source" json:"source,omitempty"`
+	Version              string                          `protobuf:"bytes,5,opt,name=version,proto3" json:"version,omitempty"`
+	Subscriptions        []string                        `protobuf:"bytes,6,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                        `json:"-"`
 	XXX_unrecognized     []byte                          `json:"-"`
 	XXX_sizecache        int32                           `json:"-"`
@@ -438,16 +453,17 @@ func (m *APIAuthenticationMessage) Reset()         { *m = APIAuthenticationMessa
 func (m *APIAuthenticationMessage) String() string { return proto.CompactTextString(m) }
 func (*APIAuthenticationMessage) ProtoMessage()    {}
 func (*APIAuthenticationMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{3}
+	return fileDescriptor_4d3551c163a1d198, []int{3}
 }
+
 func (m *APIAuthenticationMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_APIAuthenticationMessage.Unmarshal(m, b)
 }
 func (m *APIAuthenticationMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_APIAuthenticationMessage.Marshal(b, m, deterministic)
 }
-func (dst *APIAuthenticationMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_APIAuthenticationMessage.Merge(dst, src)
+func (m *APIAuthenticationMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_APIAuthenticationMessage.Merge(m, src)
 }
 func (m *APIAuthenticationMessage) XXX_Size() int {
 	return xxx_messageInfo_APIAuthenticationMessage.Size(m)
@@ -514,16 +530,17 @@ func (m *ClientSessionMessage) Reset()         { *m = ClientSessionMessage{} }
 func (m *ClientSessionMessage) String() string { return proto.CompactTextString(m) }
 func (*ClientSessionMessage) ProtoMessage()    {}
 func (*ClientSessionMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{4}
+	return fileDescriptor_4d3551c163a1d198, []int{4}
 }
+
 func (m *ClientSessionMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientSessionMessage.Unmarshal(m, b)
 }
 func (m *ClientSessionMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientSessionMessage.Marshal(b, m, deterministic)
 }
-func (dst *ClientSessionMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientSessionMessage.Merge(dst, src)
+func (m *ClientSessionMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientSessionMessage.Merge(m, src)
 }
 func (m *ClientSessionMessage) XXX_Size() int {
 	return xxx_messageInfo_ClientSessionMessage.Size(m)
@@ -539,13 +556,15 @@ type isClientSessionMessage_SessionConfig interface {
 }
 
 type ClientSessionMessage_Session_ struct {
-	Session *ClientSessionMessage_Session `protobuf:"bytes,1,opt,name=session,oneof"`
-}
-type ClientSessionMessage_AnonymousTradingSession_ struct {
-	AnonymousTradingSession *ClientSessionMessage_AnonymousTradingSession `protobuf:"bytes,2,opt,name=anonymousTradingSession,oneof"`
+	Session *ClientSessionMessage_Session `protobuf:"bytes,1,opt,name=session,proto3,oneof"`
 }
 
-func (*ClientSessionMessage_Session_) isClientSessionMessage_SessionConfig()                 {}
+type ClientSessionMessage_AnonymousTradingSession_ struct {
+	AnonymousTradingSession *ClientSessionMessage_AnonymousTradingSession `protobuf:"bytes,2,opt,name=anonymousTradingSession,proto3,oneof"`
+}
+
+func (*ClientSessionMessage_Session_) isClientSessionMessage_SessionConfig() {}
+
 func (*ClientSessionMessage_AnonymousTradingSession_) isClientSessionMessage_SessionConfig() {}
 
 func (m *ClientSessionMessage) GetSessionConfig() isClientSessionMessage_SessionConfig {
@@ -644,10 +663,10 @@ func _ClientSessionMessage_OneofSizer(msg proto.Message) (n int) {
 }
 
 type ClientSessionMessage_Session struct {
-	UserId               string   `protobuf:"bytes,1,opt,name=userId" json:"userId,omitempty"`
-	Expires              int64    `protobuf:"varint,2,opt,name=expires" json:"expires,omitempty"`
-	Token                string   `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
-	MfaToken             string   `protobuf:"bytes,4,opt,name=mfaToken" json:"mfaToken,omitempty"`
+	UserId               string   `protobuf:"bytes,1,opt,name=userId,proto3" json:"userId,omitempty"`
+	Expires              int64    `protobuf:"varint,2,opt,name=expires,proto3" json:"expires,omitempty"`
+	Token                string   `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	MfaToken             string   `protobuf:"bytes,4,opt,name=mfaToken,proto3" json:"mfaToken,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -657,16 +676,17 @@ func (m *ClientSessionMessage_Session) Reset()         { *m = ClientSessionMessa
 func (m *ClientSessionMessage_Session) String() string { return proto.CompactTextString(m) }
 func (*ClientSessionMessage_Session) ProtoMessage()    {}
 func (*ClientSessionMessage_Session) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{4, 0}
+	return fileDescriptor_4d3551c163a1d198, []int{4, 0}
 }
+
 func (m *ClientSessionMessage_Session) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientSessionMessage_Session.Unmarshal(m, b)
 }
 func (m *ClientSessionMessage_Session) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientSessionMessage_Session.Marshal(b, m, deterministic)
 }
-func (dst *ClientSessionMessage_Session) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientSessionMessage_Session.Merge(dst, src)
+func (m *ClientSessionMessage_Session) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientSessionMessage_Session.Merge(m, src)
 }
 func (m *ClientSessionMessage_Session) XXX_Size() int {
 	return xxx_messageInfo_ClientSessionMessage_Session.Size(m)
@@ -706,9 +726,9 @@ func (m *ClientSessionMessage_Session) GetMfaToken() string {
 }
 
 type ClientSessionMessage_AnonymousTradingSession struct {
-	Exchange             string   `protobuf:"bytes,1,opt,name=exchange" json:"exchange,omitempty"`
-	Token                string   `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
-	Expiration           int64    `protobuf:"varint,3,opt,name=expiration" json:"expiration,omitempty"`
+	Exchange             string   `protobuf:"bytes,1,opt,name=exchange,proto3" json:"exchange,omitempty"`
+	Token                string   `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	Expiration           int64    `protobuf:"varint,3,opt,name=expiration,proto3" json:"expiration,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -722,16 +742,17 @@ func (m *ClientSessionMessage_AnonymousTradingSession) String() string {
 }
 func (*ClientSessionMessage_AnonymousTradingSession) ProtoMessage() {}
 func (*ClientSessionMessage_AnonymousTradingSession) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{4, 1}
+	return fileDescriptor_4d3551c163a1d198, []int{4, 1}
 }
+
 func (m *ClientSessionMessage_AnonymousTradingSession) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientSessionMessage_AnonymousTradingSession.Unmarshal(m, b)
 }
 func (m *ClientSessionMessage_AnonymousTradingSession) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientSessionMessage_AnonymousTradingSession.Marshal(b, m, deterministic)
 }
-func (dst *ClientSessionMessage_AnonymousTradingSession) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientSessionMessage_AnonymousTradingSession.Merge(dst, src)
+func (m *ClientSessionMessage_AnonymousTradingSession) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientSessionMessage_AnonymousTradingSession.Merge(m, src)
 }
 func (m *ClientSessionMessage_AnonymousTradingSession) XXX_Size() int {
 	return xxx_messageInfo_ClientSessionMessage_AnonymousTradingSession.Size(m)
@@ -766,7 +787,7 @@ func (m *ClientSessionMessage_AnonymousTradingSession) GetExpiration() int64 {
 // SubscribeMessage informs the Stream Hub to subscribe the current web socket to
 // the supplied channel.
 type ClientSubscribeMessage struct {
-	SubscriptionKeys     []string `protobuf:"bytes,1,rep,name=subscriptionKeys" json:"subscriptionKeys,omitempty"`
+	SubscriptionKeys     []string `protobuf:"bytes,1,rep,name=subscriptionKeys,proto3" json:"subscriptionKeys,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -776,16 +797,17 @@ func (m *ClientSubscribeMessage) Reset()         { *m = ClientSubscribeMessage{}
 func (m *ClientSubscribeMessage) String() string { return proto.CompactTextString(m) }
 func (*ClientSubscribeMessage) ProtoMessage()    {}
 func (*ClientSubscribeMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{5}
+	return fileDescriptor_4d3551c163a1d198, []int{5}
 }
+
 func (m *ClientSubscribeMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientSubscribeMessage.Unmarshal(m, b)
 }
 func (m *ClientSubscribeMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientSubscribeMessage.Marshal(b, m, deterministic)
 }
-func (dst *ClientSubscribeMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientSubscribeMessage.Merge(dst, src)
+func (m *ClientSubscribeMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientSubscribeMessage.Merge(m, src)
 }
 func (m *ClientSubscribeMessage) XXX_Size() int {
 	return xxx_messageInfo_ClientSubscribeMessage.Size(m)
@@ -806,7 +828,7 @@ func (m *ClientSubscribeMessage) GetSubscriptionKeys() []string {
 // UnsubscribeMessage informs the Stream Hub to unsubscribe the current web socket
 // from the supplied channel.
 type ClientUnsubscribeMessage struct {
-	SubscriptionKeys     []string `protobuf:"bytes,1,rep,name=subscriptionKeys" json:"subscriptionKeys,omitempty"`
+	SubscriptionKeys     []string `protobuf:"bytes,1,rep,name=subscriptionKeys,proto3" json:"subscriptionKeys,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -816,16 +838,17 @@ func (m *ClientUnsubscribeMessage) Reset()         { *m = ClientUnsubscribeMessa
 func (m *ClientUnsubscribeMessage) String() string { return proto.CompactTextString(m) }
 func (*ClientUnsubscribeMessage) ProtoMessage()    {}
 func (*ClientUnsubscribeMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_client_4f9d92b30dd5a261, []int{6}
+	return fileDescriptor_4d3551c163a1d198, []int{6}
 }
+
 func (m *ClientUnsubscribeMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ClientUnsubscribeMessage.Unmarshal(m, b)
 }
 func (m *ClientUnsubscribeMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_ClientUnsubscribeMessage.Marshal(b, m, deterministic)
 }
-func (dst *ClientUnsubscribeMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ClientUnsubscribeMessage.Merge(dst, src)
+func (m *ClientUnsubscribeMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClientUnsubscribeMessage.Merge(m, src)
 }
 func (m *ClientUnsubscribeMessage) XXX_Size() int {
 	return xxx_messageInfo_ClientUnsubscribeMessage.Size(m)
@@ -844,6 +867,7 @@ func (m *ClientUnsubscribeMessage) GetSubscriptionKeys() []string {
 }
 
 func init() {
+	proto.RegisterEnum("ProtobufClient.APIAuthenticationMessage_Source", APIAuthenticationMessage_Source_name, APIAuthenticationMessage_Source_value)
 	proto.RegisterType((*ClientMessage)(nil), "ProtobufClient.ClientMessage")
 	proto.RegisterType((*ClientIdentificationMessage)(nil), "ProtobufClient.ClientIdentificationMessage")
 	proto.RegisterType((*WebAuthenticationMessage)(nil), "ProtobufClient.WebAuthenticationMessage")
@@ -853,12 +877,11 @@ func init() {
 	proto.RegisterType((*ClientSessionMessage_AnonymousTradingSession)(nil), "ProtobufClient.ClientSessionMessage.AnonymousTradingSession")
 	proto.RegisterType((*ClientSubscribeMessage)(nil), "ProtobufClient.ClientSubscribeMessage")
 	proto.RegisterType((*ClientUnsubscribeMessage)(nil), "ProtobufClient.ClientUnsubscribeMessage")
-	proto.RegisterEnum("ProtobufClient.APIAuthenticationMessage_Source", APIAuthenticationMessage_Source_name, APIAuthenticationMessage_Source_value)
 }
 
-func init() { proto.RegisterFile("client/client.proto", fileDescriptor_client_4f9d92b30dd5a261) }
+func init() { proto.RegisterFile("client/client.proto", fileDescriptor_4d3551c163a1d198) }
 
-var fileDescriptor_client_4f9d92b30dd5a261 = []byte{
+var fileDescriptor_4d3551c163a1d198 = []byte{
 	// 675 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x95, 0x4d, 0x6f, 0xd3, 0x4c,
 	0x10, 0xc7, 0xe3, 0x38, 0x75, 0x9a, 0xc9, 0xd3, 0x3c, 0x61, 0xa9, 0x5a, 0x2b, 0x20, 0xa8, 0x2c,

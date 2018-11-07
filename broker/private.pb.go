@@ -3,9 +3,11 @@
 
 package ProtobufBroker
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
+import (
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
+	math "math"
+)
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -29,6 +31,7 @@ var FundingType_name = map[int32]string{
 	0: "Spot",
 	1: "Margin",
 }
+
 var FundingType_value = map[string]int32{
 	"Spot":   0,
 	"Margin": 1,
@@ -37,8 +40,9 @@ var FundingType_value = map[string]int32{
 func (x FundingType) String() string {
 	return proto.EnumName(FundingType_name, int32(x))
 }
+
 func (FundingType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{0}
+	return fileDescriptor_2643a2aaad9ebcde, []int{0}
 }
 
 type PrivateOrder_Type int32
@@ -74,6 +78,7 @@ var PrivateOrder_Type_name = map[int32]string{
 	11: "FillOrKill",
 	12: "SettlePosition",
 }
+
 var PrivateOrder_Type_value = map[string]int32{
 	"Market":                  0,
 	"Limit":                   1,
@@ -93,8 +98,9 @@ var PrivateOrder_Type_value = map[string]int32{
 func (x PrivateOrder_Type) String() string {
 	return proto.EnumName(PrivateOrder_Type_name, int32(x))
 }
+
 func (PrivateOrder_Type) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{0, 0}
+	return fileDescriptor_2643a2aaad9ebcde, []int{0, 0}
 }
 
 type PrivateOrder_PriceParamType int32
@@ -110,6 +116,7 @@ var PrivateOrder_PriceParamType_name = map[int32]string{
 	1: "OffsetValue",
 	2: "PrecentageOffsetValue",
 }
+
 var PrivateOrder_PriceParamType_value = map[string]int32{
 	"AbsoluteValue":         0,
 	"OffsetValue":           1,
@@ -119,35 +126,36 @@ var PrivateOrder_PriceParamType_value = map[string]int32{
 func (x PrivateOrder_PriceParamType) String() string {
 	return proto.EnumName(PrivateOrder_PriceParamType_name, int32(x))
 }
+
 func (PrivateOrder_PriceParamType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{0, 1}
+	return fileDescriptor_2643a2aaad9ebcde, []int{0, 1}
 }
 
 type PrivateOrder struct {
-	Id                 string                     `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Time               int64                      `protobuf:"varint,2,opt,name=time" json:"time,omitempty"`
-	Price              float32                    `protobuf:"fixed32,3,opt,name=price" json:"price,omitempty"`
-	Amount             float32                    `protobuf:"fixed32,4,opt,name=amount" json:"amount,omitempty"`
-	Side               int32                      `protobuf:"varint,5,opt,name=side" json:"side,omitempty"`
-	Type               PrivateOrder_Type          `protobuf:"varint,6,opt,name=type,enum=ProtobufBroker.PrivateOrder_Type" json:"type,omitempty"`
-	FundingType        FundingType                `protobuf:"varint,7,opt,name=fundingType,enum=ProtobufBroker.FundingType" json:"fundingType,omitempty"`
-	PriceParams        []*PrivateOrder_PriceParam `protobuf:"bytes,8,rep,name=priceParams" json:"priceParams,omitempty"`
-	AmountParam        float32                    `protobuf:"fixed32,9,opt,name=amountParam" json:"amountParam,omitempty"`
-	AmountParamString  string                     `protobuf:"bytes,16,opt,name=amountParamString" json:"amountParamString,omitempty"`
-	AmountFilledString string                     `protobuf:"bytes,17,opt,name=amountFilledString" json:"amountFilledString,omitempty"`
-	Leverage           string                     `protobuf:"bytes,10,opt,name=leverage" json:"leverage,omitempty"`
+	Id                 string                     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Time               int64                      `protobuf:"varint,2,opt,name=time,proto3" json:"time,omitempty"`
+	Price              float32                    `protobuf:"fixed32,3,opt,name=price,proto3" json:"price,omitempty"`
+	Amount             float32                    `protobuf:"fixed32,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Side               int32                      `protobuf:"varint,5,opt,name=side,proto3" json:"side,omitempty"`
+	Type               PrivateOrder_Type          `protobuf:"varint,6,opt,name=type,proto3,enum=ProtobufBroker.PrivateOrder_Type" json:"type,omitempty"`
+	FundingType        FundingType                `protobuf:"varint,7,opt,name=fundingType,proto3,enum=ProtobufBroker.FundingType" json:"fundingType,omitempty"`
+	PriceParams        []*PrivateOrder_PriceParam `protobuf:"bytes,8,rep,name=priceParams,proto3" json:"priceParams,omitempty"`
+	AmountParam        float32                    `protobuf:"fixed32,9,opt,name=amountParam,proto3" json:"amountParam,omitempty"`
+	AmountParamString  string                     `protobuf:"bytes,16,opt,name=amountParamString,proto3" json:"amountParamString,omitempty"`
+	AmountFilledString string                     `protobuf:"bytes,17,opt,name=amountFilledString,proto3" json:"amountFilledString,omitempty"`
+	Leverage           string                     `protobuf:"bytes,10,opt,name=leverage,proto3" json:"leverage,omitempty"`
 	// For trailing orders
 	// DEPRECATED; use strings instead
-	CurrentStop             float32                    `protobuf:"fixed32,11,opt,name=currentStop" json:"currentStop,omitempty"`
-	InitialStop             float32                    `protobuf:"fixed32,12,opt,name=initialStop" json:"initialStop,omitempty"`
-	CurrentStopString       string                     `protobuf:"bytes,18,opt,name=currentStopString" json:"currentStopString,omitempty"`
-	InitialStopString       string                     `protobuf:"bytes,19,opt,name=initialStopString" json:"initialStopString,omitempty"`
-	StartTime               int64                      `protobuf:"varint,13,opt,name=startTime" json:"startTime,omitempty"`
-	ExpireTime              int64                      `protobuf:"varint,14,opt,name=expireTime" json:"expireTime,omitempty"`
-	Rate                    float32                    `protobuf:"fixed32,15,opt,name=rate" json:"rate,omitempty"`
-	HasClosingOrder         bool                       `protobuf:"varint,20,opt,name=hasClosingOrder" json:"hasClosingOrder,omitempty"`
-	ClosingOrderType        PrivateOrder_Type          `protobuf:"varint,21,opt,name=closingOrderType,enum=ProtobufBroker.PrivateOrder_Type" json:"closingOrderType,omitempty"`
-	ClosingOrderPriceParams []*PrivateOrder_PriceParam `protobuf:"bytes,22,rep,name=closingOrderPriceParams" json:"closingOrderPriceParams,omitempty"`
+	CurrentStop             float32                    `protobuf:"fixed32,11,opt,name=currentStop,proto3" json:"currentStop,omitempty"`
+	InitialStop             float32                    `protobuf:"fixed32,12,opt,name=initialStop,proto3" json:"initialStop,omitempty"`
+	CurrentStopString       string                     `protobuf:"bytes,18,opt,name=currentStopString,proto3" json:"currentStopString,omitempty"`
+	InitialStopString       string                     `protobuf:"bytes,19,opt,name=initialStopString,proto3" json:"initialStopString,omitempty"`
+	StartTime               int64                      `protobuf:"varint,13,opt,name=startTime,proto3" json:"startTime,omitempty"`
+	ExpireTime              int64                      `protobuf:"varint,14,opt,name=expireTime,proto3" json:"expireTime,omitempty"`
+	Rate                    float32                    `protobuf:"fixed32,15,opt,name=rate,proto3" json:"rate,omitempty"`
+	HasClosingOrder         bool                       `protobuf:"varint,20,opt,name=hasClosingOrder,proto3" json:"hasClosingOrder,omitempty"`
+	ClosingOrderType        PrivateOrder_Type          `protobuf:"varint,21,opt,name=closingOrderType,proto3,enum=ProtobufBroker.PrivateOrder_Type" json:"closingOrderType,omitempty"`
+	ClosingOrderPriceParams []*PrivateOrder_PriceParam `protobuf:"bytes,22,rep,name=closingOrderPriceParams,proto3" json:"closingOrderPriceParams,omitempty"`
 	XXX_NoUnkeyedLiteral    struct{}                   `json:"-"`
 	XXX_unrecognized        []byte                     `json:"-"`
 	XXX_sizecache           int32                      `json:"-"`
@@ -157,16 +165,17 @@ func (m *PrivateOrder) Reset()         { *m = PrivateOrder{} }
 func (m *PrivateOrder) String() string { return proto.CompactTextString(m) }
 func (*PrivateOrder) ProtoMessage()    {}
 func (*PrivateOrder) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{0}
+	return fileDescriptor_2643a2aaad9ebcde, []int{0}
 }
+
 func (m *PrivateOrder) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PrivateOrder.Unmarshal(m, b)
 }
 func (m *PrivateOrder) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PrivateOrder.Marshal(b, m, deterministic)
 }
-func (dst *PrivateOrder) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PrivateOrder.Merge(dst, src)
+func (m *PrivateOrder) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PrivateOrder.Merge(m, src)
 }
 func (m *PrivateOrder) XXX_Size() int {
 	return xxx_messageInfo_PrivateOrder.Size(m)
@@ -332,9 +341,9 @@ func (m *PrivateOrder) GetClosingOrderPriceParams() []*PrivateOrder_PriceParam {
 }
 
 type PrivateOrder_PriceParam struct {
-	Value                float32                     `protobuf:"fixed32,1,opt,name=value" json:"value,omitempty"`
-	ValueString          string                      `protobuf:"bytes,3,opt,name=valueString" json:"valueString,omitempty"`
-	Type                 PrivateOrder_PriceParamType `protobuf:"varint,2,opt,name=type,enum=ProtobufBroker.PrivateOrder_PriceParamType" json:"type,omitempty"`
+	Value                float32                     `protobuf:"fixed32,1,opt,name=value,proto3" json:"value,omitempty"`
+	ValueString          string                      `protobuf:"bytes,3,opt,name=valueString,proto3" json:"valueString,omitempty"`
+	Type                 PrivateOrder_PriceParamType `protobuf:"varint,2,opt,name=type,proto3,enum=ProtobufBroker.PrivateOrder_PriceParamType" json:"type,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
 	XXX_unrecognized     []byte                      `json:"-"`
 	XXX_sizecache        int32                       `json:"-"`
@@ -344,16 +353,17 @@ func (m *PrivateOrder_PriceParam) Reset()         { *m = PrivateOrder_PriceParam
 func (m *PrivateOrder_PriceParam) String() string { return proto.CompactTextString(m) }
 func (*PrivateOrder_PriceParam) ProtoMessage()    {}
 func (*PrivateOrder_PriceParam) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{0, 0}
+	return fileDescriptor_2643a2aaad9ebcde, []int{0, 0}
 }
+
 func (m *PrivateOrder_PriceParam) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PrivateOrder_PriceParam.Unmarshal(m, b)
 }
 func (m *PrivateOrder_PriceParam) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PrivateOrder_PriceParam.Marshal(b, m, deterministic)
 }
-func (dst *PrivateOrder_PriceParam) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PrivateOrder_PriceParam.Merge(dst, src)
+func (m *PrivateOrder_PriceParam) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PrivateOrder_PriceParam.Merge(m, src)
 }
 func (m *PrivateOrder_PriceParam) XXX_Size() int {
 	return xxx_messageInfo_PrivateOrder_PriceParam.Size(m)
@@ -386,16 +396,16 @@ func (m *PrivateOrder_PriceParam) GetType() PrivateOrder_PriceParamType {
 }
 
 type PrivateTrade struct {
-	Id                   int64    `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
-	ExternalId           string   `protobuf:"bytes,7,opt,name=externalId" json:"externalId,omitempty"`
-	OrderId              string   `protobuf:"bytes,8,opt,name=orderId" json:"orderId,omitempty"`
-	Time                 int64    `protobuf:"varint,2,opt,name=time" json:"time,omitempty"`
-	TimeMillis           int64    `protobuf:"varint,6,opt,name=timeMillis" json:"timeMillis,omitempty"`
-	Price                float32  `protobuf:"fixed32,3,opt,name=price" json:"price,omitempty"`
-	PriceString          string   `protobuf:"bytes,9,opt,name=priceString" json:"priceString,omitempty"`
-	Amount               float32  `protobuf:"fixed32,4,opt,name=amount" json:"amount,omitempty"`
-	AmountString         string   `protobuf:"bytes,10,opt,name=amountString" json:"amountString,omitempty"`
-	Side                 int32    `protobuf:"varint,5,opt,name=side" json:"side,omitempty"`
+	Id                   int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ExternalId           string   `protobuf:"bytes,7,opt,name=externalId,proto3" json:"externalId,omitempty"`
+	OrderId              string   `protobuf:"bytes,8,opt,name=orderId,proto3" json:"orderId,omitempty"`
+	Time                 int64    `protobuf:"varint,2,opt,name=time,proto3" json:"time,omitempty"`
+	TimeMillis           int64    `protobuf:"varint,6,opt,name=timeMillis,proto3" json:"timeMillis,omitempty"`
+	Price                float32  `protobuf:"fixed32,3,opt,name=price,proto3" json:"price,omitempty"`
+	PriceString          string   `protobuf:"bytes,9,opt,name=priceString,proto3" json:"priceString,omitempty"`
+	Amount               float32  `protobuf:"fixed32,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	AmountString         string   `protobuf:"bytes,10,opt,name=amountString,proto3" json:"amountString,omitempty"`
+	Side                 int32    `protobuf:"varint,5,opt,name=side,proto3" json:"side,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -405,16 +415,17 @@ func (m *PrivateTrade) Reset()         { *m = PrivateTrade{} }
 func (m *PrivateTrade) String() string { return proto.CompactTextString(m) }
 func (*PrivateTrade) ProtoMessage()    {}
 func (*PrivateTrade) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{1}
+	return fileDescriptor_2643a2aaad9ebcde, []int{1}
 }
+
 func (m *PrivateTrade) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PrivateTrade.Unmarshal(m, b)
 }
 func (m *PrivateTrade) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PrivateTrade.Marshal(b, m, deterministic)
 }
-func (dst *PrivateTrade) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PrivateTrade.Merge(dst, src)
+func (m *PrivateTrade) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PrivateTrade.Merge(m, src)
 }
 func (m *PrivateTrade) XXX_Size() int {
 	return xxx_messageInfo_PrivateTrade.Size(m)
@@ -496,23 +507,23 @@ func (m *PrivateTrade) GetSide() int32 {
 }
 
 type PrivatePosition struct {
-	Id             string  `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
-	Time           int64   `protobuf:"varint,2,opt,name=time" json:"time,omitempty"`
-	Side           int32   `protobuf:"varint,3,opt,name=side" json:"side,omitempty"`
-	AvgPrice       float32 `protobuf:"fixed32,4,opt,name=avgPrice" json:"avgPrice,omitempty"`
-	AvgPriceString string  `protobuf:"bytes,9,opt,name=avgPriceString" json:"avgPriceString,omitempty"`
+	Id             string  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Time           int64   `protobuf:"varint,2,opt,name=time,proto3" json:"time,omitempty"`
+	Side           int32   `protobuf:"varint,3,opt,name=side,proto3" json:"side,omitempty"`
+	AvgPrice       float32 `protobuf:"fixed32,4,opt,name=avgPrice,proto3" json:"avgPrice,omitempty"`
+	AvgPriceString string  `protobuf:"bytes,9,opt,name=avgPriceString,proto3" json:"avgPriceString,omitempty"`
 	// DEPRECATED; use strings instead
-	AmountOpen         float32  `protobuf:"fixed32,5,opt,name=amountOpen" json:"amountOpen,omitempty"`
-	AmountClosed       float32  `protobuf:"fixed32,6,opt,name=amountClosed" json:"amountClosed,omitempty"`
-	AmountOpenString   string   `protobuf:"bytes,10,opt,name=amountOpenString" json:"amountOpenString,omitempty"`
-	AmountClosedString string   `protobuf:"bytes,11,opt,name=amountClosedString" json:"amountClosedString,omitempty"`
-	OrderIds           []string `protobuf:"bytes,7,rep,name=orderIds" json:"orderIds,omitempty"`
+	AmountOpen         float32  `protobuf:"fixed32,5,opt,name=amountOpen,proto3" json:"amountOpen,omitempty"`
+	AmountClosed       float32  `protobuf:"fixed32,6,opt,name=amountClosed,proto3" json:"amountClosed,omitempty"`
+	AmountOpenString   string   `protobuf:"bytes,10,opt,name=amountOpenString,proto3" json:"amountOpenString,omitempty"`
+	AmountClosedString string   `protobuf:"bytes,11,opt,name=amountClosedString,proto3" json:"amountClosedString,omitempty"`
+	OrderIds           []string `protobuf:"bytes,7,rep,name=orderIds,proto3" json:"orderIds,omitempty"`
 	// NOTE:
 	// Trade ids are sent as strings here, while historically they
 	// have been represented as integers. We need to transition to using
 	// strings everywhere because of the rectangle/square rule; using
 	// ints is simply not compatible with some exchanges which use UUIDs (like Kraken lol)
-	TradeIds             []string `protobuf:"bytes,8,rep,name=tradeIds" json:"tradeIds,omitempty"`
+	TradeIds             []string `protobuf:"bytes,8,rep,name=tradeIds,proto3" json:"tradeIds,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -522,16 +533,17 @@ func (m *PrivatePosition) Reset()         { *m = PrivatePosition{} }
 func (m *PrivatePosition) String() string { return proto.CompactTextString(m) }
 func (*PrivatePosition) ProtoMessage()    {}
 func (*PrivatePosition) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{2}
+	return fileDescriptor_2643a2aaad9ebcde, []int{2}
 }
+
 func (m *PrivatePosition) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PrivatePosition.Unmarshal(m, b)
 }
 func (m *PrivatePosition) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PrivatePosition.Marshal(b, m, deterministic)
 }
-func (dst *PrivatePosition) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PrivatePosition.Merge(dst, src)
+func (m *PrivatePosition) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PrivatePosition.Merge(m, src)
 }
 func (m *PrivatePosition) XXX_Size() int {
 	return xxx_messageInfo_PrivatePosition.Size(m)
@@ -620,9 +632,9 @@ func (m *PrivatePosition) GetTradeIds() []string {
 }
 
 type Balance struct {
-	Currency             string   `protobuf:"bytes,1,opt,name=currency" json:"currency,omitempty"`
-	Amount               float32  `protobuf:"fixed32,2,opt,name=amount" json:"amount,omitempty"`
-	AmountString         string   `protobuf:"bytes,3,opt,name=amountString" json:"amountString,omitempty"`
+	Currency             string   `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	Amount               float32  `protobuf:"fixed32,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	AmountString         string   `protobuf:"bytes,3,opt,name=amountString,proto3" json:"amountString,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -632,16 +644,17 @@ func (m *Balance) Reset()         { *m = Balance{} }
 func (m *Balance) String() string { return proto.CompactTextString(m) }
 func (*Balance) ProtoMessage()    {}
 func (*Balance) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{3}
+	return fileDescriptor_2643a2aaad9ebcde, []int{3}
 }
+
 func (m *Balance) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Balance.Unmarshal(m, b)
 }
 func (m *Balance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Balance.Marshal(b, m, deterministic)
 }
-func (dst *Balance) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Balance.Merge(dst, src)
+func (m *Balance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Balance.Merge(m, src)
 }
 func (m *Balance) XXX_Size() int {
 	return xxx_messageInfo_Balance.Size(m)
@@ -674,8 +687,8 @@ func (m *Balance) GetAmountString() string {
 }
 
 type Balances struct {
-	FundingType          FundingType `protobuf:"varint,1,opt,name=fundingType,enum=ProtobufBroker.FundingType" json:"fundingType,omitempty"`
-	Balances             []*Balance  `protobuf:"bytes,2,rep,name=balances" json:"balances,omitempty"`
+	FundingType          FundingType `protobuf:"varint,1,opt,name=fundingType,proto3,enum=ProtobufBroker.FundingType" json:"fundingType,omitempty"`
+	Balances             []*Balance  `protobuf:"bytes,2,rep,name=balances,proto3" json:"balances,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -685,16 +698,17 @@ func (m *Balances) Reset()         { *m = Balances{} }
 func (m *Balances) String() string { return proto.CompactTextString(m) }
 func (*Balances) ProtoMessage()    {}
 func (*Balances) Descriptor() ([]byte, []int) {
-	return fileDescriptor_private_e63dbda2cf2934fa, []int{4}
+	return fileDescriptor_2643a2aaad9ebcde, []int{4}
 }
+
 func (m *Balances) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Balances.Unmarshal(m, b)
 }
 func (m *Balances) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Balances.Marshal(b, m, deterministic)
 }
-func (dst *Balances) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Balances.Merge(dst, src)
+func (m *Balances) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Balances.Merge(m, src)
 }
 func (m *Balances) XXX_Size() int {
 	return xxx_messageInfo_Balances.Size(m)
@@ -720,20 +734,20 @@ func (m *Balances) GetBalances() []*Balance {
 }
 
 func init() {
+	proto.RegisterEnum("ProtobufBroker.FundingType", FundingType_name, FundingType_value)
+	proto.RegisterEnum("ProtobufBroker.PrivateOrder_Type", PrivateOrder_Type_name, PrivateOrder_Type_value)
+	proto.RegisterEnum("ProtobufBroker.PrivateOrder_PriceParamType", PrivateOrder_PriceParamType_name, PrivateOrder_PriceParamType_value)
 	proto.RegisterType((*PrivateOrder)(nil), "ProtobufBroker.PrivateOrder")
 	proto.RegisterType((*PrivateOrder_PriceParam)(nil), "ProtobufBroker.PrivateOrder.PriceParam")
 	proto.RegisterType((*PrivateTrade)(nil), "ProtobufBroker.PrivateTrade")
 	proto.RegisterType((*PrivatePosition)(nil), "ProtobufBroker.PrivatePosition")
 	proto.RegisterType((*Balance)(nil), "ProtobufBroker.Balance")
 	proto.RegisterType((*Balances)(nil), "ProtobufBroker.Balances")
-	proto.RegisterEnum("ProtobufBroker.FundingType", FundingType_name, FundingType_value)
-	proto.RegisterEnum("ProtobufBroker.PrivateOrder_Type", PrivateOrder_Type_name, PrivateOrder_Type_value)
-	proto.RegisterEnum("ProtobufBroker.PrivateOrder_PriceParamType", PrivateOrder_PriceParamType_name, PrivateOrder_PriceParamType_value)
 }
 
-func init() { proto.RegisterFile("broker/private.proto", fileDescriptor_private_e63dbda2cf2934fa) }
+func init() { proto.RegisterFile("broker/private.proto", fileDescriptor_2643a2aaad9ebcde) }
 
-var fileDescriptor_private_e63dbda2cf2934fa = []byte{
+var fileDescriptor_2643a2aaad9ebcde = []byte{
 	// 921 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x56, 0xdf, 0x6f, 0x1a, 0x47,
 	0x10, 0xce, 0xfd, 0xc0, 0x1c, 0x03, 0x81, 0xf3, 0xc4, 0xb1, 0xb7, 0x4e, 0x15, 0x5d, 0xa9, 0xd4,
