@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package ProtobufMarkets;
+
+message AssetUpdateMessage {
+	int32 asset = 1;
+
+	oneof Update {
+		AssetUSDVolumeUpdate usdVolumeUpdate = 1;
+	}
+}
+
+message AssetUSDVolumeUpdate {
+	string volume = 1;
+}
