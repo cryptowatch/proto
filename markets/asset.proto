@@ -6,7 +6,7 @@ message AssetUpdateMessage {
 	int32 asset = 1;
 
 	oneof Update {
-		AssetUSDVolumeUpdate usdVolumeUpdate = 1;
+		AssetUSDVolumeUpdate usdVolumeUpdate = 2;
 	}
 }
 

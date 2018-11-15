@@ -4,12 +4,14 @@ package ProtobufStream;
 
 import "markets/market.proto";
 import "markets/pair.proto";
+import "markets/asset.proto";
 
 message StreamMessage {
   oneof body {
     AuthenticationResult authenticationResult = 1;
     ProtobufMarkets.MarketUpdateMessage marketUpdate = 2;
     ProtobufMarkets.PairUpdateMessage pairUpdate = 3;
+    ProtobufMarkets.AssetUpdateMessage assetUpdate = 4;
   }
 }
 
