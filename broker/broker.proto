@@ -33,6 +33,9 @@ message PlaceOrderRequest {
 }
 
 message PlaceOrderResult {
+  PrivateOrder order = 2;
+
+  // Deprecated
   string orderId = 1;
 }
 
