@@ -61,6 +61,9 @@ message SyncRequest {}
 
 message BrokerRequest {
   string id = 1;
+  // marketId can be 0 if there is just one session associated with the
+  // connection.
+  int64 marketId = 7;
   oneof Request {
     PlaceOrderRequest placeOrderRequest = 2;
     CancelOrderRequest cancelOrderRequest = 3;
@@ -142,6 +145,7 @@ message APIAccessorStatusUpdate {
 }
 
 message BrokerUpdateMessage {
+  int64 marketId = 11;
   oneof Update {
     OrdersUpdate ordersUpdate = 1;
     TradesUpdate tradesUpdate = 2;
