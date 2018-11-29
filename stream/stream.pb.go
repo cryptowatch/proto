@@ -3,12 +3,10 @@
 
 package ProtobufStream
 
-import (
-	markets "code.cryptowat.ch/proto/markets"
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	math "math"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
+import markets "code.cryptowat.ch/proto/markets"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -38,7 +36,6 @@ var AuthenticationResult_Status_name = map[int32]string{
 	3: "BAD_TOKEN",
 	4: "TOKEN_EXPIRED",
 }
-
 var AuthenticationResult_Status_value = map[string]int32{
 	"UNKNOWN":       0,
 	"AUTHENTICATED": 1,
@@ -50,9 +47,8 @@ var AuthenticationResult_Status_value = map[string]int32{
 func (x AuthenticationResult_Status) String() string {
 	return proto.EnumName(AuthenticationResult_Status_name, int32(x))
 }
-
 func (AuthenticationResult_Status) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_39c39af072f39be4, []int{1, 0}
+	return fileDescriptor_stream_aa04848dfef74b52, []int{1, 0}
 }
 
 type StreamMessage struct {
@@ -71,17 +67,16 @@ func (m *StreamMessage) Reset()         { *m = StreamMessage{} }
 func (m *StreamMessage) String() string { return proto.CompactTextString(m) }
 func (*StreamMessage) ProtoMessage()    {}
 func (*StreamMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_39c39af072f39be4, []int{0}
+	return fileDescriptor_stream_aa04848dfef74b52, []int{0}
 }
-
 func (m *StreamMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StreamMessage.Unmarshal(m, b)
 }
 func (m *StreamMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StreamMessage.Marshal(b, m, deterministic)
 }
-func (m *StreamMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StreamMessage.Merge(m, src)
+func (dst *StreamMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamMessage.Merge(dst, src)
 }
 func (m *StreamMessage) XXX_Size() int {
 	return xxx_messageInfo_StreamMessage.Size(m)
@@ -97,28 +92,22 @@ type isStreamMessage_Body interface {
 }
 
 type StreamMessage_AuthenticationResult struct {
-	AuthenticationResult *AuthenticationResult `protobuf:"bytes,1,opt,name=authenticationResult,proto3,oneof"`
+	AuthenticationResult *AuthenticationResult `protobuf:"bytes,1,opt,name=authenticationResult,oneof"`
 }
-
 type StreamMessage_MarketUpdate struct {
-	MarketUpdate *markets.MarketUpdateMessage `protobuf:"bytes,2,opt,name=marketUpdate,proto3,oneof"`
+	MarketUpdate *markets.MarketUpdateMessage `protobuf:"bytes,2,opt,name=marketUpdate,oneof"`
 }
-
 type StreamMessage_PairUpdate struct {
-	PairUpdate *markets.PairUpdateMessage `protobuf:"bytes,3,opt,name=pairUpdate,proto3,oneof"`
+	PairUpdate *markets.PairUpdateMessage `protobuf:"bytes,3,opt,name=pairUpdate,oneof"`
 }
-
 type StreamMessage_AssetUpdate struct {
-	AssetUpdate *markets.AssetUpdateMessage `protobuf:"bytes,4,opt,name=assetUpdate,proto3,oneof"`
+	AssetUpdate *markets.AssetUpdateMessage `protobuf:"bytes,4,opt,name=assetUpdate,oneof"`
 }
 
 func (*StreamMessage_AuthenticationResult) isStreamMessage_Body() {}
-
-func (*StreamMessage_MarketUpdate) isStreamMessage_Body() {}
-
-func (*StreamMessage_PairUpdate) isStreamMessage_Body() {}
-
-func (*StreamMessage_AssetUpdate) isStreamMessage_Body() {}
+func (*StreamMessage_MarketUpdate) isStreamMessage_Body()         {}
+func (*StreamMessage_PairUpdate) isStreamMessage_Body()           {}
+func (*StreamMessage_AssetUpdate) isStreamMessage_Body()          {}
 
 func (m *StreamMessage) GetBody() isStreamMessage_Body {
 	if m != nil {
@@ -268,7 +257,7 @@ func _StreamMessage_OneofSizer(msg proto.Message) (n int) {
 }
 
 type AuthenticationResult struct {
-	Status               AuthenticationResult_Status `protobuf:"varint,1,opt,name=status,proto3,enum=ProtobufStream.AuthenticationResult_Status" json:"status,omitempty"`
+	Status               AuthenticationResult_Status `protobuf:"varint,1,opt,name=status,enum=ProtobufStream.AuthenticationResult_Status" json:"status,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
 	XXX_unrecognized     []byte                      `json:"-"`
 	XXX_sizecache        int32                       `json:"-"`
@@ -278,17 +267,16 @@ func (m *AuthenticationResult) Reset()         { *m = AuthenticationResult{} }
 func (m *AuthenticationResult) String() string { return proto.CompactTextString(m) }
 func (*AuthenticationResult) ProtoMessage()    {}
 func (*AuthenticationResult) Descriptor() ([]byte, []int) {
-	return fileDescriptor_39c39af072f39be4, []int{1}
+	return fileDescriptor_stream_aa04848dfef74b52, []int{1}
 }
-
 func (m *AuthenticationResult) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AuthenticationResult.Unmarshal(m, b)
 }
 func (m *AuthenticationResult) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_AuthenticationResult.Marshal(b, m, deterministic)
 }
-func (m *AuthenticationResult) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AuthenticationResult.Merge(m, src)
+func (dst *AuthenticationResult) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AuthenticationResult.Merge(dst, src)
 }
 func (m *AuthenticationResult) XXX_Size() int {
 	return xxx_messageInfo_AuthenticationResult.Size(m)
@@ -307,14 +295,14 @@ func (m *AuthenticationResult) GetStatus() AuthenticationResult_Status {
 }
 
 func init() {
-	proto.RegisterEnum("ProtobufStream.AuthenticationResult_Status", AuthenticationResult_Status_name, AuthenticationResult_Status_value)
 	proto.RegisterType((*StreamMessage)(nil), "ProtobufStream.StreamMessage")
 	proto.RegisterType((*AuthenticationResult)(nil), "ProtobufStream.AuthenticationResult")
+	proto.RegisterEnum("ProtobufStream.AuthenticationResult_Status", AuthenticationResult_Status_name, AuthenticationResult_Status_value)
 }
 
-func init() { proto.RegisterFile("stream/stream.proto", fileDescriptor_39c39af072f39be4) }
+func init() { proto.RegisterFile("stream/stream.proto", fileDescriptor_stream_aa04848dfef74b52) }
 
-var fileDescriptor_39c39af072f39be4 = []byte{
+var fileDescriptor_stream_aa04848dfef74b52 = []byte{
 	// 334 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xcf, 0x4e, 0xf2, 0x40,
 	0x14, 0xc5, 0x29, 0x90, 0x7e, 0xf9, 0x2e, 0x42, 0xea, 0xc0, 0x82, 0xb0, 0x32, 0xd5, 0x85, 0x89,

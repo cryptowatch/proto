@@ -75,8 +75,8 @@ message PrivateOrder {
 }
 
 message PrivateTrade {
-  int64 id = 1;
   string externalId = 7;
+
   string orderId = 8;
 
   int64 time = 2;
@@ -88,6 +88,9 @@ message PrivateTrade {
   string amountString = 10;
 
   int32 side = 5;
+
+// Deprecated since we don't want to expose our SQL IDs
+  int64 id = 1;
 }
 
 message PrivatePosition {

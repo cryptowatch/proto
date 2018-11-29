@@ -3,11 +3,9 @@
 
 package ProtobufMarkets
 
-import (
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	math "math"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -21,7 +19,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type PairUpdateMessage struct {
-	Pair uint64 `protobuf:"varint,1,opt,name=pair,proto3" json:"pair,omitempty"`
+	Pair uint64 `protobuf:"varint,1,opt,name=pair" json:"pair,omitempty"`
 	// Types that are valid to be assigned to Update:
 	//	*PairUpdateMessage_VwapUpdate
 	//	*PairUpdateMessage_PerformanceUpdate
@@ -36,17 +34,16 @@ func (m *PairUpdateMessage) Reset()         { *m = PairUpdateMessage{} }
 func (m *PairUpdateMessage) String() string { return proto.CompactTextString(m) }
 func (*PairUpdateMessage) ProtoMessage()    {}
 func (*PairUpdateMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f0f15de32d6316fa, []int{0}
+	return fileDescriptor_pair_85c64c4789319619, []int{0}
 }
-
 func (m *PairUpdateMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PairUpdateMessage.Unmarshal(m, b)
 }
 func (m *PairUpdateMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PairUpdateMessage.Marshal(b, m, deterministic)
 }
-func (m *PairUpdateMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PairUpdateMessage.Merge(m, src)
+func (dst *PairUpdateMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PairUpdateMessage.Merge(dst, src)
 }
 func (m *PairUpdateMessage) XXX_Size() int {
 	return xxx_messageInfo_PairUpdateMessage.Size(m)
@@ -57,40 +54,36 @@ func (m *PairUpdateMessage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_PairUpdateMessage proto.InternalMessageInfo
 
-func (m *PairUpdateMessage) GetPair() uint64 {
-	if m != nil {
-		return m.Pair
-	}
-	return 0
-}
-
 type isPairUpdateMessage_Update interface {
 	isPairUpdateMessage_Update()
 }
 
 type PairUpdateMessage_VwapUpdate struct {
-	VwapUpdate *PairVwapUpdate `protobuf:"bytes,2,opt,name=vwapUpdate,proto3,oneof"`
+	VwapUpdate *PairVwapUpdate `protobuf:"bytes,2,opt,name=vwapUpdate,oneof"`
 }
-
 type PairUpdateMessage_PerformanceUpdate struct {
-	PerformanceUpdate *PairPerformanceUpdate `protobuf:"bytes,3,opt,name=performanceUpdate,proto3,oneof"`
+	PerformanceUpdate *PairPerformanceUpdate `protobuf:"bytes,3,opt,name=performanceUpdate,oneof"`
 }
-
 type PairUpdateMessage_TrendlineUpdate struct {
-	TrendlineUpdate *PairTrendlineUpdate `protobuf:"bytes,4,opt,name=trendlineUpdate,proto3,oneof"`
+	TrendlineUpdate *PairTrendlineUpdate `protobuf:"bytes,4,opt,name=trendlineUpdate,oneof"`
 }
 
-func (*PairUpdateMessage_VwapUpdate) isPairUpdateMessage_Update() {}
-
+func (*PairUpdateMessage_VwapUpdate) isPairUpdateMessage_Update()        {}
 func (*PairUpdateMessage_PerformanceUpdate) isPairUpdateMessage_Update() {}
-
-func (*PairUpdateMessage_TrendlineUpdate) isPairUpdateMessage_Update() {}
+func (*PairUpdateMessage_TrendlineUpdate) isPairUpdateMessage_Update()   {}
 
 func (m *PairUpdateMessage) GetUpdate() isPairUpdateMessage_Update {
 	if m != nil {
 		return m.Update
 	}
 	return nil
+}
+
+func (m *PairUpdateMessage) GetPair() uint64 {
+	if m != nil {
+		return m.Pair
+	}
+	return 0
 }
 
 func (m *PairUpdateMessage) GetVwapUpdate() *PairVwapUpdate {
@@ -208,7 +201,7 @@ func _PairUpdateMessage_OneofSizer(msg proto.Message) (n int) {
 }
 
 type PairVwapUpdate struct {
-	Vwap                 float64  `protobuf:"fixed64,1,opt,name=vwap,proto3" json:"vwap,omitempty"`
+	Vwap                 float64  `protobuf:"fixed64,1,opt,name=vwap" json:"vwap,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -218,17 +211,16 @@ func (m *PairVwapUpdate) Reset()         { *m = PairVwapUpdate{} }
 func (m *PairVwapUpdate) String() string { return proto.CompactTextString(m) }
 func (*PairVwapUpdate) ProtoMessage()    {}
 func (*PairVwapUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f0f15de32d6316fa, []int{1}
+	return fileDescriptor_pair_85c64c4789319619, []int{1}
 }
-
 func (m *PairVwapUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PairVwapUpdate.Unmarshal(m, b)
 }
 func (m *PairVwapUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PairVwapUpdate.Marshal(b, m, deterministic)
 }
-func (m *PairVwapUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PairVwapUpdate.Merge(m, src)
+func (dst *PairVwapUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PairVwapUpdate.Merge(dst, src)
 }
 func (m *PairVwapUpdate) XXX_Size() int {
 	return xxx_messageInfo_PairVwapUpdate.Size(m)
@@ -247,8 +239,8 @@ func (m *PairVwapUpdate) GetVwap() float64 {
 }
 
 type PairPerformanceUpdate struct {
-	Window               string   `protobuf:"bytes,1,opt,name=window,proto3" json:"window,omitempty"`
-	Performance          float64  `protobuf:"fixed64,2,opt,name=performance,proto3" json:"performance,omitempty"`
+	Window               string   `protobuf:"bytes,1,opt,name=window" json:"window,omitempty"`
+	Performance          float64  `protobuf:"fixed64,2,opt,name=performance" json:"performance,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -258,17 +250,16 @@ func (m *PairPerformanceUpdate) Reset()         { *m = PairPerformanceUpdate{} }
 func (m *PairPerformanceUpdate) String() string { return proto.CompactTextString(m) }
 func (*PairPerformanceUpdate) ProtoMessage()    {}
 func (*PairPerformanceUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f0f15de32d6316fa, []int{2}
+	return fileDescriptor_pair_85c64c4789319619, []int{2}
 }
-
 func (m *PairPerformanceUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PairPerformanceUpdate.Unmarshal(m, b)
 }
 func (m *PairPerformanceUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PairPerformanceUpdate.Marshal(b, m, deterministic)
 }
-func (m *PairPerformanceUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PairPerformanceUpdate.Merge(m, src)
+func (dst *PairPerformanceUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PairPerformanceUpdate.Merge(dst, src)
 }
 func (m *PairPerformanceUpdate) XXX_Size() int {
 	return xxx_messageInfo_PairPerformanceUpdate.Size(m)
@@ -294,10 +285,10 @@ func (m *PairPerformanceUpdate) GetPerformance() float64 {
 }
 
 type PairTrendlineUpdate struct {
-	Window               string   `protobuf:"bytes,1,opt,name=window,proto3" json:"window,omitempty"`
-	Time                 int64    `protobuf:"varint,2,opt,name=time,proto3" json:"time,omitempty"`
-	Price                string   `protobuf:"bytes,3,opt,name=price,proto3" json:"price,omitempty"`
-	Volume               string   `protobuf:"bytes,4,opt,name=volume,proto3" json:"volume,omitempty"`
+	Window               string   `protobuf:"bytes,1,opt,name=window" json:"window,omitempty"`
+	Time                 int64    `protobuf:"varint,2,opt,name=time" json:"time,omitempty"`
+	Price                string   `protobuf:"bytes,3,opt,name=price" json:"price,omitempty"`
+	Volume               string   `protobuf:"bytes,4,opt,name=volume" json:"volume,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -307,17 +298,16 @@ func (m *PairTrendlineUpdate) Reset()         { *m = PairTrendlineUpdate{} }
 func (m *PairTrendlineUpdate) String() string { return proto.CompactTextString(m) }
 func (*PairTrendlineUpdate) ProtoMessage()    {}
 func (*PairTrendlineUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_f0f15de32d6316fa, []int{3}
+	return fileDescriptor_pair_85c64c4789319619, []int{3}
 }
-
 func (m *PairTrendlineUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PairTrendlineUpdate.Unmarshal(m, b)
 }
 func (m *PairTrendlineUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_PairTrendlineUpdate.Marshal(b, m, deterministic)
 }
-func (m *PairTrendlineUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PairTrendlineUpdate.Merge(m, src)
+func (dst *PairTrendlineUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PairTrendlineUpdate.Merge(dst, src)
 }
 func (m *PairTrendlineUpdate) XXX_Size() int {
 	return xxx_messageInfo_PairTrendlineUpdate.Size(m)
@@ -363,9 +353,9 @@ func init() {
 	proto.RegisterType((*PairTrendlineUpdate)(nil), "ProtobufMarkets.PairTrendlineUpdate")
 }
 
-func init() { proto.RegisterFile("markets/pair.proto", fileDescriptor_f0f15de32d6316fa) }
+func init() { proto.RegisterFile("markets/pair.proto", fileDescriptor_pair_85c64c4789319619) }
 
-var fileDescriptor_f0f15de32d6316fa = []byte{
+var fileDescriptor_pair_85c64c4789319619 = []byte{
 	// 286 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x92, 0xdf, 0x4a, 0xc3, 0x30,
 	0x14, 0xc6, 0xdb, 0xad, 0x16, 0x7b, 0x06, 0x8e, 0x1d, 0xff, 0xb0, 0x3b, 0x4b, 0x19, 0xb2, 0xab,

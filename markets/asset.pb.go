@@ -3,11 +3,9 @@
 
 package ProtobufMarkets
 
-import (
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	math "math"
-)
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
@@ -21,7 +19,7 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type AssetUpdateMessage struct {
-	Asset int32 `protobuf:"varint,1,opt,name=asset,proto3" json:"asset,omitempty"`
+	Asset int32 `protobuf:"varint,1,opt,name=asset" json:"asset,omitempty"`
 	// Types that are valid to be assigned to Update:
 	//	*AssetUpdateMessage_UsdVolumeUpdate
 	Update               isAssetUpdateMessage_Update `protobuf_oneof:"Update"`
@@ -34,17 +32,16 @@ func (m *AssetUpdateMessage) Reset()         { *m = AssetUpdateMessage{} }
 func (m *AssetUpdateMessage) String() string { return proto.CompactTextString(m) }
 func (*AssetUpdateMessage) ProtoMessage()    {}
 func (*AssetUpdateMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4484c98b97098687, []int{0}
+	return fileDescriptor_asset_11b1ebcf6470df0b, []int{0}
 }
-
 func (m *AssetUpdateMessage) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AssetUpdateMessage.Unmarshal(m, b)
 }
 func (m *AssetUpdateMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_AssetUpdateMessage.Marshal(b, m, deterministic)
 }
-func (m *AssetUpdateMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetUpdateMessage.Merge(m, src)
+func (dst *AssetUpdateMessage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssetUpdateMessage.Merge(dst, src)
 }
 func (m *AssetUpdateMessage) XXX_Size() int {
 	return xxx_messageInfo_AssetUpdateMessage.Size(m)
@@ -55,19 +52,12 @@ func (m *AssetUpdateMessage) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AssetUpdateMessage proto.InternalMessageInfo
 
-func (m *AssetUpdateMessage) GetAsset() int32 {
-	if m != nil {
-		return m.Asset
-	}
-	return 0
-}
-
 type isAssetUpdateMessage_Update interface {
 	isAssetUpdateMessage_Update()
 }
 
 type AssetUpdateMessage_UsdVolumeUpdate struct {
-	UsdVolumeUpdate *AssetUSDVolumeUpdate `protobuf:"bytes,2,opt,name=usdVolumeUpdate,proto3,oneof"`
+	UsdVolumeUpdate *AssetUSDVolumeUpdate `protobuf:"bytes,2,opt,name=usdVolumeUpdate,oneof"`
 }
 
 func (*AssetUpdateMessage_UsdVolumeUpdate) isAssetUpdateMessage_Update() {}
@@ -77,6 +67,13 @@ func (m *AssetUpdateMessage) GetUpdate() isAssetUpdateMessage_Update {
 		return m.Update
 	}
 	return nil
+}
+
+func (m *AssetUpdateMessage) GetAsset() int32 {
+	if m != nil {
+		return m.Asset
+	}
+	return 0
 }
 
 func (m *AssetUpdateMessage) GetUsdVolumeUpdate() *AssetUSDVolumeUpdate {
@@ -142,7 +139,7 @@ func _AssetUpdateMessage_OneofSizer(msg proto.Message) (n int) {
 }
 
 type AssetUSDVolumeUpdate struct {
-	Volume               string   `protobuf:"bytes,1,opt,name=volume,proto3" json:"volume,omitempty"`
+	Volume               string   `protobuf:"bytes,1,opt,name=volume" json:"volume,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -152,17 +149,16 @@ func (m *AssetUSDVolumeUpdate) Reset()         { *m = AssetUSDVolumeUpdate{} }
 func (m *AssetUSDVolumeUpdate) String() string { return proto.CompactTextString(m) }
 func (*AssetUSDVolumeUpdate) ProtoMessage()    {}
 func (*AssetUSDVolumeUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4484c98b97098687, []int{1}
+	return fileDescriptor_asset_11b1ebcf6470df0b, []int{1}
 }
-
 func (m *AssetUSDVolumeUpdate) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_AssetUSDVolumeUpdate.Unmarshal(m, b)
 }
 func (m *AssetUSDVolumeUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_AssetUSDVolumeUpdate.Marshal(b, m, deterministic)
 }
-func (m *AssetUSDVolumeUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AssetUSDVolumeUpdate.Merge(m, src)
+func (dst *AssetUSDVolumeUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AssetUSDVolumeUpdate.Merge(dst, src)
 }
 func (m *AssetUSDVolumeUpdate) XXX_Size() int {
 	return xxx_messageInfo_AssetUSDVolumeUpdate.Size(m)
@@ -185,9 +181,9 @@ func init() {
 	proto.RegisterType((*AssetUSDVolumeUpdate)(nil), "ProtobufMarkets.AssetUSDVolumeUpdate")
 }
 
-func init() { proto.RegisterFile("markets/asset.proto", fileDescriptor_4484c98b97098687) }
+func init() { proto.RegisterFile("markets/asset.proto", fileDescriptor_asset_11b1ebcf6470df0b) }
 
-var fileDescriptor_4484c98b97098687 = []byte{
+var fileDescriptor_asset_11b1ebcf6470df0b = []byte{
 	// 160 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xce, 0x4d, 0x2c, 0xca,
 	0x4e, 0x2d, 0x29, 0xd6, 0x4f, 0x2c, 0x2e, 0x4e, 0x2d, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17,
