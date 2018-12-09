@@ -9,6 +9,8 @@ import "markets/asset.proto";
 message StreamMessage {
   oneof body {
     AuthenticationResult authenticationResult = 1;
+    SubscriptionResult subscriptionResult = 5;
+    UnsubscriptionResult unsubscriptionResult = 6;
     ProtobufMarkets.MarketUpdateMessage marketUpdate = 2;
     ProtobufMarkets.PairUpdateMessage pairUpdate = 3;
     ProtobufMarkets.AssetUpdateMessage assetUpdate = 4;
@@ -24,4 +26,52 @@ message AuthenticationResult {
     BAD_TOKEN = 3;
     TOKEN_EXPIRED = 4;
   }
+}
+
+// SubscriptionResult is sent to clients after subscription to some key(s) is
+// attempted. It happens after successful authentication (if authentication
+// message contained initial subscriptions) as well as after
+// ClientSubscribeMessage.
+message SubscriptionResult {
+  // Successful subscriptions
+  repeated string subscribed = 1;
+  // Faied subscriptions
+  repeated SubscribeError failed = 2;
+
+  // Current status: list of the keys to which the client is now subscribed
+  SubscriptionStatus status = 3;
+}
+
+// UnsubscriptionResult is sent to clients in response to
+// ClientUnsubscribeMessage.
+message UnsubscriptionResult {
+  // Successful unsubscriptions
+  repeated string unsubscribed = 1;
+  // Faied unsubscriptions
+  repeated UnsubscribeError failed = 2;
+
+  // Current status: list of the keys to which the client is now subscribed
+  SubscriptionStatus status = 3;
+}
+
+// SubscribeError represents an error of a single key: it contains the key and
+// the error message explaining why subscription has failed. Sent as part of
+// SubscriptionResult.
+message SubscribeError {
+  string key = 1;
+  string error = 2;
+}
+
+// UnsubscribeError represents an error of a single key: it contains the key
+// and the error message explaining why unsubscription has failed. Sent as part
+// of UnsubscriptionResult.
+message UnsubscribeError {
+  string key = 1;
+  string error = 2;
+}
+
+// SubscriptionStatus contains the key to which the client is subscribed right
+// now. Sent as part of SubscriptionResult and UnsubscriptionResult.
+message SubscriptionStatus {
+  repeated string keys = 1;
 }
