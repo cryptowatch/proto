@@ -44,6 +44,7 @@ message APIAuthenticationMessage {
     GOLANG_SDK = 1;
     JAVASCRIPT_SDK = 2;
     NODE_SDK = 3;
+    RUST_SDK = 5;
     CW_WEB = 4;
   }
 }
