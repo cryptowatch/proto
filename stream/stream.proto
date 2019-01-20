@@ -11,6 +11,7 @@ message StreamMessage {
     AuthenticationResult authenticationResult = 1;
     SubscriptionResult subscriptionResult = 5;
     UnsubscriptionResult unsubscriptionResult = 6;
+    MissedMessages missedMessages = 7;
     ProtobufMarkets.MarketUpdateMessage marketUpdate = 2;
     ProtobufMarkets.PairUpdateMessage pairUpdate = 3;
     ProtobufMarkets.AssetUpdateMessage assetUpdate = 4;
@@ -74,4 +75,11 @@ message UnsubscribeError {
 // now. Sent as part of SubscriptionResult and UnsubscriptionResult.
 message SubscriptionStatus {
   repeated string keys = 1;
+}
+
+// MissedMessages is sent by stream to the clients if stream's internal buffer
+// is overflown by the messages, so some messages were missed. Normally it
+// could only happen if a client subscribes to too many channels.
+message MissedMessages {
+  int64 numMissedMessages = 1;
 }
