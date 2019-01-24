@@ -1,7 +1,11 @@
 syntax = "proto3";
 
-// Package ProtobufMarkets contains definitions for market update messages;
+// Package ProtobufMarkets contains definitions for observables update messages;
 // the main wrapper messages is a MarketUpdateMessage.
+
+// NOTE: While a lot of these types have been expanded to indices, to prevent
+// breaking clients by changing protbuf message types and names
+// we'll just leave the package as ProtobufMarkets
 package ProtobufMarkets;
 
 // Market represents a currency pair on a particular exchange.

@@ -3,6 +3,7 @@ syntax = "proto3";
 package ProtobufStream;
 
 import "markets/market.proto";
+import "markets/index.proto";
 import "markets/pair.proto";
 import "markets/asset.proto";
 
@@ -15,6 +16,7 @@ message StreamMessage {
     ProtobufMarkets.MarketUpdateMessage marketUpdate = 2;
     ProtobufMarkets.PairUpdateMessage pairUpdate = 3;
     ProtobufMarkets.AssetUpdateMessage assetUpdate = 4;
+    ProtobufMarkets.IndexUpdateMessage indexUpdate = 8;
   }
 }
 

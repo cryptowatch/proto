@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+// NOTE: While a lot of these types have been expanded to indices, to prevent
+// breaking clients by changing protbuf message types and names
+// we'll just leave the package as ProtobufMarkets
+package ProtobufMarkets;
+
+import "markets/market.proto";
+
+// Index represents a index metric which may be produced on cryptowatch
+// or belong to an exchange
+message Index {
+    uint64 id = 1;
+    string symbol = 2;
+    string indexType = 3;
+  
+    bool cwIndex = 4;
+  
+    uint64 exchangeId = 5;
+    uint64 instrumentId = 6;
+}
+
+message IndexUpdateMessage {
+    Index index = 1;
+
+    oneof Update {
+      TickerUpdate tickerUpdate = 2;
+      IntervalsUpdate intervalsUpdate = 3;
+      SummaryUpdate summaryUpdate = 4;
+      SparklineUpdate sparklineUpdate = 5;
+    }
+}
+
+// TickerUpdate is just a single ticker message
+message TickerUpdate {
+    repeated Ticker tickers = 1;
+}
+
+// Ticker is just a single update instance in TickerUpdate
+message Ticker {
+    string value = 1;
+  
+    int64 timestamp = 2;
+    // Just to keep consistency with Trade
+    // this will also be called timestampNano
+    int64 timestampNano = 3;
+}
