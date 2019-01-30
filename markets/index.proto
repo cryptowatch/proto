@@ -13,9 +13,7 @@ message Index {
     uint64 id = 1;
     string symbol = 2;
     string indexType = 3;
-  
     bool cwIndex = 4;
-  
     uint64 exchangeId = 5;
     uint64 instrumentId = 6;
 }
@@ -39,7 +37,6 @@ message TickerUpdate {
 // Ticker is just a single update instance in TickerUpdate
 message Ticker {
     string value = 1;
-  
     int64 timestamp = 2;
     // Just to keep consistency with Trade
     // this will also be called timestampNano
