@@ -31,13 +31,39 @@ message WebAuthenticationMessage {
   repeated string access_list = 4;
 }
 
+message TradeSessionAuth {
+  string api_key = 1;
+  string api_secret = 2;
+  string customer_id = 3;
+  string key_passphrase = 4;
+}
+
+message TradeSubscription {
+  string marketId = 1;
+
+  // optional: use if supplying different exchange keys
+  TradeSessionAuth auth = 2;
+}
+
+message StreamSubscription {
+  string resource = 1;
+}
+
+message ClientSubscription {
+  oneof body {
+    StreamSubscription stream_subscription = 1;
+    TradeSubscription trade_subscription = 2;
+  }
+}
+
 message APIAuthenticationMessage {
   string token = 1;
   string nonce = 2;
   string api_key = 3;
   Source source = 4;
   string version = 5;
-  repeated string subscriptions = 6;
+  repeated string subscriptions = 6 [deprecated=true]; // kept for compability
+  repeated ClientSubscription client_subscriptions = 7; // should be used for subscriptions
 
   enum Source {
     UNKNOWN = 0;
@@ -72,11 +98,13 @@ message ClientSessionMessage {
 // SubscribeMessage informs the Stream Hub to subscribe the current web socket to
 // the supplied channel.
 message ClientSubscribeMessage {
-  repeated string subscriptionKeys = 1;
+  repeated string subscriptionKeys = 1 [ deprecated = true ]; // kept for compability
+  repeated ClientSubscription subscriptions = 2; // list of subscriptions
 }
 
 // UnsubscribeMessage informs the Stream Hub to unsubscribe the current web socket
 // from the supplied channel.
 message ClientUnsubscribeMessage {
-  repeated string subscriptionKeys = 1;
+  repeated string subscriptionKeys = 1 [ deprecated = true ]; // kept for compability
+  repeated ClientSubscription subscriptions = 2; // list of subscriptions
 }

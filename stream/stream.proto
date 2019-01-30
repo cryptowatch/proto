@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package ProtobufStream;
 
+import "client/client.proto";
 import "markets/market.proto";
 import "markets/index.proto";
 import "markets/pair.proto";
@@ -36,47 +37,57 @@ message AuthenticationResult {
 // message contained initial subscriptions) as well as after
 // ClientSubscribeMessage.
 message SubscriptionResult {
-  // Successful subscriptions
-  repeated string subscribed = 1;
+   // Successful subscriptions
+  repeated string subscribed = 1 [ deprecated = true ]; // kept for compability
   // Faied subscriptions
   repeated SubscribeError failed = 2;
 
   // Current status: list of the keys to which the client is now subscribed
   SubscriptionStatus status = 3;
+
+  // Successful subscriptions
+  repeated ProtobufClient.ClientSubscription subscriptions = 4; // list of subscriptions
 }
 
 // UnsubscriptionResult is sent to clients in response to
 // ClientUnsubscribeMessage.
 message UnsubscriptionResult {
   // Successful unsubscriptions
-  repeated string unsubscribed = 1;
+  repeated string unsubscribed = 1 [ deprecated = true ];
   // Faied unsubscriptions
   repeated UnsubscribeError failed = 2;
 
   // Current status: list of the keys to which the client is now subscribed
   SubscriptionStatus status = 3;
+
+  // Successful unsubscriptions
+  repeated ProtobufClient.ClientSubscription subscriptions = 4; // list of subscriptions
 }
 
 // SubscribeError represents an error of a single key: it contains the key and
 // the error message explaining why subscription has failed. Sent as part of
 // SubscriptionResult.
 message SubscribeError {
-  string key = 1;
+  string key = 1 [ deprecated = true ]; // kept for compability
   string error = 2;
+  ProtobufClient.ClientSubscription subscription = 3;
+
 }
 
 // UnsubscribeError represents an error of a single key: it contains the key
 // and the error message explaining why unsubscription has failed. Sent as part
 // of UnsubscriptionResult.
 message UnsubscribeError {
-  string key = 1;
+  string key = 1 [ deprecated = true ]; // kept for compability
   string error = 2;
+  ProtobufClient.ClientSubscription subscription = 3;
 }
 
 // SubscriptionStatus contains the key to which the client is subscribed right
 // now. Sent as part of SubscriptionResult and UnsubscriptionResult.
 message SubscriptionStatus {
-  repeated string keys = 1;
+  repeated string keys = 1 [ deprecated = true ]; // kept for compability
+  repeated ProtobufClient.ClientSubscription subscriptions = 2;
 }
 
 // MissedMessages is sent by stream to the clients if stream's internal buffer

@@ -157,5 +157,6 @@ message BrokerUpdateMessage {
     SessionStatusUpdate sessionStatusUpdate = 7;
     APIAccessorStatusUpdate apiAccessorStatusUpdate = 9;
     ProtobufStream.AuthenticationResult authenticationResult = 10;
+    ProtobufStream.SubscriptionResult subscriptionResult = 12;
   }
 }
