@@ -60,6 +60,8 @@ message ClosePositionRequest {
 
 message SyncRequest {}
 
+message AllBalancesRequest{}
+
 message BrokerRequest {
   string id = 1;
   // marketId can be 0 if there is just one session associated with the
@@ -71,6 +73,7 @@ message BrokerRequest {
     ReplaceOrderRequest replaceOrderRequest = 6;
     SyncRequest syncRequest = 4;
     ClosePositionRequest closePositionRequest = 5;
+    AllBalancesRequest allBalancesRequest = 8;
   }
 }
 
@@ -89,6 +92,8 @@ message PositionsUpdate {
 message BalancesUpdate {
   repeated Balances balances = 1;
 }
+
+message AllBalancesUpdate {}
 
 message RequestResolutionUpdate {
   string id = 1;
@@ -157,6 +162,7 @@ message BrokerUpdateMessage {
     PermissionsUpdate permissionsUpdate = 6;
     SessionStatusUpdate sessionStatusUpdate = 7;
     APIAccessorStatusUpdate apiAccessorStatusUpdate = 9;
+    AllBalancesUpdate allBalancesUpdate = 13;
     ProtobufStream.AuthenticationResult authenticationResult = 10;
     ProtobufStream.SubscriptionResult subscriptionResult = 12;
   }
