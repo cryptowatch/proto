@@ -93,7 +93,9 @@ message BalancesUpdate {
   repeated Balances balances = 1;
 }
 
-message AllBalancesUpdate {}
+message AllBalancesUpdate {
+  string id = 1;
+}
 
 message RequestResolutionUpdate {
   string id = 1;
