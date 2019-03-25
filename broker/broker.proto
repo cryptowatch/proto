@@ -95,6 +95,7 @@ message BalancesUpdate {
 
 message AllBalancesUpdate {
   string id = 1;
+  repeated Balances balances = 2;
 }
 
 message RequestResolutionUpdate {
