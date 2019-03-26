@@ -5,6 +5,7 @@ package ProtobufBroker;
 import "broker/private.proto";
 import "stream/stream.proto";
 
+// DEPRECATION WARNING this isn't used anymore in favor of ProtobufClient.ClientSessionMessage
 message BrokerSessionMessage {
   message Session {
     string userId = 1;

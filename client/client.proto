@@ -6,11 +6,12 @@ package ProtobufClient;
 // and pass metadata about the client.
 message ClientMessage {
   oneof body {
-    ClientIdentificationMessage identification = 1;
+    ClientIdentificationMessage identification = 1 [deprecated=true];
     ClientSubscribeMessage subscribe = 2;
     ClientUnsubscribeMessage unsubscribe = 3;
     WebAuthenticationMessage webAuthentication = 4;
     APIAuthenticationMessage apiAuthentication = 5;
+    ClientSessionMessage clientSession = 6;
   }
 }
 
@@ -21,7 +22,8 @@ message ClientIdentificationMessage {
   string revision = 2;
   string integration = 3;
   string locale = 4;
-  repeated string subscriptions = 5;
+  repeated string subscriptions = 5 [deprecated=true];
+  repeated ClientSubscription clientSubscriptions = 6; // should be used for subscriptions
 }
 
 message WebAuthenticationMessage {
@@ -93,6 +95,8 @@ message ClientSessionMessage {
     Session session = 1;
     AnonymousTradingSession anonymousTradingSession = 2;
   }
+
+  ClientIdentificationMessage identification = 3;
 }
 
 // SubscribeMessage informs the Stream Hub to subscribe the current web socket to
