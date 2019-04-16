@@ -91,7 +91,13 @@ message PositionsUpdate {
 }
 
 message BalancesUpdate {
+  // This field represents available balances, this was the
+  // default until we introduced the ability to split between
+  // total and available balances.
   repeated Balances balances = 1;
+
+  // This field contains total balances only.
+  repeated Balances total = 2;
 }
 
 // AllBalances grep flag: Ai33fA
