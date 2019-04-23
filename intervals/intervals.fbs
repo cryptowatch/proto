@@ -1,11 +1,13 @@
 namespace intervals;
 
-struct Decimal {
-  value:int64;
+table Decimal {
+  // `coeff` being variable length forces `Decimal` and `OHLC`
+  // to be tables instead of structs
+  coeff:[ubyte];
   exp:int32;
 }
 
-struct OHLC {
+table OHLC {
   open:Decimal;
   high:Decimal;
   low:Decimal;
