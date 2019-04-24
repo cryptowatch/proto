@@ -143,8 +143,6 @@ message PermissionsUpdate {
   }
   repeated Agreement agreements = 4;
 
-  bool currencyPairAllowed = 5;
-
   message LeverageLevels {
     repeated string buy = 1;
     repeated string sell = 2;
@@ -153,6 +151,10 @@ message PermissionsUpdate {
   LeverageLevels leverageLevels = 6;
 
   bool supportsOrderExpiry = 7;
+
+  // Removed feature
+  reserved 5;
+  reserved "currencyPairAllowed";
 }
 
 message APIAccessorStatusUpdate {
