@@ -28,6 +28,16 @@ message BrokerSessionMessage {
   int64 marketId = 3;
 }
 
+message WebAuthenticationResult {
+  Status status = 1;
+  enum Status {
+    UNKNOWN = 0;
+    AUTHENTICATED = 1;
+    INVALID_SESSION = 2;
+    MFA_REQUIRED = 3;
+  }
+}
+
 message PlaceOrderRequest {
   PrivateOrder order = 2;
   PrivateOrder closingOrder = 3;
@@ -178,5 +188,6 @@ message BrokerUpdateMessage {
     // AllBalancesUpdate allBalancesUpdate = 13; // AllBalances grep flag: Ai33fA
     ProtobufStream.AuthenticationResult authenticationResult = 10;
     ProtobufStream.SubscriptionResult subscriptionResult = 12;
+    WebAuthenticationResult webAuthenticationResult = 14;
   }
 }
