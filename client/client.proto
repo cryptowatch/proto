@@ -33,6 +33,16 @@ message WebAuthenticationMessage {
   repeated string access_list = 4;
 }
 
+message WebAuthenticationResult {
+  Status status = 1;
+  enum Status {
+    UNKNOWN = 0;
+    AUTHENTICATED = 1;
+    INVALID_SESSION = 2;
+    MFA_REQUIRED = 3;
+  }
+}
+
 message TradeSessionAuth {
   string api_key = 1;
   string api_secret = 2;
