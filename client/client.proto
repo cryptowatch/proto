@@ -61,10 +61,16 @@ message StreamSubscription {
   string resource = 1;
 }
 
+message TriggerSubscription {
+  // No fields needed for now, there's only one trigger "subscription" possible
+  // (all of them).
+}
+
 message ClientSubscription {
   oneof body {
     StreamSubscription stream_subscription = 1;
     TradeSubscription trade_subscription = 2;
+    TriggerSubscription trigger_subscription = 3;
   }
 }
 
