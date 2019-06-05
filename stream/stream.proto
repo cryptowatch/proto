@@ -29,6 +29,7 @@ message AuthenticationResult {
     BAD_NONCE = 2;
     BAD_TOKEN = 3;
     TOKEN_EXPIRED = 4;
+    READONLY_KEY = 5;
   }
 }
 
