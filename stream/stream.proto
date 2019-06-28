@@ -30,7 +30,8 @@ message AuthenticationResult {
     BAD_NONCE = 2;
     BAD_TOKEN = 3;
     TOKEN_EXPIRED = 4;
-    READONLY_KEY = 5;
+    READONLY_KEY = 5; // this should probably be deprecated for ACCESS_DENIED
+    ACCESS_DENIED = 6;
   }
 }
 
