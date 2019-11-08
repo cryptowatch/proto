@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package ProtobufStream;
 
-import "client/client.proto";
-import "markets/market.proto";
-import "markets/index.proto";
-import "markets/pair.proto";
-import "markets/asset.proto";
+import "public/client/client.proto";
+import "public/markets/market.proto";
+import "public/markets/index.proto";
+import "public/markets/pair.proto";
+import "public/markets/asset.proto";
 
 message StreamMessage {
   oneof body {
