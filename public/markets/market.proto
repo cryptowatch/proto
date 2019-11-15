@@ -38,7 +38,7 @@ message Trade {
   string externalId = 11;
 
   int64 timestamp = 2;
-  int64 timestampMillis = 5;
+  int64 timestampMillis = 5 [deprecated = true];
   int64 timestampNano = 10;
 
   string priceStr = 8;
