@@ -19,6 +19,7 @@ message StreamMessage {
     ProtobufMarkets.AssetUpdateMessage assetUpdate = 4;
     ProtobufMarkets.IndexUpdateMessage indexUpdate = 8;
     BandwidthUpdate bandwidthUpdate = 9;
+    Heartbeat heartbeat = 10;
   }
 }
 
@@ -32,6 +33,7 @@ message AuthenticationResult {
     TOKEN_EXPIRED = 4;
     READONLY_KEY = 5; // this should probably be deprecated for ACCESS_DENIED
     ACCESS_DENIED = 6;
+    INVALID_PUBLIC_KEY = 7;
   }
 }
 
@@ -108,4 +110,9 @@ message BandwidthUpdate {
   bool ok = 1;
   int64 bytesRemaining = 2;
   int64 bytesUsed = 3;
+}
+
+// Not used yet
+message Heartbeat {
+  int64 time = 1;
 }

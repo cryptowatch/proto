@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// Package ProtobufMarkets contains definitions for observables update messages;
+// Package ProtobufMarkets contains definitions for series update messages;
 // the main wrapper messages is a MarketUpdateMessage.
 
 // NOTE: While a lot of these types have been expanded to indices, to prevent
@@ -27,9 +27,8 @@ message Order {
   string priceStr = 3;
   string amountStr = 4;
 
-  // Deprecated
-  float price = 1;
-  float amount = 2;
+  reserved "price", "amount";
+  reserved 1, 2;
 }
 
 // Trade is a single trade in TradesUpdate
@@ -38,18 +37,31 @@ message Trade {
   string externalId = 11;
 
   int64 timestamp = 2;
-  int64 timestampMillis = 5 [deprecated = true];
   int64 timestampNano = 10;
 
   string priceStr = 8;
   string amountStr = 9;
 
+  enum OrderSide {
+    UNKNOWN = 0;
+    BUYSIDE = 1;
+    SELLSIDE = 2;
+  }
+  OrderSide orderSide = 13;
+
+  reserved "price", "amount", "timestampMillis", "id", "priceDouble", "amountDouble", "side";
+  reserved 1, 3, 4, 5, 6, 7, 12;
+
   // Deprecated
-  float price = 3;
-  float amount = 4;
-  double priceDouble = 6;
-  double amountDouble = 7;
-  int64 id = 1;
+  // Enum definitions are properties on the top-level message, so
+  // BUY and SELL are actually reserved on Trade. We need to keep
+  // this definition around because there doens't seem to be a way to
+  // reserve/deprecate enum values
+  enum Side {
+    option deprecated = true;
+    BUY = 0 [deprecated = true];
+    SELL = 1 [deprecated = true];
+  }
 }
 
 // MarketUpdateMessage is the primary message for market updates; it wraps all
@@ -86,8 +98,8 @@ message OrderBookUpdate {
   repeated Order bids = 1;
   repeated Order asks = 2;
 
-  // Deprecated
-  float aggregationModulus = 3;
+  reserved "aggregationModulus";
+  reserved 3;
 }
 
 // OrderBookDeltaUpdate represents a delta which needs to be applied to the
@@ -96,7 +108,6 @@ message OrderBookDeltaUpdate {
   // Aggregation modulus is a value which all bids and asks in this particular
   // OrderBookUpdate are divisible by. E.g. could be 1 (no aggregation), 5, 10,
   // 50, 100, etc. Exact possible values are set for each market individually.
-  float aggregationModulus = 3;
   string aggregationModulusStr = 4;
 
   int32 seqNum = 5;
@@ -108,14 +119,19 @@ message OrderBookDeltaUpdate {
     // TODO: I see we don't really use deltas, and just use set?
     repeated Order delta = 2;
     // Remove order at a particular price
-    repeated float remove = 3 [packed = false];
     repeated string removeStr = 4;
+
+    reserved "remove";
+    reserved 3;
   }
 
   // Deltas for bids
   OrderDeltas bids = 1;
   // Deltas for asks
   OrderDeltas asks = 2;
+
+  reserved "aggregationModulus";
+  reserved 3;
 }
 
 // OrderBookSpreadUpdate represents only the best bid & ask
@@ -164,24 +180,24 @@ message Interval {
     string lowStr = 7;
     string closeStr = 8;
 
-    // Deprecated
-    float open = 1;
-    float high = 2;
-    float low = 3;
-    float close = 4;
+    reserved "open", "high", "low", "close";
+    reserved 1, 2, 3, 4;
   }
 
   int64 closetime = 1;
-  int32 period = 4;
 
   OHLC ohlc = 2;
 
   string volumeBaseStr = 6;
   string volumeQuoteStr = 7;
 
+  string periodName = 9;
+
   // Deprecated
-  float volumeBase = 3;
-  float volumeQuote = 5;
+  reserved "volumeBase", "volumeQuote";
+  reserved 3, 5;
+
+  int32 period = 4;
 }
 
 // IntervalsUpdate represents a set of new Intervals (OHLC candles)
@@ -203,21 +219,14 @@ message SummaryUpdate {
 
   int32 numTrades = 8;
 
-  // Deprecated
-  float last = 2;
-  float high = 3;
-  float low = 4;
-  float volumeBase = 5;
-  float volumeQuote = 9;
-  float changeAbsolute = 6;
-  float changePercent = 7;
+  reserved "last", "high", "low", "volumeBase", "volumeQuote", "changeAbsolute", "changePercent";
+  reserved 2, 3, 4, 5, 6, 7, 9;
 }
 
 message SparklineUpdate {
-  reserved 1;
   int64 time = 2;
-  float price = 3;
   string priceStr = 4;
+
+  reserved "price";
+  reserved 1, 3;
 }
-
-

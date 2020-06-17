@@ -5,6 +5,7 @@ package ProtobufBroker;
 import "public/client/client.proto";
 import "public/broker/private.proto";
 import "public/stream/stream.proto";
+import "google/protobuf/any.proto";
 
 // DEPRECATION WARNING this isn't used anymore in favor of ProtobufClient.ClientSessionMessage
 message BrokerSessionMessage {
@@ -59,6 +60,10 @@ message ClosePositionRequest {
   string positionId = 2;
 }
 
+message SettlePositionRequest {
+  string positionId = 1;
+}
+
 message SyncRequest {}
 
 // AllBalances grep flag: Ai33fA
@@ -76,6 +81,7 @@ message BrokerRequest {
     SyncRequest syncRequest = 4;
     ClosePositionRequest closePositionRequest = 5;
     // AllBalancesRequest allBalancesRequest = 8; // AllBalances grep flag: Ai33fA
+    SettlePositionRequest settlePositionRequest = 9;
   }
 }
 
@@ -111,6 +117,7 @@ message RequestResolutionUpdate {
   string id = 1;
   int32 error = 2;
   string message = 3;
+  Error errorV2 = 6;
 
   oneof Result {
     PlaceOrderResult placeOrderResult = 4;
@@ -181,4 +188,36 @@ message BrokerUpdateMessage {
     ProtobufStream.SubscriptionResult subscriptionResult = 12;
     ProtobufClient.WebAuthenticationResult webAuthenticationResult = 14;
   }
+}
+
+// Copied from cryptowatch/outer/resource/broker/v1
+message Error {
+  enum Kind {
+    KIND_UNKNOWN = 0;
+    KIND_INTERNAL = 1;
+    KIND_TRANSIENT = 2;
+    KIND_ABORTED = 3;
+    KIND_IO = 4;
+    KIND_PERMISSION_DENIED = 5;
+    KIND_INVALID_OPERATION = 6;
+    KIND_INVALID_ARGUMENT = 7;
+    KIND_INVALID_REQUEST = 8;
+  }
+
+  // Kind is generalized code.
+  Kind kind = 1 [json_name = "kind"];
+  // Code is an identifier that represents error produced by an external service for example by an exchange, unified into the common form.
+  // It has simple uint64 representation so that there is no need to rebuild frontend/update client library every time an exchange introduce a new error.
+  // The set of values is changing constantly and are out of control of Cryptowatch.
+  // For in-depth information about the original error that exchange sent, inspect details for OriginalErrorDetails.
+  uint64 code = 2 [json_name = "code"];
+  // Message is a developer-facing human-readable error message in English. It should
+  // both explain the error and offer an actionable resolution to it.
+  string message = 4 [json_name = "message"];
+  // Details are an additional error information that the client code can use to handle the error.
+  // It may contains information about particular fields that were filled in the wrong way,
+  // how much request quota is left or what was the exact response from the exchange.
+  //
+  // LINK: https://godoc.org/google.golang.org/genproto/googleapis/rpc/errdetails
+  repeated google.protobuf.Any details = 5 [json_name = "details"];
 }

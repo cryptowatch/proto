@@ -117,9 +117,14 @@ message ClientSessionMessage {
     int64 expiration = 3;
   }
 
+  message AnonymousUserSession {
+    string token = 1; // expected to be a user.AnonToken
+  }
+
   oneof SessionConfig {
     Session session = 1;
     AnonymousTradingSession anonymousTradingSession = 2;
+    AnonymousUserSession anonymousUserSession = 4;
   }
 
   ClientIdentificationMessage identification = 3;
