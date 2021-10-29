@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package MarketData;
+
+message Asset {
+    uint64 id = 1;
+
+    string symbol = 2;
+    string name = 3;
+
+    message Tag {
+        uint64 id = 1;
+        string name = 2;
+    }
+
+    repeated Tag tags = 4;
+}
+
+message Instrument {
+    uint64 id = 1;
+
+    string kind = 2;
+    string contract_schema = 3;
+
+    Asset base = 4;
+    Asset quote = 5;
+}
+
+message Origin {
+    uint64 id = 1;
+
+    string symbol = 2;
+    string name = 3;
+
+    bool active = 4;
+}
+
+message Market {
+    uint64 id = 1;
+    uint64 feed_delay_seconds = 2;
+
+    string slug = 3;
+    string title = 4;
+    string external_ticker = 5;
+
+    string amount_increment = 6;
+    string price_increment = 7;
+    string lot_size = 8;
+    string schedule_kind = 9;
+    string expiration = 10;
+
+    bool active = 11;
+
+    Instrument instrument = 12;
+    Origin origin = 13;
+}
+
+message Index {
+    uint64 id = 1;
+    uint64 feed_delay_seconds = 2;
+
+    string slug = 3;
+    string title = 4;
+
+    bool active = 5;
+
+    Origin origin = 6;
+}
+
+message GTSeries {
+    uint64 id = 1;
+    uint64 feed_delay_seconds = 2;
+
+    string slug = 3;
+    string title = 4;
+
+    bool active = 5;
+
+    Origin origin = 6;
+
+    message Category {
+        uint64 id = 1;
+        string name = 2;
+    }
+
+    Category category = 7;
+}

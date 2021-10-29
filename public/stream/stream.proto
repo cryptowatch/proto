@@ -5,8 +5,10 @@ package ProtobufStream;
 import "public/client/client.proto";
 import "public/markets/market.proto";
 import "public/markets/index.proto";
+import "public/markets/gts.proto";
 import "public/markets/pair.proto";
 import "public/markets/asset.proto";
+import "public/marketdata/types.proto";
 
 message StreamMessage {
   oneof body {
@@ -20,7 +22,16 @@ message StreamMessage {
     ProtobufMarkets.IndexUpdateMessage indexUpdate = 8;
     BandwidthUpdate bandwidthUpdate = 9;
     Heartbeat heartbeat = 10;
+    BulkMessage bulkMessage = 11;
+    ProtobufMarkets.GTSeriesUpdateMessage gtsUpdate = 12;
+    ListingsUpdateMessage listingsUpdate = 13;
   }
+}
+
+message BulkMessage {
+  // message is actually an array of StreamMessage
+  // sent by Stream when it is throttling messages.
+  repeated bytes messages = 1;
 }
 
 message AuthenticationResult {
@@ -115,4 +126,10 @@ message BandwidthUpdate {
 // Not used yet
 message Heartbeat {
   int64 time = 1;
+}
+
+message ListingsUpdateMessage {
+  repeated MarketData.Market markets = 1;
+  repeated MarketData.Index indices = 2;
+  repeated MarketData.GTSeries gts = 3;
 }
