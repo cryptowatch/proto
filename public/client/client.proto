@@ -39,7 +39,32 @@ message WebAuthenticationResult {
     UNKNOWN = 0;
     AUTHENTICATED = 1;
     INVALID_SESSION = 2;
+
+    // MFA_REQUIRED is returned when the user that's trying to set up a trading
+    // session does not have MFA configured whatsoever.
     MFA_REQUIRED = 3;
+
+    // MFA_REAUTH_REQUIRED is returned when the user has MFA, but hasn't
+    // reauthenticated for a while. So we require them to identify
+    // themselves again.
+    MFA_REAUTH_REQUIRED = 4;
+  }
+
+  MFARequest mfa_request = 2;
+  message MFARequest {
+    message TOTPRequest {
+      bool enabled = 1;
+    }
+
+    message U2FRequest {
+      bool enabled = 1;
+
+      // This is the JSON encoded challenge as provided by the webauthn package.
+      bytes credential_options = 2;
+    }
+
+    TOTPRequest totp_request = 1;
+    U2FRequest u2f_request = 2;
   }
 }
 
@@ -64,11 +89,13 @@ message StreamSubscription {
 message UserPushSubscription {
   message TriggeredHandlers {}
   message Achievements {}
+  message BalanceUpdate {}
 
   oneof body {
     // receive websocket pushes from trigger
     TriggeredHandlers triggered_handlers = 1;
     Achievements achievements = 2;
+    BalanceUpdate balance_update = 3;
   }
 }
 
@@ -105,10 +132,11 @@ message APIAuthenticationMessage {
 
 message ClientSessionMessage {
   message Session {
-    string userId = 1;
-    int64 expires = 2;
-    string token = 3;
-    string mfaToken = 4;
+
+    reserved 1, 2, 3, 4, 5, 7;
+    reserved "userId", "expires", "token", "mfaToken", "external_id", "refresh_token";
+
+    string access_token = 6;
   }
 
   message AnonymousTradingSession {

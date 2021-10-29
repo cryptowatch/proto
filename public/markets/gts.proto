@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ProtobufMarkets;
+
+import "public/markets/market.proto";
+
+// GTSeries represents generic time series.
+message GTSeries {
+    uint64 id = 1;
+    string symbol = 2;
+}
+
+message GTSeriesUpdateMessage {
+    GTSeries GTSeries = 1;
+
+    oneof Update {
+      IntervalsUpdate intervalsUpdate = 2;
+    }
+}

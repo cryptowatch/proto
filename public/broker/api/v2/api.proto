@@ -1,0 +1,900 @@
+syntax = "proto3";
+
+package cryptowatch.broker.api.v2;
+
+option go_package = "apiv2";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service TradingService {
+  rpc GetExchangeInformation(GetExchangeInformationRequest) returns (GetExchangeInformationResponse) {
+    option (google.api.http) = {
+      get: "/v2/exchange_info"
+    };
+  }
+
+  rpc GetMarketInformation(GetMarketInformationRequest) returns (GetMarketInformationResponse) {
+    option (google.api.http) = {
+      get: "/v2/market_info/{market_id}"
+    };
+  }
+
+  rpc GetAllMarketsInformation(GetAllMarketsInformationRequest) returns (GetAllMarketsInformationResponse) {
+    option (google.api.http) = {
+      get: "/v2/market_info"
+    };
+  }
+
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {
+    option (google.api.http) = {
+      post: "/v2/orders/create"
+      body: "*"
+    };
+  }
+
+  rpc CreateOrders(CreateOrdersRequest) returns (CreateOrdersResponse) {
+    option (google.api.http) = {
+      post: "/v2/orders/createmulti"
+      body: "*"
+    };
+  }
+
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse) {
+    option (google.api.http) = {
+      delete: "/v2/orders/cancel/{order_id}"
+    };
+  }
+
+  rpc CancelAllOrders(CancelAllOrdersRequest) returns (CancelAllOrdersResponse) {
+    option (google.api.http) = {
+      post: "/v2/orders/cancelall"
+      body: "*"
+    };
+  }
+
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse) {
+    option (google.api.http) = {
+      get: "/v2/orders/id/{order_id}"
+    };
+  }
+
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {
+    option (google.api.http) = {
+      get: "/v2/orders"
+    };
+  }
+
+  rpc ListTrades(ListTradesRequest) returns (ListTradesResponse) {
+    option (google.api.http) = {
+      get: "/v2/trades"
+    };
+  }
+
+  rpc ListPositions(ListPositionsRequest) returns (ListPositionsResponse) {
+    option (google.api.http) = {
+      get: "/v2/positions"
+    };
+  }
+
+  rpc ListExchangeWallets(ListExchangeWalletsRequest)
+      returns (ListExchangeWalletsResponse) {
+    option (google.api.http) = {
+      get: "/v2/wallets"
+    };
+  }
+
+  rpc ClosePosition(ClosePositionRequest) returns (ClosePositionResponse) {
+    option (google.api.http) = {
+      delete: "/v2/positions/{position_id}"
+    };
+  }
+}
+
+message TradingWebsocketRequest {
+  // Client specified opaque string that we echo back on the response. This is so that
+  // the client can match responses to requests when making multiple in parallel.
+  string request_id = 1;
+
+  oneof Request {
+    GetExchangeInformationRequest get_exchange_information_request = 2;
+    GetMarketInformationRequest get_market_information_request = 3;
+    GetAllMarketsInformationRequest get_all_markets_information_request = 4;
+    CreateOrderRequest create_order_request = 5;
+    CreateOrdersRequest create_orders_request = 6;
+    CancelOrderRequest cancel_order_request = 7;
+    CancelAllOrdersRequest cancel_all_orders_request = 8;
+    GetOrderRequest get_order_request = 9;
+    ListOrdersRequest list_orders_request = 10;
+    ListTradesRequest list_trades_request = 11;
+    ListPositionsRequest list_positions_request = 12;
+    ListExchangeWalletsRequest list_exchange_wallets_request = 13;
+    ClosePositionRequest close_position_request = 14;
+    SubscribeToExchangesRequest subscribe_to_exchanges_request = 15;
+    AddExchangeAPIKeyRequest add_exchange_api_key_request = 16;
+    RevokeExchangeAPIKeyRequest revoke_exchange_api_key_request = 17;
+    RevokeAllExchangeAPIKeysRequest revoke_all_exchange_api_keys_request = 18;
+    ListExchangeAPIKeysRequest list_exchange_api_keys_request = 19;
+  }
+}
+
+message TradingWebsocketResponse {
+  string request_id = 1;
+
+  oneof Response {
+    GetExchangeInformationResponse get_exchange_information_response = 2;
+    GetMarketInformationResponse get_market_information_response = 3;
+    GetAllMarketsInformationResponse get_all_markets_information_response = 4;
+    CreateOrderResponse create_order_response = 5;
+    CreateOrdersResponse create_orders_response = 6;
+    CancelOrderResponse cancel_order_response = 7;
+    CancelAllOrdersResponse cancel_all_orders_response = 8;
+    GetOrderResponse get_order_response = 9;
+    ListOrdersResponse list_orders_response = 10;
+    ListTradesResponse list_trades_response = 11;
+    ListPositionsResponse list_positions_response = 12;
+    ListExchangeWalletsResponse list_exchange_wallets_response = 13;
+    ClosePositionResponse close_position_response = 14;
+    SubscribeToExchangesResponse subscribe_to_exchanges_response = 15;
+    AddExchangeAPIKeyResponse add_exchange_api_key_response = 16;
+    RevokeExchangeAPIKeyResponse revoke_exchange_api_key_response = 17;
+    RevokeAllExchangeAPIKeysResponse revoke_all_exchange_api_keys_response = 18;
+    ListExchangeAPIKeysResponse list_exchange_api_keys_response = 19;
+    ErrorResponse error_response = 20;
+  }
+}
+
+message CreateOrderRequest {
+  // Could be either 'Buy' or 'Sell'.
+  Side side = 1;
+
+  // Could be any of the values defined in the 'OrderType' enum.
+  // It defines how we should place this order and usually which
+  // parameters we are going to use (if a stop loss, we'll use the
+  // stop price, etc.). Default value is MARKET.
+  OrderType type = 2;
+
+  // The ID of the desired market to place an order upon (could be
+  // found with the REST API under https://api.cryptowat.ch/markets)
+  int32 market_id = 3;
+
+  // [optional] Leverage value for a margin order (default: 0 / no
+  // leverage).
+  string leverage = 4;
+
+  // Amount of base asset to buy or sell.
+  string amount = 5;
+
+  // Quote asset price to buy or sell the base asset. Used for Limit orders.
+  string price = 6;
+
+  // The stop price for a Stop Market or Stop Limit order.
+  string stop_price = 7;
+
+  // The triggered limit price for a Stop Limit order.
+  string stop_limit_price = 8;
+
+  // The trigger price for a Market If Touched order.
+  string trigger_price = 9;
+
+  // The triggered limit price for a Limit If Touched order.
+  string execution_price = 10;
+
+  // The trailing offset price for a Trailing Stop Market order.
+  TrailingOffsetPrice trailing_stop_market_offset = 11;
+
+  // The limit price offset for a Trailing Stop Limit order.
+  TrailingOffsetPrice trailing_stop_limit_offset = 12;
+
+  // [optional] Timestamp defining when the order should be placed.
+  google.protobuf.Timestamp start_time = 13;
+
+  // [optional] Timestamp for the time the order should be canceled.
+  google.protobuf.Timestamp expire_time = 14;
+
+  // [optional] Defines if the order should de deleted if it won't
+  // appear on the orderbook and fill immediately (default: false).
+  bool post_only = 15;
+
+  // [optional] Defines if the order should be immediate or cancel
+  // (default: false)
+  bool immediate_or_cancel = 16;
+
+  // [optional] Defines if the order should be a fill or kill order
+  // (default: false)
+  bool fill_or_kill = 17;
+
+  // [optional] Determines if the order should be hidden from the
+  // orderbook or not (default: false).
+  bool hidden = 18;
+
+  // [optional] Currency to use in order to pay for the trading fees.
+  // (default: base currency)
+  FeeCurrency fee_currency = 19;
+
+  // [optional] If the order fills in its entirety, place the following
+  // closing order.
+  CreateOrderRequest closing_order = 20;
+}
+
+message CreateOrderResponse {
+  repeated Order order = 1;
+}
+
+message GetExchangeInformationRequest {}
+
+message GetExchangeInformationResponse {
+  map<int32, ExchangeInformation> exchange_info = 1;
+}
+
+message ExchangeInformation {
+  // Unique ID for the exchange.
+  int32 exchange_id = 1;
+
+  // Name of the exchange.
+  string exchange_name = 2;
+
+  // The fields required in order to enter a new API key successfully.
+  // For example:
+  //   - Kraken requires:         [key, secret]
+  //   - Coinbase Pro requires:   [key, secret, passphrase]
+  //   - etc.
+  repeated string fields = 3;
+}
+
+message GetMarketInformationRequest {
+  int32 market_id = 1;
+}
+
+message GetMarketInformationResponse {
+  MarketInformation market_info= 1;
+}
+
+message GetAllMarketsInformationRequest {
+  int32 exchange_id = 1;
+}
+
+message GetAllMarketsInformationResponse {
+  repeated MarketInformation markets_info= 1;
+}
+
+message MarketInformation {
+  int32 market_id = 1;
+
+  // ID of the exchange this market belongs to.
+  int32 exchange_id = 2;
+
+  // Symbol is a unique upper-case string identifier for the underlying instrument.
+  string symbol = 3;
+
+  // Specifies precision info for order size & order price.
+  TickSizes tick_sizes = 4;
+
+  // Differentiates between regular pair markets and futures markets.
+  MarketType market_type = 5;
+
+  // Specifies the futures contract schema. Only applies to futures markets.
+  ContractSchema contract_schema = 6;
+
+  // Determines if the exchange supports margin and leverage options.
+  bool supports_margin = 7;
+
+  // List of supported margin actions available atomically for this market.
+  repeated MarginAction margin_actions = 8;
+
+  // Specifies the set of allowed leverage levels. Only applies if the market supports margin trading.
+  LeverageLevels leverage_levels = 9;
+
+  // Lot size is the size of a traded unit on a market. When a trade is done
+  // on an exchange, a lot is either bought or sold. The lot size is how many
+  // units of an instrument composes a lot.
+  string lot_size = 10;
+
+  // Order types that this specific market supports.
+  repeated OrderType order_types = 11;
+
+  // Determines if this market supports post-only option to limit orders.
+  bool supports_post_only = 12;
+
+  // Determines if this market supports fee currency on order creation.
+  bool supports_fee_currency = 13;
+
+  // Determines if this market supports conditional closing orders.
+  bool supports_conditional_close = 14;
+
+  // Time in force options supported by this market.
+  repeated TimeInForce time_in_force = 15;
+
+  // Determines if this market supports hidden option to limit orders.
+  bool supports_hidden = 16;
+
+  // Determines if this market supports reduce-only option to margin orders.
+  bool supports_reduce_only = 17;
+
+  // Determines if this market supports iceberg option to limit orders.
+  bool supports_iceberg = 18;
+}
+
+enum MarginAction {
+  POSITION_CLOSE = 0;
+  POSITION_SETTLE = 1;
+}
+
+message LeverageLevels {
+  message LeverageList {
+    // Used for fixed set of leverage values, e.g: [1,10,20,30,40,50]
+    repeated string list = 1;
+  }
+
+  message LeverageBound {
+    // Used for arbitrary values (up to `precision` decimals) within `minLeverage`/`maxLeverage` range
+    string min_leverage = 1;
+    string max_leverage = 2;
+
+    // The maximum precision that could be used for arbitrary values within the leverage bounds
+    string precision = 3;
+  }
+
+  oneof levels {
+    LeverageList leverage_list = 1;
+    LeverageBound leverage_bound = 2;
+  }
+}
+
+enum MarketType {
+  UNKNOWN_MARKET_TYPE = 0;  // market type isn't known
+  PAIR = 1;  // regular pair market
+  FUTURES = 2;  // futures market
+}
+
+enum ContractSchema {
+  UNKNOWN_CONTRACT_SCHEMA = 0;  // contract schema isn't known
+  VANILLA = 1; 	// contract that is settled in its quote asset.
+  INVERSE = 2;  // contract that is settled in its base asset.
+  QUANTO = 3;  // contract that is settled in an asset that is neither its base or quote.
+}
+
+message TickSizes {
+  // The min, max, and tick_size specify the set of valid inputs for each of the
+  // base and quote (aka order size and order price) when creating an order.
+  // min specifies the minimum value, max specifies the max value, and tick_size
+  // specifies the size of the increment.
+  //
+  // As an example, if a market specifies a base_min of 10, a base_max of 12,
+  // and a base_tick_size of 0.5, then only the values [10, 10.5, 11, 11.5, 12]
+  // may be used to specify the order amount.
+
+  string base_min = 1;
+  string base_max = 2;
+  string base_tick_size = 3;
+
+  string quote_min = 4;
+  string quote_max = 5;
+  string quote_tick_size = 6;
+}
+
+message CreateOrdersRequest {
+  repeated CreateOrderRequest orders = 1;
+}
+
+message CreateOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message CancelOrderRequest {
+  string order_id = 1;
+}
+
+message CancelOrderResponse {}
+
+message CancelAllOrdersRequest {
+  // [optional] If specified, deletes all orders for this exchange only.
+  int32 exchange_id = 1;
+
+  // [optional] If specified, deletes all orders belonging to this market only.
+  int32 market_id = 2;
+}
+
+message CancelAllOrdersResponse {}
+
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message GetOrderResponse {
+  Order order = 1;
+}
+
+message ListOrdersRequest {
+  // Limits the number of orders shown, if unset, the default is set to 200.
+  int32 limit = 1;
+
+  // If specified, only retrieves orders for this exchange.
+  int32 exchange_id = 2;
+
+  // If specified, only retrieves orders for this market.
+  int32 market_id = 3;
+
+  // If specified, only lists orders belonging to a given order group, if it
+  // exists.
+  string group_id = 4;
+
+  // If specified, only retrieve orders that were opened after (strictly >)
+  // to this Timestamp.
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message ListTradesRequest {
+  // Limits the number of trades shown, if unset, the default is set to 200.
+  int32 limit = 1;
+
+  // If specified, only retrieves trades for this exchange.
+  int32 exchange_id = 2;
+
+  // If specified, only retrieves trades for this market.
+  int32 market_id = 3;
+
+  // If specified, only retrieve trades that were executed after (strictly >)
+  // to this Timestamp.
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message ListTradesResponse {
+  repeated Trade trades = 1;
+}
+
+message ListPositionsRequest {
+  // Limits the number of positions shown, if unset, the default is set to 200.
+  int32 limit = 1;
+
+  // If specified, only retrieves positions for this exchange.
+  int32 exchange_id = 2;
+
+  // If specified, only retrieves positions for this market.
+  int32 market_id = 3;
+
+  // If specified, only retrieve positions that were opened after (strictly >)
+  // to this Timestamp.
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message ListPositionsResponse {
+  repeated Position positions = 1;
+}
+
+message ClosePositionRequest {
+  string position_id = 1;
+}
+
+message ClosePositionResponse {
+  // The orders created as a result of closing the position.
+  // Not guaranteed to be filled, some exchanges do not include
+  // this in the response.
+  repeated Order orders = 1;
+}
+
+message ListExchangeWalletsRequest {
+  // If specified, only returns the wallets and balances for that exchange.
+  int32 exchange_id = 1;
+}
+
+message ListExchangeWalletsResponse {
+  // A map of exchange IDs associated with their complete wallet set and
+  // balances information.
+  map<int32, Wallets> exchange_wallets = 1;
+}
+
+message Wallets {
+  // A map of arbitrary wallet strings (ie. Spot, Margin, etc.) linked to
+  // their list of account balances per assets.
+  map<string, Balances> balances = 1;
+}
+
+message Balances {
+  // The list of asset balances for a given wallet. The key of the map
+  // is the asset ID, the value being the Balances for that asset.
+  map<int32, Balance> balances = 1;
+}
+
+// Balance represents the total and available amount of asset for a given
+// exchange, asset and wallet type.
+message Balance {
+  // The total balance owned for that asset.
+  string total = 1;
+
+  // The available balance for this asset to use for trading.
+  string available = 2;
+}
+
+message Exchange {
+  // The ID of the exchange the order was placed on. Could be found
+  // with the REST API under https://api.cryptowat.ch/exchanges.
+  int32 exchange_id = 1;
+
+  // Name of the exchange the order was placed on.
+  string exchange_name = 2;
+}
+
+message Market {
+  // The ID of the market the trade executed on (could be found
+  // with the REST API under https://api.cryptowat.ch/markets)
+  int32 market_id = 1;
+
+  // The symbol for that market, ie. btcusd, etheur, ltcusd, etc.
+  string market_symbol = 2;
+
+  // The base asset for this market.
+  Asset base = 3;
+
+  // The quote asset for this market.
+  Asset quote = 4;
+}
+
+// Represents an asset, for example BTC or ETH.
+message Asset {
+  // The ID of the asset. (mapping could be found with the REST API under
+  // https://api.cryptowat.ch/assets)
+  int32 asset_id = 1;
+
+  // The symbol of the asset: ie. btc, eth, usd, etc.
+  string asset_symbol = 2;
+
+  // The asset name, for example: bitcoin, ethereum, euro, dollar, etc.
+  string asset_name = 3;
+}
+
+enum FeeCurrency {
+  NONE = 0;
+  BASE = 1;
+  QUOTE = 2;
+}
+
+enum Side {
+  SELL = 0;
+  BUY = 1;
+}
+
+enum TimeInForce {
+  GOOD_TIL_CANCELED = 0;    // order must be either filled or manually cancelled
+  IMMEDIATE_OR_CANCEL = 1;  // order is partially filled as much as possible immediately, all remaining is cancelled
+  FILL_OR_KILL = 2;         // entire order must fill entirely immediately or it's cancelled
+  GOOD_TILL_DATE = 3;       // order is good until a specified datetime
+  PLACE_AT = 4;             // order is good after a specified datetime
+}
+
+enum OrderType {
+  MARKET = 0;
+  LIMIT = 1;
+  STOP_MARKET = 2;
+  STOP_LIMIT = 3;
+  MARKET_IF_TOUCHED = 4;  // previously take_profit
+  LIMIT_IF_TOUCHED = 5;   // previously take_profit_limit
+  TRAILING_STOP_MARKET = 6;
+  TRAILING_STOP_LIMIT = 7;
+  SETTLE_POSITION = 8;
+  ONE_CANCELS_OTHER = 9;
+}
+
+enum Status {
+  UNKNOWN_STATUS = 0;   // Unknown status.
+  NEW = 1;              // The order has been accepted by the exchange engine.
+  OPEN = 2;             // The order has been accepted by the engine and posted to the orderbook.
+  CANCELED = 3;         // The order was canceled by the user.
+  FILLED = 4;           // The order has been completed and filled entirely.
+  PARTIALLY_FILLED = 5; // The order has been partially filled.
+  EXPIRED = 6;          // The order has expired (if it was set with an expiry date).
+  REJECTED = 7;         // The order was not accepted by the engine and got rejected.
+}
+
+enum TrailingOffsetType {
+  ABSOLUTE = 0;
+  RELATIVE = 1;
+  RELATIVE_PERCENT = 2;
+}
+
+// TrailingOffsetPrice defines price offset to be used for Trailing Stop Limit and Trailing
+// Stop Market orders.
+message TrailingOffsetPrice {
+  TrailingOffsetType type = 1;
+  string value = 2;
+}
+
+// Order defines the information for an order after it has been placed on the
+// exchange side. It is generally returned when we list open orders on an
+// exchange or after we place the order using the 'CreateOrder' endpoint.
+message Order {
+  // Cryptowatch identifier for the order, uniqueness is guaranteed by cryptowatch.
+  // This ID could be used to interact with the orders through the API.
+  string id = 1;
+
+  // Exchange identifier for the order, uniqueness is ensured by the exchange itself.
+  // This ID could be used to interact with the orders through the API.
+  string external_id = 2;
+
+  // Group Identifier for the order. Appears if the order is part of an OCO.
+  string group_id = 3;
+
+  // The exchange this order was placed on.
+  Exchange exchange = 4;
+
+  // Creation timestamp of the order.
+  google.protobuf.Timestamp creation_time = 5;
+
+  // Could be either 'Buy' or 'Sell'.
+  Side side = 6;
+
+  // Could be any of the values defined in the 'OrderType' enum.
+  // It defines how we this order was placed and usually which
+  // parameters were used (if a stop loss, we'll see the stop
+  // price information filled, etc.).
+  OrderType type = 7;
+
+  // Denotes the market this order has been opened on.
+  Market market = 8;
+
+  // The abstracted status of the order, reduced to the minimum subset
+  // supported by most exchanges.
+  Status status = 9;
+
+  // The status of the order as returned by the exchange.
+  string status_string = 10;
+
+  // Leverage value for a margin order.
+  string leverage = 11;
+
+  // Amount of base asset to buy or sell.
+  string amount = 12;
+
+  // Amount filled for the order, appears if the order is partially filled.
+  string amount_filled = 13;
+
+  // If this is a trailing stop, defines the current stop price.
+  string current_stop = 14;
+
+  // Initial stop price as defined when the order was placed.
+  string initial_stop = 15;
+
+  // Quote asset price to buy or sell the base asset.
+  string price = 16;
+
+  // The stop price for a Stop Market or Stop Limit order.
+  string stop_price = 17;
+
+  // The limit price for a Stop Limit order.
+  string stop_limit_price = 18;
+
+  // The trigger price for a Market If Touched order.
+  string trigger_price = 19;
+
+  // The triggered limit price for a Limit If Touched order.
+  string execution_price = 20;
+
+  // The trailing offset price for a Trailing Stop Market order.
+  TrailingOffsetPrice trailing_stop_market_offset = 21;
+
+  // The limit price offset for a Trailing Stop Limit order.
+  TrailingOffsetPrice trailing_stop_limit_offset = 22;
+
+  // The stop price for an OCO order.
+  string oco_stop_price = 23;
+
+  // Timestamp defining when the order should be placed.
+  google.protobuf.Timestamp start_time = 24;
+
+  // Timestamp for the time the order should be canceled.
+  google.protobuf.Timestamp expire_time = 25;
+
+  // Defines if the order should de deleted if it won't appear
+  // in the orderbook and fill immediately (default: false)
+  bool post_only = 26;
+
+  // Defines if the order should be immediate or cancel (default: false)
+  bool immediate_or_cancel = 27;
+
+  // Defines if the order should be a fill or kill order (default: false)
+  bool fill_or_kill = 28;
+
+  // Determines if the order should be hidden from the orderbook or not.
+  // (default: false)
+  bool hidden = 29;
+
+  // The currency used to pay for the fees (could be base or quote).
+  FeeCurrency fee_currency = 30;
+
+  // Contains the details for the closing order if the parent order fills fully.
+  Order closing_order = 31;
+}
+
+// Trade denotes the information after an order has been filled and becomes a
+// trade.
+message Trade {
+  // Cryptowatch identifier for the trade, uniqueness is guaranteed by cryptowatch.
+  // This ID could be used to interact with the trades through the API.
+  string id = 1;
+
+  // The ID of the trade, coming from the exchange itself or assigned by Cryptowatch.
+  string external_id = 2;
+
+  // The ID of the order, coming from the exchange itself or assigned by Cryptowatch.
+  string order_external_id = 3;
+
+  // The exchange this trade was executed on.
+  Exchange exchange = 4;
+
+  // The market for which this trade was executed.
+  Market market = 5;
+
+  // The time at which the trade was executed, in millisecond precision.
+  google.protobuf.Timestamp execution_time = 6;
+
+  // Quote asset price that was used to buy or sell the base asset.
+  string price = 7;
+
+  // Amount of base asset that was bought/sold.
+  string amount = 8;
+
+  // Could be either 'Buy' or 'Sell'.
+  Side side = 9;
+
+  // The fee paid for this trade.
+  string fee = 10;
+
+  // The currency used to pay for the fees (could be base or quote).
+  FeeCurrency fee_currency = 11;
+}
+
+message Position {
+  // Cryptowatch identifier for the position, uniqueness is guaranteed by cryptowatch.
+  // This ID could be used to interact with positions through the API.
+  string id = 1;
+
+  // The ID of the position coming from the exchange.
+  string external_id = 2;
+
+  // The exchange for which this position is opened on.
+  Exchange exchange = 3;
+
+  // The market for which this position is valid and open.
+  Market market = 4;
+
+  // The time at which the given position was created.
+  google.protobuf.Timestamp creation_time = 5;
+
+  // Could be either 'Buy' or 'Sell'.
+  Side side = 6;
+
+  // The average price for the position, made from all the orders
+  // contributing to this position.
+  string average_price = 7;
+
+  // Amount of that position still open after closing part of it with
+  // buy or sell orders.
+  string amount_open = 8;
+
+  // Amount that was closed by selling or buying assets, reducing
+  // the position size.
+  string amount_closed = 9;
+
+  // The current leverage used to open this position. Can be any decimal value
+  // supported by the final exchange. For better compatibility, use the values
+  // returned by the GetExchangeSupportInformation endpoint.
+  string leverage = 10;
+
+  // The profit loss for this position, determining the gain or loss
+  // incurred.
+  string profit_loss = 11;
+
+  // The list of order IDs (if this could be determined), contributing
+  // to this position.
+  repeated string order_ids = 12;
+
+  // The list of trade IDs (if this could be determined), contributing
+  // to this position.
+  repeated string trade_ids = 13;
+
+  // The price at which the position will get liquidated by the exchange.
+  string liquidation_price = 14;
+
+  // The fee paid to lend assets from other traders or the exchange itself
+  // when opening a margin position.
+  string lending_fee = 15;
+}
+
+// Some additional websocket-specific messages
+
+// Subscribe to receive all balance/order/trade/position changes on the given exchange.
+message SubscribeToExchangesRequest {
+  repeated int32 exchange_ids = 1;
+}
+
+message SubscribeToExchangesResponse {
+  repeated int32 exchange_ids = 1;
+}
+
+message ErrorResponse {
+  int32 code = 1;
+  string message = 2;
+}
+
+message AddExchangeAPIKeyRequest {
+  // The ID of the exchange we want to add an API key pair for.
+  int32 exchange_id = 1;
+
+  // The account name for this API key pair, which will be used in order
+  // to remove the pair if needs be. If not provided, it will be assigned
+  // the 'default' value.
+  string account_name = 2;
+
+  // The exchange key to register.
+  string key = 3;
+
+  // The secret associated with the key.
+  string secret = 4;
+
+  // meta_fields is a flexible list of parameters to pass on when registering
+  // an API key. For example with Coinbase, a passphrase is necessary in order
+  // to be able to use the API. For Bitstamp you want to add a `customer_id`.
+  // A full list of fields to pass on could be found with the GetExchangeInformation
+  // call which lists all the required fields for exchanges.
+  map<string, string> meta_fields = 5;
+}
+
+message AddExchangeAPIKeyResponse {
+  // The account name of the api key that was added.
+  string account_name = 1;
+
+  // The first 4 characters of the key that was just added.
+  string shortened_key = 2;
+}
+
+message RevokeExchangeAPIKeyRequest {
+  // The ID of the exchange we want to revoke an API key for.
+  int32 exchange_id = 1;
+
+  // The account name for the API key to revoke.
+  string account_name = 2;
+}
+
+message RevokeExchangeAPIKeyResponse {}
+
+message RevokeAllExchangeAPIKeysRequest {}
+
+message RevokeAllExchangeAPIKeysResponse {}
+
+message ListExchangeAPIKeysRequest {}
+
+message ListExchangeAPIKeysResponse {
+  // api_keys is a map of all exchanges registered for a user with their
+  // associated api key pairs/account names.
+  map<int32, ExchangeAPIKeysInformation> api_keys = 1;
+}
+
+message ExchangeAPIKeysInformation {
+  // The list of api keys for a given exchange.
+  repeated ExchangeAPIKey api_keys = 1;
+}
+
+message ExchangeAPIKey {
+  // The account name for this exchange key pair.
+  string account_name = 1;
+
+  // The shortened version of the key to identify it, it is shortened
+  // because this is a sensitive information.
+  string shortened_key = 2;
+
+  // The status of the API key, whether it is valid or not. See the
+  // `APIKeyStatus` enumeration for more information about the statuses.
+  APIKeyStatus status = 3;
+}
+
+enum APIKeyStatus {
+  OK = 0;             // The key is valid and we can contact the exchange successfully.
+  INVALID_KEY = 1;    // The key pair is invalid, we cannot communicate with the exchange.
+  UNPRIVILEGED = 2;   // The key pair is valid but has insufficient privileges set from the exchange website.
+  NOT_EXCLUSIVE = 3;  // The key pair is potentially used elsewhere because we're getting an elevated amount
+                      // of nonce errors.
+}

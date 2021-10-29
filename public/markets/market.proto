@@ -41,6 +41,7 @@ message Trade {
 
   string priceStr = 8;
   string amountStr = 9;
+  string amountQuoteStr = 14;
 
   enum OrderSide {
     UNKNOWN = 0;
@@ -184,6 +185,7 @@ message Interval {
     reserved 1, 2, 3, 4;
   }
 
+  int64 opentime = 10;
   int64 closetime = 1;
 
   OHLC ohlc = 2;
@@ -192,6 +194,10 @@ message Interval {
   string volumeQuoteStr = 7;
 
   string periodName = 9;
+  string label = 11;
+
+  // openInterest is only present on 1d intervals for some markets.
+  string openInterestStr = 12;
 
   // Deprecated
   reserved "volumeBase", "volumeQuote";
@@ -216,6 +222,7 @@ message SummaryUpdate {
   string volumeQuoteStr = 14;
   string changeAbsoluteStr = 15;
   string changePercentStr = 16;
+  string openInterestStr = 17;
 
   int32 numTrades = 8;
 

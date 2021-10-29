@@ -42,6 +42,17 @@ message PlaceOrderResult {
   string orderId = 1;
 }
 
+message UserSettingsChangeRequest {
+  reserved 1;
+  reserved "userTradingSessionTimeoutDays";
+
+  // The seconds for which the trading session will
+  // stay valid before we ask for MFA verification.
+  int32 userTradingSessionTimeoutSeconds = 2;
+}
+
+message UserSettingsChangeResponse {}
+
 message CancelOrderRequest {
   string orderId = 2;
 }
@@ -82,6 +93,7 @@ message BrokerRequest {
     ClosePositionRequest closePositionRequest = 5;
     // AllBalancesRequest allBalancesRequest = 8; // AllBalances grep flag: Ai33fA
     SettlePositionRequest settlePositionRequest = 9;
+    UserSettingsChangeRequest userSettingsChangeRequest = 10;
   }
 }
 
@@ -105,6 +117,10 @@ message BalancesUpdate {
 
   // This field contains total balances only.
   repeated Balances total = 2;
+}
+
+message LedgersUpdate {
+  repeated PrivateLedger ledgers = 1;
 }
 
 // AllBalances grep flag: Ai33fA
@@ -152,17 +168,50 @@ message PermissionsUpdate {
   repeated Agreement agreements = 4;
 
   message LeverageLevels {
-    repeated string buy = 1;
-    repeated string sell = 2;
+    // Note: Only Kraken seems to use 2 different leverage fields for buy and sell
+    //       But values on both side are always the same.
+    repeated string buy = 1 [deprecated=true];
+    repeated string sell = 2 [deprecated=true];
+
+    enum LeverageType {
+      NONE = 0;
+      FIXED_SET = 1;
+      ARBITRARY_RANGE = 2;
+    }
+
+    // Indicates where leverage info should be read, either:
+    // - `steps` for `FIXED_SET`, or
+    // - `minLeverage`, `maxLeverage` and `precision` for `ARBITRARY_RANGE`.
+    LeverageType type = 3;
+    // Used for fixed set of values, e.g: [1,10,20,30,40,50]
+    repeated string steps = 4;
+    // Used for arbitrary values (up to `precision` decimals) within `minLeverage`/`maxLeverage` range
+    int32 minLeverage = 5;
+    int32 maxLeverage = 6;
+    int32 precision = 7;
+
   }
 
   LeverageLevels leverageLevels = 6;
 
   bool supportsOrderExpiry = 7;
 
+  float BaseAssetTickerSize = 8 [deprecated=true]; 
+  float QuoteAssetTickerSize = 9 [deprecated=true];
+  string BaseAssetTickerSizeString = 14;
+  string QuoteAssetTickerSizeString = 15;
+
+  string LotSize = 11;
+
+  int32 userTradingSessionTimeoutSeconds = 12;
+  int64 userTradingSessionExpireTime = 13;
+
   // Removed feature
   reserved 5;
   reserved "currencyPairAllowed";
+
+  reserved 10;
+  reserved "tradingSessionTimeoutDays";
 }
 
 message APIAccessorStatusUpdate {
@@ -178,6 +227,7 @@ message BrokerUpdateMessage {
     TradesUpdate tradesUpdate = 2;
     BalancesUpdate balancesUpdate = 3;
     PositionsUpdate positionsUpdate = 8;
+    LedgersUpdate ledgersUpdate = 15;
     RequestResolutionUpdate requestResolutionUpdate = 4;
     AnonymousSessionStatusUpdate anonymousSessionStatusUpdate = 5;
     PermissionsUpdate permissionsUpdate = 6;
