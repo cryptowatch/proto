@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package ProtobufMarkets;
+
+message NFTCollectionStatsUpdateMessage {
+  uint64 id = 1;
+  NFTCollectionVolume ethVolumeUpdate = 2;
+}
+
+message NFTCollectionVolume {
+  string volume24hStr = 1;
+  string volume7dStr = 2;
+  string volume30dStr = 3;
+  string volumeTotalStr = 4;
+}

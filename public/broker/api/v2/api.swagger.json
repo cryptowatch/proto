@@ -1,0 +1,2660 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "public/broker/api/v2/api.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v2/available_filters": {
+      "get": {
+        "summary": "ListAvailableFilters allows user to get their current available filters based on their orders/trades/positions. The filters \nare user specific since the data returned is based on the user's data. \nFor example, if user has only Ethereum and Bictoin orders, they should only get the set of (ETH, BTC) for orders filters.",
+        "operationId": "TradingService_ListAvailableFilters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListAvailableFiltersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/exchange_accounts": {
+      "get": {
+        "summary": "ListExchangeAccounts allows the user to list their registered exchange accounts\nwith cryptowatch. If the user does not have an account registered with cryptowatch \nfor an exchange, the map will be empty for that exchange. If a user has at least 1 account, \nit is guaranteed that one account is marked as the default account for that exchange.",
+        "operationId": "TradingService_ListExchangeAccounts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListExchangeAccountsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/exchange_info": {
+      "get": {
+        "summary": "GetExchangeInformation returns all exchange information for each exchange.\nexample use cases:\n - Determine what fields are needed to authenticate with the exchange.\n - Find the exchanges the user is registred with.\n - List the exchanges available with their ids for the user to use in the API.",
+        "operationId": "TradingService_GetExchangeInformation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetExchangeInformationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "only_registered_exchanges",
+            "description": "if true, will only respond with information about exchanges the user is registered with.\n(exchanges that the user has keys setup for in Cryptowatch).",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/fee_schedule": {
+      "get": {
+        "summary": "GetFeeSchedule allows a user to get their fee schedule for a market. The market's exchange \nmust be registered with cryptowatch with valid keys to be able to fetch the fee \nschedule for that market. Also, fee schedules are synced with the exchange when a user\nrequests their fee schedule, or if a user has an active session. The sync process only\noccur every 24 hours, if the user requests their fee schedule and it has been synced\nwithin the past 24 hours of the request, the user will get what cryptowatch \nhas for the fees schedule at that time; else, cryptowatch requests to sync the user\nfee schedule for that market and then return the new data.",
+        "operationId": "TradingService_GetFeeSchedule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetFeeScheduleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "market_id",
+            "description": "The market id to get the fee schedule for.\nA cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/market_info": {
+      "get": {
+        "summary": "GetAllMarketsInformation allows user to get all trading information for all markets supported on an exchange.\nexample use cases:\n - find supported markets for an exchange\n - trading info for all markets on an exchange",
+        "operationId": "TradingService_GetAllMarketsInformation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetAllMarketsInformationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "exchange_id",
+            "description": "The exchange to get all of its markets information.\nExchange Ids can be found with the REST API under https://api.cryptowat.ch/exchanges.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/market_info/{market_id}": {
+      "get": {
+        "summary": "GetMarketInformation allows user to get all trading information for a specific market. Two Assets \ntrade on a given market; a market belongs to an exchange. \n Example of an asset (Bitcoin).\n Example of a market (Bitcoin/Ethereum on kraken exchange).\nexample use cases:\n - determine trading ticks for a market\n - determine if a market supports margin",
+        "operationId": "TradingService_GetMarketInformation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetMarketInformationResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "market_id",
+            "description": "the market id to get the information about. \nA cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets)",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders": {
+      "get": {
+        "summary": "ListOrders allows the user to list their existing orders. The user\nmay choose any of the filters provided in ListOrdersRequest to narrow down the \nlist returned.",
+        "operationId": "TradingService_ListOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListOrdersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "[optional] Limits the number of orders shown, if unset, the default is set to 200.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "exchange_account_id",
+            "description": "[optional] If specified, only retrieve only orders belonging to the exchange account.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] If specified, only retrieves orders for this exchange.\n(Could be found with the REST API under https://api.cryptowat.ch/exchanges).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "market_id",
+            "description": "[optional] If specified, only retrieves orders for this market.\n(could be found with the REST API under https://api.cryptowat.ch/markets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "group_id",
+            "description": "[optional] If specified, only lists orders belonging to a given order group, if it exists.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "start_timestamp",
+            "description": "[optional] If specified, only retrieve orders that were executed after (strictly \u003e).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_timestamp",
+            "description": "[optional] If specified, only retrieve orders that were executed before (strictly \u003c).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "offset",
+            "description": "[optional] Used for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "side.valid",
+            "description": "Valid needs to be set to true otherwise side will be ignored.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "side.side",
+            "description": "Side value.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "SELL",
+              "BUY"
+            ],
+            "default": "SELL"
+          },
+          {
+            "name": "type.valid",
+            "description": "Valid needs to be set to true otherwise type will be ignored.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "type.type",
+            "description": "OrderType value.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "MARKET",
+              "LIMIT",
+              "STOP_MARKET",
+              "STOP_LIMIT",
+              "MARKET_IF_TOUCHED",
+              "LIMIT_IF_TOUCHED",
+              "TRAILING_STOP_MARKET",
+              "TRAILING_STOP_LIMIT",
+              "SETTLE_POSITION",
+              "ONE_CANCELS_OTHER",
+              "ICEBERG",
+              "TRIGGER_ENTRY"
+            ],
+            "default": "MARKET"
+          },
+          {
+            "name": "quote_asset_id",
+            "description": "[optional] The quote asset for this market. (mapping could be found with the REST API under\nhttps://api.cryptowat.ch/assets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "base_asset_id",
+            "description": "[optional] The base asset for this market. (mapping could be found with the REST API under\nhttps://api.cryptowat.ch/assets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "statuses",
+            "description": "[optional] Filter by statuses.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "UNKNOWN_STATUS",
+                "NEW",
+                "OPEN",
+                "CANCELED",
+                "FILLED",
+                "PARTIALLY_FILLED",
+                "EXPIRED",
+                "REJECTED",
+                "PAUSED"
+              ]
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "sorting",
+            "description": "[optional] defaults to DESCENDING\nNOTE: Anything other than DESCENDING is disabled.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "DESCENDING",
+              "ASCENDING"
+            ],
+            "default": "DESCENDING"
+          },
+          {
+            "name": "sort_on",
+            "description": "[optional] defaults to CREATION_TIME\nNOTE: Anything other than CREATION_TIME is disabled.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ORDER_CREATION_TIME",
+              "ORDER_STATUS",
+              "ORDER_AMOUNT",
+              "ORDER_PRICE",
+              "ORDER_TRIGGER_PRICE",
+              "ORDER_MARKET",
+              "ORDER_TYPE",
+              "ORDER_SIDE"
+            ],
+            "default": "ORDER_CREATION_TIME"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/cancel/{order_id}": {
+      "delete": {
+        "summary": "CancelOrder allows a user to cancel an existing open order. \nIf the order requested to be cancelled is one of the synthetic orders supported by cryptowatch,\ncancelling that order will cause cancelling the rest of the orders for that synthetic order.",
+        "operationId": "TradingService_CancelOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2CancelOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "order_id",
+            "description": "order_id is the exchange's identifier for the order to be cancelled",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across\nexchanges, there is a very small change that a user could have two orders with the same order ID, and end up\ncancelling the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within\nan exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchange).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/cancelall": {
+      "post": {
+        "summary": "CancelAllOrders allows a user to batch cancel their open orders. A user\nmay choose to provide the optional filters listed in CancelAllOrdersRequest to narrow\ndown the orders they would like to cancel. Example, cancelling all orders on a specific exchange\ninstead of all their orders on all exchanges.\n \nCancelAllOrders failures are handled the same way CreateOrders failures are handled. If a failure\noccurred in the middle of the process, the remaining orders are not cancelled. However,\nif a failure occurred because an order had been cancelled previously on the exchange, we \nignore that failure and continue the process.",
+        "operationId": "TradingService_CancelAllOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2CancelAllOrdersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2CancelAllOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/create": {
+      "post": {
+        "summary": "CreateOrder allows a user to place an order for a market; Creating an order does not mean a trade will occur,\nan order is simply the user's intent to make the trade. When an order is filled, a formal trade is made. \nSince an order can be partially filled, this can result in multiple formal trades created to fulfill a single order. \nOrder can have many different types: limit, market, etc.\n \nSynthetic order types are order types that cryptowatch manages for the user for order types that\naren't supported natively on the exchange. Example, Iceberg order type may not be available\non a specific exchange but we may still support it and allow the user to create that order \non the exchange that does not support it; Cryptowatch makes this feature possible by handling the logistics of the iceberg order \nto allow the user to place their order on their desired exchange.\nBut it is possible to have a specific order type that is supported by this exchange and can also be synthetically created \nby Cryptowatch. Example, Iceberg order are supported natively by Binance and also by Cryptowach synthetic orders feature.\n \nThe following are the current synthetic order types and the exchanges cryptowatch allows the synthetic order type on:\n__Iceberg__ __Order__ __Type__: [kraken, coinbase, ftx, kucoin, bitfinex, binance, poloniex]",
+        "operationId": "TradingService_CreateOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2CreateOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2CreateOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/createmulti": {
+      "post": {
+        "summary": "CreateOrders allows a user to create a batch of orders. Each order can have different a market on different exchanges\nand each order will be created exactly as does CreateOrder method permits the user.\n \nCreateOrders failures are handled as follow:\nif an order creation failed in the middle of the process, the rest of the orders are aborted and an error\nis returned to the user. Example: the user sent 3 orders to be created and the failure occurred on the second order\ncreation, the third order will not be placed and only the first order is placed successfully.",
+        "operationId": "TradingService_CreateOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2CreateOrdersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2CreateOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/id/{order_id}": {
+      "get": {
+        "summary": "GetOrder allows the user to fetch an existing order's information.",
+        "operationId": "TradingService_GetOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "order_id",
+            "description": "order_id is the exchange's identifier for the order.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across\nexchanges, there is a very small change that a user could have two orders with the same order ID, and end up\nretrieving the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within\nan exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchanges.).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/orders/replace": {
+      "post": {
+        "summary": "ReplaceOrder allows a user to replace an order for a different one. This method can be used in a variety of use cases:\n - replace an entire order to a different order\n - updating some values for an order such as amount, price, etc.\n \nSome exchanges support replacing an order natively but some do not. For the exchanges that do not support\nreplacing an order, we cancel the original order and replace it by creating a new one with\nthe updated values provided in the ReplaceOrderRequest. \nThis method may result in multiple orders being returned since some orders will cause \nmultiple orders to be returned from the exchange. Example: Order type `ONE_CANCELS_OTHER` will\nreturn multiple orders from the exchange.\n  \nThe following exchanges __do not__ support Replaceorder __natively__: \n[kraken, binance, bitmex, bitstamp, bittrex, coinbase, ftx\nhitbtc, huboi, kucoin, okex]\n \nReplaceOrder possible failures:\nfor exchanges that do not support replace order natively, we may cancel the old order and fail\nto create the new one. The user will know if the original order was cancelled part of the response.",
+        "operationId": "TradingService_ReplaceOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ReplaceOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2ReplaceOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/pause_orders": {
+      "post": {
+        "summary": "PauseOrders allows a user to pause their orders. Not providing any argument will cause\nall of the user's __open__ orders to be paused. Using the arguments provided \nhelps narrowing down the orders the user would like to be paused.\n \nPauseOrders failures are handled as CreateOrders failures:\nif pausing an order failed in the middle of the process, the rest of the orders are not paused and an error\nis returned to the user. Example, the user sent 3 orders to be paused and the failure occurred on the second order,\nthe third order will not be paused and only the first order is paused successfully.",
+        "operationId": "TradingService_PauseOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2PauseOrdersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2PauseOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/play_orders": {
+      "post": {
+        "summary": "PlayOrders allows a user to play their paused orders. Not providing any argument will cause\nall of the user's paused orders to be played. Using the arguments provided \nhelps narrowing down the orders the user would like to be played.\n \nPlayOrders failures are handled as CreateOrders failures:\nif playing an order failed in the middle of the process, the rest of the orders are aborted and an error\nis returned to the user. Example, the user sent 3 orders to be played and the failure occurred on the second order,\nthe third order will not be played and only the first order is played successfully.",
+        "operationId": "TradingService_PlayOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2PlayOrdersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2PlayOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/positions": {
+      "get": {
+        "summary": "ListPositions allows the user to list their positions. The user\nmay choose to provide any of the filters provided in ListPositionsRequest to narrow down the \nlist returned. \n \npossible scenario:\n A user may not see the most up-to-date positions that they have with the exchange\n and that is due to possible failures occurring in the process of syncing the user\n positions with the exchange. Failures can be the exchange not returning positions,\n exchange has issues when cryptowatch requests to sync user positions,\n exchange has downtime etc.",
+        "operationId": "TradingService_ListPositions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListPositionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "[optional] Limits the number of positions shown, if unset, the default is set to 200.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "exchange_account_id",
+            "description": "[optional] If specified, only retrieves positions for this exchange account.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] If specified, only retrieves positions for this exchange. \n(Could be found with the REST API under https://api.cryptowat.ch/exchanges).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "market_id",
+            "description": "[optional] If specified, only retrieves positions for this market.\n(could be found with the REST API under https://api.cryptowat.ch/markets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "timestamp",
+            "description": "[optional] If specified, only retrieve positions that were opened after (strictly \u003e)\nto this Timestamp.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "offset",
+            "description": "[optional] Used for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/positions/settle/{position_id}": {
+      "delete": {
+        "summary": "SettlePosition allows a user to settle their open position on an exchange. A valid \nexchange position id must be provided. If an exchange id is provided as well,\nit must be an exchange that supports margin.\nExchanges give traders the option to ‘settle’ the position to reduce their \nliquidation risk by paying back the exchange the amount borrowed to originally open the position. \n \npossible failures:\n A user may get a \"not found\" error for a position that \n exists on the exchange. Since Cryptowatch syncs with the exchange for the user positions\n it is possible for numerous kind of errors to occur during the syncing\n process that would restrict cryptowatch from getting a user's position.\n Failures can be the exchange not returning position,\n exchange has issues when cryptowatch requests to sync user positions,\n exchange has downtime etc.",
+        "operationId": "TradingService_SettlePosition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2SettlePositionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "position_id",
+            "description": "the exchange's identifier for the position to settle",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] The exchange ID that the position is on. Because position IDs are not guaranteed to be unique across\nexchanges, there is a very small change that a user could have two positions with the same position ID, and end up\nclosing the wrong position. Providing the exchange_id removes that possibility, since position IDs are unique\nwithin an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchanges).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/positions/{position_id}": {
+      "delete": {
+        "summary": "ClosePosition allows the user to close an open position on an exchange. \nClosing a position means taking the position back to zero.\n \npossible failures:\n A user may get a \"not found\" error for a position that \n exists on the exchange. Since Cryptowatch syncs with the exchange for the user positions\n it is possible for numerous kind of errors to occur during the syncing\n process that would restrict cryptowatch from getting a user's position.\n Failures can be the exchange not returning position,\n exchange has issues when cryptowatch requests to sync user positions,\n exchange has downtime etc.",
+        "operationId": "TradingService_ClosePosition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ClosePositionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "position_id",
+            "description": "position_id is the exchange's identifier for the position to close.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] The exchange ID that the position is on. Because position IDs are not guaranteed to be unique across\nexchanges, there is a very small change that a user could have two positions with the same position ID, and end up\nclosing the wrong position. Providing the exchange_id removes that possibility, since position IDs are unique\nwithin an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchange).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/server_time": {
+      "get": {
+        "summary": "GetServerTime returns the current server time for the trading server. \nThis can be used to test connectivity to the trading service\nor this can be used as an application level ping\nto keep a websocket connection alive.",
+        "operationId": "TradingService_GetServerTime",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetServerTimeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/trades": {
+      "get": {
+        "summary": "ListTrades allows the user to list all of their trades. The user\nmay choose to provide any of the filters provided in ListTradesRequest to narrow down the \nlist returned. \n \nTemporary workflow:\n Currently, the total value is not the user's total number of trades but rather\n the number of trades returned.\n \npossible scenario:\n A user may not see the most up-to-date trades that they have with the exchange\n and that is due to possible failures occurring in the process of syncing the user\n trades with the exchange. Failures can be the exchange not returning trades,\n exchange has issues when cryptowatch requests to sync user trades,\n exchange has downtime etc.",
+        "operationId": "TradingService_ListTrades",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListTradesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "[optional] Limits the number of trades shown, if unset, the default is set to 200.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "exchange_account_id",
+            "description": "[optional] If sepcified, only retrieves trades for this exchange account.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "exchange_id",
+            "description": "[optional] If specified, only retrieves trades for this exchange.\n(Could be found with the REST API under https://api.cryptowat.ch/exchanges).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "market_id",
+            "description": "[optional] If specified, only retrieves trades for this market.\n(could be found with the REST API under https://api.cryptowat.ch/markets).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "start_timestamp",
+            "description": "[optional] If specified, only retrieve trades that were executed after (strictly \u003e).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "end_timestamp",
+            "description": "[optional] If specified, only retrieve trades that were executed before (strictly \u003c).",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "offset",
+            "description": "[optional] Used for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "side.valid",
+            "description": "Valid needs to be set to true otherwise side will be ignored.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "side.side",
+            "description": "Side value.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "SELL",
+              "BUY"
+            ],
+            "default": "SELL"
+          },
+          {
+            "name": "quote_asset_id",
+            "description": "[optional] The quote asset for this market.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "base_asset_id",
+            "description": "[optional] The base asset for this market.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "consolidate",
+            "description": "[optional] Whether or not to consolidate trades per order.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "sorting",
+            "description": "[optional] defaults to DESCENDING\nNOTE: Anything other than DESCENDING is disabled.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "DESCENDING",
+              "ASCENDING"
+            ],
+            "default": "DESCENDING"
+          },
+          {
+            "name": "sort_on",
+            "description": "[optional] defaults to TRADE_EXECUTION_TIME\nNOTE:  Anything other than TRADE_EXECUTION_TIME is disabled.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TRADE_EXECUTION_TIME",
+              "TRADE_EXTERNAL_ID",
+              "TRADE_ORDER_ID",
+              "TRADE_AMOUNT",
+              "TRADE_PRICE",
+              "TRADE_MARKET",
+              "TRADE_FEE",
+              "TRADE_SIDE"
+            ],
+            "default": "TRADE_EXECUTION_TIME"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/user_settings": {
+      "get": {
+        "summary": "GetUserSettings allows the user to see their set settings on cryptowatch.",
+        "operationId": "TradingService_GetUserSettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2GetUserSettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "TradingService"
+        ]
+      },
+      "post": {
+        "summary": "UpdateUserSettings allows the user to update their cryptowatch settings.\nThis is mainly used to manipulate cryptowatch's trading user interface to the user's preference",
+        "operationId": "TradingService_UpdateUserSettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2UpdateUserSettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v2UpdateUserSettingsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    },
+    "/v2/wallets": {
+      "get": {
+        "summary": "ListExchangeWallets allows user to get their current balances for all of their registered exchanges \nor the balances narrowed to the filters provided in ListExchangeWalletsRequest.\n \npossible scenario:\n A user may not see the most up-to-date balance that they have with the exchange\n and that is due to possible failures occurring in the process of syncing the user\n balances with the exchange. Failures can be the exchange not returning balances,\n exchange has issues when cryptowatch requests to sync user balances,\n exchange has downtime etc.",
+        "operationId": "TradingService_ListExchangeWallets",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v2ListExchangeWalletsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "exchange_id",
+            "description": "[optional] If specified, only returns the wallets and balances for that exchange.\n(Could be found with the REST API under https://api.cryptowat.ch/exchanges).",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "exchange_account_id",
+            "description": "[optional] If specified, only returns the wallets and balances for that exchange account.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TradingService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "LeverageLevelsLeverageBound": {
+      "type": "object",
+      "properties": {
+        "min_leverage": {
+          "type": "string",
+          "title": "Used for arbitrary values (up to `precision` decimals) within `minLeverage`/`maxLeverage` range"
+        },
+        "max_leverage": {
+          "type": "string"
+        },
+        "precision": {
+          "type": "string",
+          "title": "The maximum precision that could be used for arbitrary values within the leverage bounds"
+        }
+      }
+    },
+    "LeverageLevelsLeverageList": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Used for fixed set of leverage values, e.g: [1,10,20,30,40,50]"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v2APIKeyStatus": {
+      "type": "string",
+      "enum": [
+        "OK",
+        "INVALID_KEY",
+        "UNPRIVILEGED",
+        "NOT_EXCLUSIVE"
+      ],
+      "default": "OK"
+    },
+    "v2Asset": {
+      "type": "object",
+      "properties": {
+        "asset_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The ID of the asset. (mapping could be found with the REST API under\nhttps://api.cryptowat.ch/assets)"
+        },
+        "asset_symbol": {
+          "type": "string",
+          "description": "The symbol of the asset: ie. btc, eth, usd, etc."
+        },
+        "asset_name": {
+          "type": "string",
+          "description": "The asset name, for example: bitcoin, ethereum, euro, dollar, etc."
+        }
+      },
+      "description": "Represents an asset, for example BTC or ETH."
+    },
+    "v2Balance": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "string",
+          "description": "The total balance owned for that asset."
+        },
+        "available": {
+          "type": "string",
+          "title": "The available balance for this asset to use for trading. Ensure to checkout \nthe `virtual_available` balance as well"
+        },
+        "asset_name": {
+          "type": "string",
+          "title": "The name of the asset"
+        },
+        "exchange_name": {
+          "type": "string",
+          "title": "The name of the exchange"
+        },
+        "exchange_account_name": {
+          "type": "string",
+          "title": "The name of the exchange account for which this balance belongs to"
+        },
+        "virtual_available": {
+          "type": "string",
+          "description": "virtual_available is the available balance including synthetic orders.\nIf a user has any open synethetic order, this value\nwill denote how much would they have left if the entire\nsynthetic order was filled. \nThis will be useful for the user to know how much \nto keep in their account so their synthetic orders can \ncompletely be placed."
+        },
+        "asset_symbol": {
+          "type": "string",
+          "title": "The symbol of the asset"
+        }
+      },
+      "description": "Balance represents the total and available amount of asset for a given\nexchange, asset and wallet type."
+    },
+    "v2Balances": {
+      "type": "object",
+      "properties": {
+        "balances": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2Balance"
+          },
+          "description": "balances is a map of all of the user balances where the key of the map\nis the asset ID, the value being the Balance for that asset."
+        }
+      },
+      "description": "Balances represent all of the balances the user have accross \nall of their assets."
+    },
+    "v2CancelAllOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "[optional] If specified, deletes orders for this exchange only.\n(Could be found with the REST API under https://api.cryptowat.ch/exchanges)"
+        },
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "[optional] If specified, deletes orders belonging to this market only.\n(could be found with the REST API under https://api.cryptowat.ch/markets)"
+        },
+        "exchange_account_id": {
+          "type": "string",
+          "description": "[optional] If specified, deletes orders belonging to this exchange account only."
+        }
+      }
+    },
+    "v2CancelAllOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "failed_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ErrorResponse"
+          }
+        }
+      },
+      "description": "CancelAllOrdersResponse returns a list of failed order ids (key) with the error/reason for the failure (value)."
+    },
+    "v2CancelOrderResponse": {
+      "type": "object",
+      "title": "CancelOrderResponse is an empty response"
+    },
+    "v2ClosePositionResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "description": "The orders created as a result of closing the position.\nNot guaranteed to be filled, some exchanges do not include\nthis in the response."
+        }
+      }
+    },
+    "v2Column": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "name of column"
+        },
+        "fixed": {
+          "type": "boolean",
+          "title": "is column fixed"
+        },
+        "visibility": {
+          "type": "boolean",
+          "title": "is column visible"
+        }
+      },
+      "title": "column setting inside each tab"
+    },
+    "v2ContractSchema": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_CONTRACT_SCHEMA",
+        "VANILLA",
+        "INVERSE",
+        "QUANTO"
+      ],
+      "default": "UNKNOWN_CONTRACT_SCHEMA"
+    },
+    "v2CreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "exchange_account_id": {
+          "type": "string",
+          "description": "[optional] id of the exchange account to place the order through.\nIf not provided, the default account will be used."
+        },
+        "side": {
+          "$ref": "#/definitions/v2Side",
+          "description": "Could be either 'Buy' or 'Sell'."
+        },
+        "type": {
+          "$ref": "#/definitions/v2OrderType",
+          "description": "Could be any of the values defined in the 'OrderType' enum\nexcept `SETTLE_POSITION`. If you need to settle a position \nmake a request using `SettlePosition()`.\nType will define how we should place this order and usually which\nparameters we are going to use (if a stop loss, we'll use the\nstop price, etc.). Default value is MARKET."
+        },
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The ID of the desired market to place an order upon (could be\nfound with the REST API under https://api.cryptowat.ch/markets)"
+        },
+        "leverage": {
+          "type": "string",
+          "description": "[optional] Leverage value for a margin order (default: 0 / no\nleverage)."
+        },
+        "amount": {
+          "type": "string",
+          "description": "Amount of base asset to buy or sell."
+        },
+        "price": {
+          "type": "string",
+          "description": "Quote asset price to buy or sell the base asset. Used for `LIMIT` orders."
+        },
+        "stop_price": {
+          "type": "string",
+          "description": "The stop price for a `Stop Market` or `Stop Limit` order."
+        },
+        "stop_limit_price": {
+          "type": "string",
+          "description": "The limit order execution price for `STOP_LIMIT` order."
+        },
+        "trigger_price": {
+          "type": "string",
+          "description": "The trigger price for a `MARKET_IF_TOUCHED` order."
+        },
+        "execution_price": {
+          "type": "string",
+          "description": "The limit order execution price for `LIMIT_IF_TOUCHED` order."
+        },
+        "trailing_stop_market_offset": {
+          "$ref": "#/definitions/v2TrailingOffsetPrice",
+          "description": "The trailing offset price for a `TRAILING_STOP_MARKET` order."
+        },
+        "trailing_stop_limit_offset": {
+          "$ref": "#/definitions/v2TrailingOffsetPrice",
+          "description": "The limit price offset for a `TRAILING_STOP_LIMIT` order."
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "[optional] Timestamp defining when the order should be placed."
+        },
+        "expire_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "[optional] Timestamp for the time the order should be canceled."
+        },
+        "post_only": {
+          "type": "boolean",
+          "description": "[optional] Defines if the order should de deleted if it won't\nappear on the orderbook and fill immediately (default: false)."
+        },
+        "immediate_or_cancel": {
+          "type": "boolean",
+          "title": "[optional] Defines if the order should be immediate or cancel\n(default: false)"
+        },
+        "fill_or_kill": {
+          "type": "boolean",
+          "title": "[optional] Defines if the order should be a fill or kill order\n(default: false)"
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "[optional] Determines if the order should be hidden from the\norderbook or not (default: false)."
+        },
+        "fee_currency": {
+          "$ref": "#/definitions/v2FeeCurrency",
+          "title": "[optional] Currency to use in order to pay for the trading fees.\n(default: base currency)"
+        },
+        "closing_order": {
+          "$ref": "#/definitions/v2CreateOrderRequest",
+          "description": "[optional] If the order fills in its entirety, place the following\nclosing order."
+        },
+        "reduce_only": {
+          "type": "boolean",
+          "title": "[optional] Defines if the order should be immediately canceled, if it would increase the size of an open position.\n(default: false)"
+        },
+        "iceberg_quantity": {
+          "type": "string",
+          "description": "[optional] An order type to trade in smaller predetermined quantities, called iceberg_quantity, in order to hide the total order quantity."
+        },
+        "reference_price": {
+          "$ref": "#/definitions/v2ReferencePrice",
+          "title": "[optional] Trigger price references are used in futures trading to denote the kind of price at which a trade action is to be taken, if supported for a market.\n(default: Default)"
+        },
+        "synthetic": {
+          "type": "boolean",
+          "title": "[optional] Specify if an order is synthetic or not.\n(default: false)"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key: \"tradeform\", Values = [\"legacy\", \"standard\", \"active\", \"ladder\", \"tui\", \"other\"]\nThis represents which trade form was used to place order",
+          "title": "We expect following be present in this field\nKey : \"platform\", Values = [\"desktop\", \"web\", \"mobile\", \"bcli\", \"other\"]\nThis represents platform where trade was placed"
+        }
+      }
+    },
+    "v2CreateOrderResponse": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "description": "CreateOrder may result in multiple orders returned since some order types can cause \nmultiple orders to be returned from the exchange. Example: Order type `ONE_CANCELS_OTHER` will return multiple orders from the exchange."
+        }
+      }
+    },
+    "v2CreateOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2CreateOrderRequest"
+          },
+          "title": "list of orders to be created"
+        }
+      }
+    },
+    "v2CreateOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "description": "multiple orders can be returned even if only one order was sent in `CreateOrdersRequest`\nsince some order types can result in multiple orders returned from the exchange."
+        }
+      }
+    },
+    "v2ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v2Exchange": {
+      "type": "object",
+      "properties": {
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Cryptowatch identifier for the exchange. Could be found\nwith the REST API under https://api.cryptowat.ch/exchanges."
+        },
+        "exchange_name": {
+          "type": "string",
+          "title": "Name of the exchange"
+        }
+      }
+    },
+    "v2ExchangeAPIKey": {
+      "type": "object",
+      "properties": {
+        "shortened_key": {
+          "type": "string",
+          "description": "The shortened version of the key to identify it, it is shortened\nbecause this is a sensitive information."
+        },
+        "status": {
+          "$ref": "#/definitions/v2APIKeyStatus",
+          "description": "The status of the API key, whether it is valid or not. See the\n`APIKeyStatus` enumeration for more information about the statuses."
+        }
+      }
+    },
+    "v2ExchangeAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "cryptowatch identifier of this exchange account"
+        },
+        "exchange": {
+          "$ref": "#/definitions/v2Exchange",
+          "title": "the exchange that this exchange account belongs to"
+        },
+        "read_only": {
+          "type": "boolean",
+          "description": "whether this account is read only or not. Enforced by cryptowatch, not necessarily\nby the exchange API key permissions."
+        },
+        "account_name": {
+          "type": "string",
+          "title": "human readable account name assigned by the user"
+        },
+        "is_default": {
+          "type": "boolean",
+          "description": "whether this is the default exchange account for this exchange or not. Only one\nexchange account per exchange will be the default."
+        },
+        "api_key": {
+          "$ref": "#/definitions/v2ExchangeAPIKey",
+          "title": "the API keys attached to this account"
+        }
+      }
+    },
+    "v2ExchangeAccountWallets": {
+      "type": "object",
+      "properties": {
+        "wallets": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2Wallets"
+          },
+          "description": "A map of exchange account IDs to the wallets for that exchange account."
+        }
+      }
+    },
+    "v2ExchangeAccounts": {
+      "type": "object",
+      "properties": {
+        "exchange_accounts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ExchangeAccount"
+          },
+          "description": "exchange_accounts is a map of exchange account ID to the corresponding exchange account."
+        }
+      }
+    },
+    "v2ExchangeConnectionUpdate": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v2ExchangeStatus",
+          "description": "`status` represent the general status of the exchange."
+        },
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "exchange unique identifier"
+        },
+        "user_connection_status": {
+          "$ref": "#/definitions/v2UserConnectionStatus",
+          "description": "DEPRECATED, please use `user_connections` field instead.\nTo maintain backwards compatibility:\n  - When sent as a response to a request, this field will contain the connection status of\n    the default exchange account.\n  - When pushed as an update, this field will contain the connection status of whichever exchange account the\n    update is for. If you have multiple subscriptions and need to disambiguate, please use `user_connections`."
+        },
+        "user_connections": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2UserConnectionStatus"
+          },
+          "title": "`user_connection_status` represent user specific connection status with the exchange for each exchange account,\nwhere the key is the exchange account ID and the value is the connection status for that exchange account.\nThis is different than `status` since `status` represents the exchange's overall status. An exchange status may\nbe `AVAILABLE` but the user's connection to the exchange isn't.\nExamples where user may not have a `CONNECTION_AVAILABLE` status even when the exchange is `AVAILABLE`:\n- user being rate limited\n- user key is revoked\n- user doesn't have a websocket connection to the exchange in the backend"
+        }
+      },
+      "description": "ExchangeConnectionUpdate represents Cryptowatch connection to the exchange.\nUsers connected to high performance trading platforms need to know the realtime \nstatus of an exchange prior to placing orders at that exchange. If an exchange is down \nor degraded for any reason, a trader may not want to risk their money by sending orders there."
+    },
+    "v2ExchangeInformation": {
+      "type": "object",
+      "properties": {
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Unique ID for the exchange. Could be found with the REST API under https://api.cryptowat.ch/exchanges."
+        },
+        "exchange_name": {
+          "type": "string",
+          "description": "Name of the exchange."
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "The fields required in order to enter a new API key successfully.\nFor example:\n  - Kraken requires:         [api_key, api_secret]\n  - Coinbase Pro requires:   [api_key, api_secret, passphrase]"
+        },
+        "exchange_accounts": {
+          "$ref": "#/definitions/v2ExchangeAccounts",
+          "description": "information about any exchange accounts the user has registered.\nif there are accounts, it is guaranteed one of them is marked\nas the default account for the exchange. Default account is used\nfor operations where user does not specify a specific exchange account, so \nCryptowatch perform the action using the exchange's default account."
+        },
+        "connection": {
+          "$ref": "#/definitions/v2ExchangeConnectionUpdate",
+          "title": "information about the current exchange status"
+        }
+      }
+    },
+    "v2ExchangeStatus": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "AVAILABLE",
+        "DEGRADED",
+        "UNAVAILABLE"
+      ],
+      "default": "UNKNOWN"
+    },
+    "v2FeeCurrency": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "BASE",
+        "QUOTE"
+      ],
+      "default": "NONE"
+    },
+    "v2Filters": {
+      "type": "object",
+      "properties": {
+        "exchanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Exchange"
+          },
+          "title": "All exchanges available to be filtered"
+        },
+        "markets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Market"
+          },
+          "title": "All markets availables to be filtered"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2OrderType"
+          },
+          "title": "All order types availables to be filtered\nOnly for orders"
+        },
+        "base_assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Asset"
+          },
+          "title": "All base assets availables to be filtered"
+        },
+        "quote_assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Asset"
+          },
+          "title": "All quote assets availables to be filtered"
+        },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Status"
+          },
+          "title": "All order statuses availables to be filtered\nOnly for orders"
+        }
+      },
+      "title": "Filters are user independent data. Each user may see different \nfilters based on the orders/trades/positions"
+    },
+    "v2GetAllMarketsInformationResponse": {
+      "type": "object",
+      "properties": {
+        "markets_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2MarketInformation"
+          },
+          "title": "list of market information"
+        }
+      }
+    },
+    "v2GetExchangeInformationResponse": {
+      "type": "object",
+      "properties": {
+        "exchange_info": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ExchangeInformation"
+          },
+          "title": "exchange_info is a map where the key is the exchange id and the value is the corresponding ExchangeInformation"
+        }
+      }
+    },
+    "v2GetFeeScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "makerFee": {
+          "type": "string",
+          "title": "makerFee is a fee for orders that provide liquidity.\nThis fee is unique per user.\nEx: \"0.1\" means 0.1% fee"
+        },
+        "takerFee": {
+          "type": "string",
+          "title": "takerFee is a fee for orders that take away liquidity.\nThis fee is unique per user.\nEx: \"0.1\" means 0.1% fee"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time",
+          "title": "represent when was the last time the user fee schedules were synced with the exchange"
+        }
+      }
+    },
+    "v2GetMarketInformationResponse": {
+      "type": "object",
+      "properties": {
+        "market_info": {
+          "$ref": "#/definitions/v2MarketInformation"
+        }
+      }
+    },
+    "v2GetOrderResponse": {
+      "type": "object",
+      "properties": {
+        "order": {
+          "$ref": "#/definitions/v2Order"
+        }
+      }
+    },
+    "v2GetServerTimeResponse": {
+      "type": "object",
+      "properties": {
+        "server_time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "server_time is the current server time of the instance that served the user request"
+        }
+      }
+    },
+    "v2GetUserSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v2UserSettings",
+          "title": "cryptowatch settings"
+        }
+      }
+    },
+    "v2LeverageLevels": {
+      "type": "object",
+      "properties": {
+        "leverage_list": {
+          "$ref": "#/definitions/LeverageLevelsLeverageList"
+        },
+        "leverage_bound": {
+          "$ref": "#/definitions/LeverageLevelsLeverageBound"
+        }
+      }
+    },
+    "v2ListAvailableFiltersResponse": {
+      "type": "object",
+      "properties": {
+        "orders_filters": {
+          "$ref": "#/definitions/v2Filters"
+        },
+        "trades_filters": {
+          "$ref": "#/definitions/v2Filters"
+        }
+      },
+      "description": "ListAvailableFiltersResponse is unique per user\nsince the response is depended upon the orders, trades \nand positions a user have."
+    },
+    "v2ListExchangeAccountsResponse": {
+      "type": "object",
+      "properties": {
+        "exchange_accounts_by_exchange": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ExchangeAccounts"
+          },
+          "description": "exchange_accounts_by_exchange is a map of exchange ID to a the users\nexchange accounts for that particular exchange. If there \nare exchange accounts, it is guaranteed that one account\nis set as the default account for the exchange."
+        }
+      }
+    },
+    "v2ListExchangeWalletsResponse": {
+      "type": "object",
+      "properties": {
+        "exchange_account_wallets": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ExchangeAccountWallets"
+          },
+          "description": "A map of exchange IDs associated with their complete wallet set and\nbalances information."
+        }
+      }
+    },
+    "v2ListOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "title": "list of orders that belong to the user"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total field is not the number of all orders ever, unless there were no filter criteria in the request.\nIt is also not the length of the orders in the response.\n \nIt is the total number of possible results as defined by the filter criteria without pagination criteria. For \nexample, a user has 10 orders, 7 of them belongs to BTC/USD market. If the request is:\n`ListOrdersRequest {\n    limit=2\n    market_id=87 (BTC/USD)\n    offset=3\n}`\n`total` will be equal 7 and the `orders` field will contains 2 objects.\n \nNB: ListOrdersResponse can be used as a websocket response in a update of orders, in this specific case `total`\nwill represent the amount of orders that have been updated."
+        }
+      }
+    },
+    "v2ListPositionsResponse": {
+      "type": "object",
+      "properties": {
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Position"
+          },
+          "title": "list of positions that belong to the user"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total field is not the number of all positions ever, unless there were no filter criteria in the request.\nIt is also not the length of the positions in the response.\n \nIt is the total number of possible results as defined by the filter criteria without pagination criteria. For \nexample, a user has 10 postions, 7 of them belongs to BTC/USD market. If the request is:\nListPositionRequest {\n    limit=2\n    market_id=87 (BTC/USD)\n    offset=3\n}\n`total` will be equal 7 and the `positions` field will contains 2 objects."
+        }
+      }
+    },
+    "v2ListTradesResponse": {
+      "type": "object",
+      "properties": {
+        "trades": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Trade"
+          },
+          "title": "list of trades that belong to the user"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total field is not the number of all trades ever, unless there were no filter criteria in the request.\nIt is also not the length of the trades in the response.\n \nIt is the total number of possible results as defined by the filter criteria without pagination criteria. For \nexample, a user has 10 trades, 7 of them belongs to BTC/USD market. If the request is:\n`ListTradesRequest {\n    limit=2g\n    market_id=87 (BTC/USD)\n    offset=3\n}`\n`total` will be equal 7 and the `trades` field will contains 2 objects.\n \nNB: ListTradesResponse can be used as a websocket response in a update of trades, in this specific case `total`\nwill represent the amount of trades that have been updated."
+        }
+      }
+    },
+    "v2MarginAction": {
+      "type": "string",
+      "enum": [
+        "POSITION_CLOSE",
+        "POSITION_SETTLE"
+      ],
+      "default": "POSITION_CLOSE"
+    },
+    "v2Market": {
+      "type": "object",
+      "properties": {
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The ID of the market the trade executed on (could be found\nwith the REST API under https://api.cryptowat.ch/markets)"
+        },
+        "market_symbol": {
+          "type": "string",
+          "description": "The symbol for that market, ie. btcusd, etheur, ltcusd, etc."
+        },
+        "base": {
+          "$ref": "#/definitions/v2Asset",
+          "description": "The base asset for this market."
+        },
+        "quote": {
+          "$ref": "#/definitions/v2Asset",
+          "description": "The quote asset for this market."
+        }
+      }
+    },
+    "v2MarketInformation": {
+      "type": "object",
+      "properties": {
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "A cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets)"
+        },
+        "exchange": {
+          "$ref": "#/definitions/v2Exchange",
+          "description": "The exchange this market belongs to."
+        },
+        "symbol": {
+          "type": "string",
+          "description": "Symbol is a unique upper-case string identifier for the underlying instrument."
+        },
+        "tick_sizes": {
+          "$ref": "#/definitions/v2TickSizes",
+          "description": "Specifies precision info for order size \u0026 order price."
+        },
+        "market_type": {
+          "$ref": "#/definitions/v2MarketType",
+          "description": "Differentiates between regular pair markets and futures markets."
+        },
+        "contract_schema": {
+          "$ref": "#/definitions/v2ContractSchema",
+          "description": "Specifies the futures contract schema. Only applies to futures markets."
+        },
+        "supports_margin": {
+          "type": "boolean",
+          "description": "Determines if the exchange supports margin and leverage options."
+        },
+        "margin_actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2MarginAction"
+          },
+          "description": "List of supported margin actions available atomically for this market."
+        },
+        "leverage_levels": {
+          "$ref": "#/definitions/v2LeverageLevels",
+          "description": "Specifies the set of allowed leverage levels. Only applies if the market supports margin trading."
+        },
+        "lot_size": {
+          "type": "string",
+          "description": "Lot size is the size of a traded unit on a market. When a trade is done\non an exchange, a lot is either bought or sold. The lot size is how many\nunits of an instrument composes a lot."
+        },
+        "order_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2OrderType"
+          },
+          "description": "Order types that this specific market supports."
+        },
+        "supports_post_only": {
+          "type": "boolean",
+          "description": "Determines if this market supports post-only option to limit orders."
+        },
+        "supports_fee_currency": {
+          "type": "boolean",
+          "description": "Determines if this market supports fee currency on order creation."
+        },
+        "supports_conditional_close": {
+          "type": "boolean",
+          "description": "Determines if this market supports conditional closing orders."
+        },
+        "time_in_force": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2TimeInForce"
+          },
+          "description": "Time in force options supported by this market."
+        },
+        "supports_hidden": {
+          "type": "boolean",
+          "description": "Determines if this market supports hidden option to limit orders."
+        },
+        "supports_reduce_only": {
+          "type": "boolean",
+          "description": "Determines if this market supports reduce-only option to margin orders."
+        },
+        "supports_iceberg": {
+          "type": "boolean",
+          "description": "Determines if this market supports iceberg option to limit orders."
+        },
+        "synthetic_order_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2OrderType"
+          },
+          "description": "Synthetic order types that this specific market supports."
+        }
+      }
+    },
+    "v2MarketType": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_MARKET_TYPE",
+        "PAIR",
+        "FUTURES"
+      ],
+      "default": "UNKNOWN_MARKET_TYPE"
+    },
+    "v2OptionalOrderType": {
+      "type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean",
+          "description": "Valid needs to be set to true otherwise type will be ignored."
+        },
+        "type": {
+          "$ref": "#/definitions/v2OrderType",
+          "title": "OrderType value"
+        }
+      },
+      "description": "OptionalOrderType helps cryotwatch determine if a user specified an order type.\nSince the order types offered are enums, not sending an order type will default\nto the default value 0. In this case, the request will be interpreted as the user\nspecified the order type that belongs to enum 0. To avoid the scenario above, \nOptionalOrderType is a wrapper around OrderType which will be evaluated if and only if valid flag is set."
+    },
+    "v2OptionalSide": {
+      "type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean",
+          "description": "Valid needs to be set to true otherwise side will be ignored."
+        },
+        "side": {
+          "$ref": "#/definitions/v2Side",
+          "title": "Side value"
+        }
+      },
+      "description": "OptionalSide helps cryotwatch determine if a user specified an order side.\nSince the sides offered are enums, not sending an order type will default\nto the default value 0. In this case, the request will be interpreted as the user\nspecified the order side that belongs to enum 0. To avoid the scenario above, \nOptionalSide is a wrapper around Side which will be evaluated if and only if valid flag is set."
+    },
+    "v2Order": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Cryptowatch identifier for the order, uniqueness is guaranteed by cryptowatch.\nThis ID could be used to interact with the orders through the API."
+        },
+        "external_id": {
+          "type": "string",
+          "description": "Exchange identifier for the order, uniqueness is ensured by the exchange itself.\nThis ID could be used to interact with the orders through the API."
+        },
+        "group_id": {
+          "type": "string",
+          "description": "Group Identifier for the order. Appears if the order is part of an OCO."
+        },
+        "exchange_account_id": {
+          "type": "string",
+          "description": "The exchange account this order belongs to."
+        },
+        "exchange": {
+          "$ref": "#/definitions/v2Exchange",
+          "description": "The exchange this order was placed on."
+        },
+        "creation_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp of the order."
+        },
+        "side": {
+          "$ref": "#/definitions/v2Side",
+          "description": "Could be either 'Buy' or 'Sell'."
+        },
+        "type": {
+          "$ref": "#/definitions/v2OrderType",
+          "description": "Could be any of the values defined in the 'OrderType' enum.\nIt defines how we this order was placed and usually which\nparameters were used (if a stop loss, we'll see the stop\nprice information filled, etc.)."
+        },
+        "market": {
+          "$ref": "#/definitions/v2Market",
+          "description": "Denotes the market this order has been opened on."
+        },
+        "status": {
+          "$ref": "#/definitions/v2Status",
+          "description": "The abstracted status of the order, reduced to the minimum subset\nsupported by most exchanges."
+        },
+        "leverage": {
+          "type": "string",
+          "description": "Leverage value for a margin order."
+        },
+        "amount": {
+          "type": "string",
+          "description": "Amount of base asset to buy or sell."
+        },
+        "amount_filled": {
+          "type": "string",
+          "description": "Amount filled for the order, appears if the order is partially filled."
+        },
+        "current_stop": {
+          "type": "string",
+          "description": "If this is a trailing stop, defines the current stop price."
+        },
+        "initial_stop": {
+          "type": "string",
+          "description": "Initial stop price as defined when the order was placed."
+        },
+        "price": {
+          "type": "string",
+          "description": "Quote asset price to buy or sell the base asset."
+        },
+        "stop_price": {
+          "type": "string",
+          "description": "The stop price for a Stop Market or Stop Limit order."
+        },
+        "stop_limit_price": {
+          "type": "string",
+          "description": "The limit order execution price for `STOP_LIMIT` order."
+        },
+        "trigger_price": {
+          "type": "string",
+          "description": "The trigger price for a `MARKET_IF_TOUCHED` order."
+        },
+        "execution_price": {
+          "type": "string",
+          "description": "The limit order execution price for `LIMIT_IF_TOUCHED` order."
+        },
+        "trailing_stop_market_offset": {
+          "$ref": "#/definitions/v2TrailingOffsetPrice",
+          "description": "The trailing offset price for a `TRAILING_STOP_MARKET` order."
+        },
+        "trailing_stop_limit_offset": {
+          "$ref": "#/definitions/v2TrailingOffsetPrice",
+          "description": "The limit price offset for a `TRAILING_STOP_LIMIT` order."
+        },
+        "oco_stop_price": {
+          "type": "string",
+          "description": "The stop price for an OCO order."
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp defining when the order should be placed."
+        },
+        "expire_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp for the time the order should be canceled."
+        },
+        "post_only": {
+          "type": "boolean",
+          "title": "Defines if the order should de deleted if it won't appear\nin the orderbook and fill immediately (default: false)"
+        },
+        "immediate_or_cancel": {
+          "type": "boolean",
+          "title": "Defines if the order should be immediate or cancel (default: false)"
+        },
+        "fill_or_kill": {
+          "type": "boolean",
+          "title": "Defines if the order should be a fill or kill order (default: false)"
+        },
+        "hidden": {
+          "type": "boolean",
+          "title": "Determines if the order should be hidden from the orderbook or not.\n(default: false)"
+        },
+        "fee_currency": {
+          "$ref": "#/definitions/v2FeeCurrency",
+          "description": "The currency used to pay for the fees (could be base or quote)."
+        },
+        "closing_order": {
+          "$ref": "#/definitions/v2Order",
+          "description": "Contains the details for the closing order if the parent order fills fully."
+        },
+        "reduce_only": {
+          "type": "boolean",
+          "title": "[optional] Defines if the order should be immediately canceled, if it would increase the size of an open position.\n(default: false)"
+        },
+        "iceberg_quantity": {
+          "type": "string",
+          "description": "An order type to trade in smaller predetermined quantities, called iceberg_quantity, in order to hide the total order quantity."
+        },
+        "reference_price": {
+          "$ref": "#/definitions/v2ReferencePrice",
+          "title": "[optional] Trigger price references are used in futures trading to denote the kind of price at which a trade action is to be taken, if supported for a market.\n(default: Default)"
+        },
+        "synthetic": {
+          "type": "boolean",
+          "title": "If true, order is a synthetic order"
+        }
+      },
+      "description": "Order defines the information for an order after it has been placed on the\nexchange side. It is generally returned when we list open orders on an\nexchange or after we place the order using the 'CreateOrder' endpoint."
+    },
+    "v2OrderType": {
+      "type": "string",
+      "enum": [
+        "MARKET",
+        "LIMIT",
+        "STOP_MARKET",
+        "STOP_LIMIT",
+        "MARKET_IF_TOUCHED",
+        "LIMIT_IF_TOUCHED",
+        "TRAILING_STOP_MARKET",
+        "TRAILING_STOP_LIMIT",
+        "SETTLE_POSITION",
+        "ONE_CANCELS_OTHER",
+        "ICEBERG",
+        "TRIGGER_ENTRY"
+      ],
+      "default": "MARKET"
+    },
+    "v2OrdersSortKey": {
+      "type": "string",
+      "enum": [
+        "ORDER_CREATION_TIME",
+        "ORDER_STATUS",
+        "ORDER_AMOUNT",
+        "ORDER_PRICE",
+        "ORDER_TRIGGER_PRICE",
+        "ORDER_MARKET",
+        "ORDER_TYPE",
+        "ORDER_SIDE"
+      ],
+      "default": "ORDER_CREATION_TIME"
+    },
+    "v2PauseOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "providing an array of specific order IDs will only pause those specific orders"
+        },
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "providing the market_id will only pause orders on that market\nCould be found with the REST API under https://api.cryptowat.ch/exchanges."
+        },
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "providing the exchange_id will only pause orders on that exchange\nCould be found with the REST API under https://api.cryptowat.ch/markets."
+        }
+      },
+      "description": "PauseOrdersRequest expects either of the filters to be specified. If none of them are set, we pause all orders."
+    },
+    "v2PauseOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          }
+        },
+        "all_successful": {
+          "type": "boolean"
+        },
+        "failed_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ErrorResponse"
+          }
+        }
+      }
+    },
+    "v2PlayOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "providing an array of specific order IDs will only play those specific orders"
+        },
+        "market_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "providing the market_id will only play orders on that market\nCould be found with the REST API under https://api.cryptowat.ch/exchanges."
+        },
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "providing the exchange_id will only play orders on that exchange\nCould be found with the REST API under https://api.cryptowat.ch/markets."
+        }
+      },
+      "description": "PlayOrdersRequest expects either of the filters to be specified. If none of them are set, we play all orders."
+    },
+    "v2PlayOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          }
+        },
+        "all_successful": {
+          "type": "boolean"
+        },
+        "failed_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2ErrorResponse"
+          }
+        }
+      }
+    },
+    "v2Position": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Cryptowatch identifier for the position, uniqueness is guaranteed by cryptowatch.\nThis ID could be used to interact with positions through the API."
+        },
+        "external_id": {
+          "type": "string",
+          "description": "The ID of the position coming from the exchange."
+        },
+        "exchange_account_id": {
+          "type": "string",
+          "description": "The exchange account for which this position belongs to."
+        },
+        "exchange": {
+          "$ref": "#/definitions/v2Exchange",
+          "description": "The exchange for which this position is opened on."
+        },
+        "market": {
+          "$ref": "#/definitions/v2Market",
+          "description": "The market for which this position is valid and open."
+        },
+        "creation_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time at which the given position was created."
+        },
+        "side": {
+          "$ref": "#/definitions/v2Side",
+          "description": "Could be either 'Buy' or 'Sell'."
+        },
+        "average_price": {
+          "type": "string",
+          "description": "The average price for the position, made from all the orders\ncontributing to this position."
+        },
+        "amount_open": {
+          "type": "string",
+          "description": "Amount of that position still open after closing part of it with\nbuy or sell orders."
+        },
+        "amount_closed": {
+          "type": "string",
+          "description": "Amount that was closed by selling or buying assets, reducing\nthe position size."
+        },
+        "leverage": {
+          "type": "string",
+          "description": "The current leverage used to open this position. Can be any decimal value\nsupported by the final exchange. For better compatibility, use the values\nreturned by the GetExchangeSupportInformation endpoint."
+        },
+        "profit_loss": {
+          "type": "string",
+          "description": "The profit loss for this position, determining the gain or loss\nincurred."
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list of order IDs (if this could be determined), contributing\nto this position."
+        },
+        "trade_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list of trade IDs (if this could be determined), contributing\nto this position."
+        },
+        "liquidation_price": {
+          "type": "string",
+          "description": "The price at which the position will get liquidated by the exchange."
+        },
+        "lending_fee": {
+          "type": "string",
+          "description": "The fee paid to lend assets from other traders or the exchange itself\nwhen opening a margin position."
+        }
+      }
+    },
+    "v2ReferencePrice": {
+      "type": "string",
+      "enum": [
+        "DEFAULT",
+        "MARK",
+        "INDEX",
+        "LTP"
+      ],
+      "default": "DEFAULT",
+      "title": "- DEFAULT: Default type for an exchange\n - MARK: Mark Price is Index price + 30 seconds EMA (protection against freak trades)\nNote that mark is first option because it is also the default value if nothing is passed\n - INDEX: Index Price is the underlying benchmark which is based on collective prices from different exchange.\n - LTP: Last traded price for contract"
+    },
+    "v2ReplaceOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "title": "Order ID of the original order"
+        },
+        "order": {
+          "$ref": "#/definitions/v2CreateOrderRequest",
+          "title": "New order to replace the original with"
+        },
+        "exchange_id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "[optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across\nexchanges, there is a very small change that a user could have two orders with the same order ID, and end up\nreplacing the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within\nan exchange. Could be found with the REST API under https://api.cryptowat.ch/exchanges."
+        }
+      }
+    },
+    "v2ReplaceOrderResponse": {
+      "type": "object",
+      "properties": {
+        "canceled": {
+          "type": "boolean",
+          "description": "Some exchanges don't have an atomic replace function, so broker manually cancels the original order and\nthen places the new one. Because of this, it's possible the original order was canceled but the new order\nfailed to place for some reason. The canceled field indicates whether the original order was cancelled or not."
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "title": "affected orders"
+        }
+      }
+    },
+    "v2SettlePositionResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Order"
+          },
+          "description": "The orders created as a result of settling the position.\nNot guaranteed to be filled, some exchanges do not include\nthis in the response."
+        }
+      }
+    },
+    "v2Side": {
+      "type": "string",
+      "enum": [
+        "SELL",
+        "BUY"
+      ],
+      "default": "SELL"
+    },
+    "v2Sorting": {
+      "type": "string",
+      "enum": [
+        "DESCENDING",
+        "ASCENDING"
+      ],
+      "default": "DESCENDING"
+    },
+    "v2Status": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_STATUS",
+        "NEW",
+        "OPEN",
+        "CANCELED",
+        "FILLED",
+        "PARTIALLY_FILLED",
+        "EXPIRED",
+        "REJECTED",
+        "PAUSED"
+      ],
+      "default": "UNKNOWN_STATUS"
+    },
+    "v2Tab": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "valid names are \"open-orders\",  \"holdings\",  \"positions\",  \"historical-orders\",  \"trades\""
+        },
+        "visibility": {
+          "type": "boolean"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Column"
+          }
+        }
+      }
+    },
+    "v2TickSizes": {
+      "type": "object",
+      "properties": {
+        "base_min": {
+          "type": "string"
+        },
+        "base_max": {
+          "type": "string"
+        },
+        "base_tick_size": {
+          "type": "string"
+        },
+        "quote_min": {
+          "type": "string"
+        },
+        "quote_max": {
+          "type": "string"
+        },
+        "quote_tick_size": {
+          "type": "string"
+        }
+      }
+    },
+    "v2TimeInForce": {
+      "type": "string",
+      "enum": [
+        "GOOD_TIL_CANCELED",
+        "IMMEDIATE_OR_CANCEL",
+        "FILL_OR_KILL",
+        "GOOD_TILL_DATE",
+        "PLACE_AT"
+      ],
+      "default": "GOOD_TIL_CANCELED"
+    },
+    "v2Trade": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Cryptowatch identifier for the trade, uniqueness is guaranteed by cryptowatch.\nThis ID could be used to interact with the trades through the API.\nempty (zero value) if is_consolidated is true"
+        },
+        "external_id": {
+          "type": "string",
+          "title": "The ID of the trade, coming from the exchange itself or assigned by Cryptowatch.\nempty (zero value) if is_consolidated is true"
+        },
+        "order_external_id": {
+          "type": "string",
+          "description": "The ID of the order, coming from the exchange itself or assigned by Cryptowatch."
+        },
+        "exchange_account_id": {
+          "type": "string",
+          "description": "The exchange account this trade belongs to."
+        },
+        "exchange": {
+          "$ref": "#/definitions/v2Exchange",
+          "description": "The exchange this trade was executed on."
+        },
+        "market": {
+          "$ref": "#/definitions/v2Market",
+          "description": "The market for which this trade was executed."
+        },
+        "execution_time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "The time at which the trade was executed, in millisecond precision.\nempty (zero value) if is_consolidated is true"
+        },
+        "price": {
+          "type": "string",
+          "description": "Quote asset price that was used to buy or sell the base asset."
+        },
+        "amount": {
+          "type": "string",
+          "description": "Amount of base asset that was bought/sold."
+        },
+        "side": {
+          "$ref": "#/definitions/v2Side",
+          "description": "Could be either 'Buy' or 'Sell'."
+        },
+        "fee": {
+          "type": "string",
+          "description": "The fee paid for this trade."
+        },
+        "fee_currency": {
+          "$ref": "#/definitions/v2FeeCurrency",
+          "description": "The currency used to pay for the fees (could be base or quote)."
+        },
+        "is_consolidated": {
+          "type": "boolean",
+          "title": "A consolidated trade aggregates all trades under the same order ID.\nIt acts as if the related order created a single trade:\n - fee(s) are added up\n - price(s) are weighted averaged, weighted by the amount\n - amount(s) are added up\n - execution_time is set to its most recent constituent trades execution_time.\n - id and external_id are ignored (zero'd value)\n - other attributes (market, exchange, exchange_account_id, order_external_id, side, fee_currency) remain untouched"
+        },
+        "total": {
+          "type": "string",
+          "title": "total = price * amount"
+        }
+      },
+      "description": "Trade denotes the information after an order has been filled and becomes a\ntrade."
+    },
+    "v2TradesSortKey": {
+      "type": "string",
+      "enum": [
+        "TRADE_EXECUTION_TIME",
+        "TRADE_EXTERNAL_ID",
+        "TRADE_ORDER_ID",
+        "TRADE_AMOUNT",
+        "TRADE_PRICE",
+        "TRADE_MARKET",
+        "TRADE_FEE",
+        "TRADE_SIDE"
+      ],
+      "default": "TRADE_EXECUTION_TIME"
+    },
+    "v2TrailingOffsetPrice": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v2TrailingOffsetType"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "description": "TrailingOffsetPrice defines price offset to be used for Trailing Stop Limit and Trailing\nStop Market orders."
+    },
+    "v2TrailingOffsetType": {
+      "type": "string",
+      "enum": [
+        "ABSOLUTE",
+        "RELATIVE",
+        "RELATIVE_PERCENT"
+      ],
+      "default": "ABSOLUTE"
+    },
+    "v2UpdateUserSettingsRequest": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/definitions/v2UserSettings",
+          "title": "the settings to update in cryptowatch"
+        }
+      }
+    },
+    "v2UpdateUserSettingsResponse": {
+      "type": "object"
+    },
+    "v2UserConnectionStatus": {
+      "type": "string",
+      "enum": [
+        "USER_CONNECTION_UNKNOWN",
+        "USER_CONNECTION_AVAILABLE",
+        "USER_CONNECTION_DEGRADED",
+        "USER_CONNECTION_UNAVAILABLE"
+      ],
+      "default": "USER_CONNECTION_UNKNOWN",
+      "description": "- USER_CONNECTION_UNKNOWN: user connection to the exchange is unknown. Cryptowatch can not predetermine if the user calls to the exchange \nwill fail or succeed. This uncertainty occurs if the user does not have a session with cryptowatch \nso cryptowatch can't keep track of their interactions to determine if their connection to the exchange is well.\n - USER_CONNECTION_AVAILABLE: user connection to the exchange is working well as expected. No interuption or errors occured with the user flow\nand the exchange is responding properly for all of the user's specific trading requests.\n - USER_CONNECTION_DEGRADED: user connection to the exchange is unstable and have a higher probability of resulting in errors\nfor operations performed on the exchange for the specific user. This status can occur for any \ninconsistent errors occurring while the user perform their trading operations on the exchange.\nExample: if the user is rate limited by the exchange then their connection is degraded as some calls may error out depending \non how the exchange implements their rate limit.\n - USER_CONNECTION_UNAVAILABLE: the user connection to the exchange is unavailable and all calls made to the exchange \nis expected to fail for the user. If this is the status then the user should \navoid making trading operations to the exchange until the status is updated to a \nbetter value.",
+      "title": "UserConnectionStatus is user specific connection status to an exchange"
+    },
+    "v2UserSettings": {
+      "type": "object",
+      "properties": {
+        "session_timeout_seconds": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Session timeout in seconds define how frequently user will need to\nreauthenticate current session"
+        },
+        "tabs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v2Tab"
+          },
+          "title": "Allows you to change the order and related properties of the tab"
+        },
+        "privacy_mode": {
+          "type": "boolean",
+          "description": "Privacy mode toggle allows a user to hide the value of their holdings and\ntheir PnL. This is recommended when working in public so that your account\ndetails are not visible to people glancing at your screen."
+        },
+        "consolidating_fills": {
+          "type": "boolean",
+          "description": "Consolidating fills toggle allows you to toggle between seeing order fills\nwith all the constituent partial fills, or as one whole fill. For example,\nan order to buy 10 ETH/USD might have gotten filled over 20 orders of many\nsizes at one price, but a user might just want to see that they bought 10\nETH/USD in one order and the average price."
+        },
+        "show_all_pairs_positions": {
+          "type": "boolean",
+          "title": "This is used to persist setting if we want to show positions for all pairs in cockpit"
+        },
+        "show_all_pairs_open_order": {
+          "type": "boolean",
+          "title": "This is used to persist setting if we want to show open orders for all pairs in cockpit"
+        }
+      }
+    },
+    "v2Wallets": {
+      "type": "object",
+      "properties": {
+        "balances": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v2Balances"
+          },
+          "description": "A map of arbitrary wallet strings (ie. Spot, Margin, etc.) linked to\ntheir list of account balances per assets."
+        }
+      }
+    }
+  }
+}

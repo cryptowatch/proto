@@ -8,6 +8,9 @@ enum FundingType {
   Spot = 0;
   Margin = 1;
   Staking = 2;
+  ParachainAuctions = 3;
+  SingleCollateral = 4;
+  MultiCollateral = 5;
 }
 
 message PrivateOrder {
@@ -114,6 +117,9 @@ message PrivateOrder {
   // Iceberg orders are large orders divided into smaller limit orders in order to hide the true quantity.
   // Smaller orders are executed progressively, after the previous one has been filled.
   string iceberg_qty = 30;
+
+  // Orders with the synthetic flag set only exist internally in CW, not externally on the exchange.
+  bool synthetic = 31;
 }
 
 message PrivateTrade {

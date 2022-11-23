@@ -14,6 +14,8 @@ message Asset {
     }
 
     repeated Tag tags = 4;
+
+    string sid = 5;
 }
 
 message Instrument {
@@ -24,6 +26,7 @@ message Instrument {
 
     Asset base = 4;
     Asset quote = 5;
+    Asset settlement = 6;
 }
 
 message Origin {
@@ -53,9 +56,18 @@ message Market {
 
     Instrument instrument = 12;
     Origin origin = 13;
+
+    uint64 quote_usd_series = 14;
+    uint64 settlement_usd_series = 15;
 }
 
+// NOTE: Indices has been removed from CW, this is a leftover to ensure
+// compatibility during transition.
+//
+// TODO: Delete Index message.
 message Index {
+    option deprecated = true;
+
     uint64 id = 1;
     uint64 feed_delay_seconds = 2;
 

@@ -77,9 +77,6 @@ message SettlePositionRequest {
 
 message SyncRequest {}
 
-// AllBalances grep flag: Ai33fA
-// message AllBalancesRequest{}
-
 message BrokerRequest {
   string id = 1;
   // marketId can be 0 if there is just one session associated with the
@@ -91,7 +88,6 @@ message BrokerRequest {
     ReplaceOrderRequest replaceOrderRequest = 6;
     SyncRequest syncRequest = 4;
     ClosePositionRequest closePositionRequest = 5;
-    // AllBalancesRequest allBalancesRequest = 8; // AllBalances grep flag: Ai33fA
     SettlePositionRequest settlePositionRequest = 9;
     UserSettingsChangeRequest userSettingsChangeRequest = 10;
   }
@@ -123,12 +119,6 @@ message LedgersUpdate {
   repeated PrivateLedger ledgers = 1;
 }
 
-// AllBalances grep flag: Ai33fA
-// message AllBalancesUpdate {
-//   string id = 1;
-//   repeated Balances balances = 2;
-// }
-
 message RequestResolutionUpdate {
   string id = 1;
   int32 error = 2;
@@ -155,6 +145,12 @@ message SessionStatusUpdate {
   int64 lastSyncTime = 3;
   // Expose error from poller
   int32 syncError = 4;
+  // More comprehensive error from poller
+  Error errorV2 = 5;
+  // User's current trading fees
+  // Ex: "0.1" means 0.1% fee
+  string makerFee = 6;
+  string takerFee = 7;
 }
 
 message PermissionsUpdate {
@@ -165,7 +161,13 @@ message PermissionsUpdate {
     string key = 1;
     string body = 2;
   }
-  repeated Agreement agreements = 4;
+
+  // CW-23158: Since SessionFeatures endpoint replaced old Features one for
+  // Kraken's SAPI, we do not have access for user's agreements anymore. By
+  // the time this happened, Trading frontend was not using such data. We
+  // agreed to stop filling pbm.PermissionsUpdate_Agreement, but didn't
+  // removed it from proto to avoid a breaking change on our clients.
+  repeated Agreement agreements = 4 [deprecated=true];
 
   message LeverageLevels {
     // Note: Only Kraken seems to use 2 different leverage fields for buy and sell
@@ -233,7 +235,6 @@ message BrokerUpdateMessage {
     PermissionsUpdate permissionsUpdate = 6;
     SessionStatusUpdate sessionStatusUpdate = 7;
     APIAccessorStatusUpdate apiAccessorStatusUpdate = 9;
-    // AllBalancesUpdate allBalancesUpdate = 13; // AllBalances grep flag: Ai33fA
     ProtobufStream.AuthenticationResult authenticationResult = 10;
     ProtobufStream.SubscriptionResult subscriptionResult = 12;
     ProtobufClient.WebAuthenticationResult webAuthenticationResult = 14;

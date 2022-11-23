@@ -15,5 +15,93 @@ message GTSeriesUpdateMessage {
 
     oneof Update {
       IntervalsUpdate intervalsUpdate = 2;
+      SummaryUpdate summaryUpdate = 3;
+
+      GTSIntervalsUpdate gtsIntervalsUpdate = 4;
+      GTSSummaryUpdate gtsSummaryUpdate = 5;
+			GTSDatapointsUpdate datapointsUpdate = 6;
     }
+}
+
+// Aggregate represents an aggregated value in a certain time period. Only one
+// of the fields is ever set.
+message Aggregate {
+	 oneof Value {
+			 AggregateOHLC ohlc = 1;
+			 AggregateDecimal decimal = 2;
+	 }
+}
+
+// AggregateOHLC is a kind of aggregate that represents OHLC.
+message AggregateOHLC {
+    string open = 1;
+    string high = 2;
+    string low = 3;
+    string close = 4;
+}
+
+message AggregateDecimal {
+	 enum AggregateDecimalType {
+			UNKNOWN = 0;
+			SUM = 1;
+			LATEST = 2;
+	 }
+
+   string value = 1;
+   AggregateDecimalType kind = 2;
+}
+
+// Change in a certain time period.
+message Change {
+    string absolute = 1;
+    string percentage = 2;
+}
+
+message GTSIntervalsUpdate {
+    repeated GTSInterval intervals = 1;
+}
+
+// GTSSummaryUpdate represents a generic interval used by certain GTSeries.
+message GTSInterval {
+    int64 openTime = 1;
+    int64 closeTime = 2;
+    string periodAPISlug = 4;
+    map<string, Aggregate> data = 5;
+}
+
+// GTSSummaryUpdate represents a generic summary used by certain GTSeries.
+message GTSSummaryUpdate {
+   map<string, Aggregate> data = 1;
+   map<string, Change> changes = 2;
+   int64 updateTime = 3;
+}
+
+// GTSDataPoint represents a generic datapoint used by certain GTSeries.
+message GTSDataPoint {
+  uint64 series_id = 1;
+  int64 timestamp = 2;
+  int64 timestampNano = 3;
+  string external_id = 4;
+
+  map<string, GTSValue> values = 5;
+  string primary_field_name = 6;
+}
+
+message GTSDatapointsUpdate {
+	 repeated GTSDataPoint datapoints = 1;
+}
+
+// GTSValue is a container for an either a string or decimal value.
+message GTSValue {
+  enum GTSValueType {
+    UNKNOWN = 0;
+    STRING = 1;
+    DECIMAL = 2;
+  }
+
+  // v contains the actual datapoint value. Currently it can be either a string or a decimal.
+  // To identify which it is, use the type field. 
+  string v = 1;
+  // GTSValueType is not an actual cwlib.GTSValue field, but it helps decode the value to it's correct type.
+  GTSValueType type = 2;
 }

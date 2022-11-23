@@ -40,8 +40,12 @@ message Trade {
   int64 timestampNano = 10;
 
   string priceStr = 8;
-  string amountStr = 9;
+  string amountStr = 9 [deprecated=true];
+  string amountBaseStr = 15;
   string amountQuoteStr = 14;
+  string amountContractsStr = 16;
+  string amountSettlementStr = 17;
+  string amountUSDStr = 18;
 
   enum OrderSide {
     UNKNOWN = 0;
@@ -190,8 +194,14 @@ message Interval {
 
   OHLC ohlc = 2;
 
-  string volumeBaseStr = 6;
+  // VolumeBaseStr is deprecated and maps to internal SeriesOHLC.VolumeLegacyStr.
+  string volumeBaseStr = 6 [deprecated = true];
+  // VolumeBaseStrV2 maps to internal SeriesOHLC.VolumeBaseStr.
+  string volumeBaseStrV2 = 13;
   string volumeQuoteStr = 7;
+  string volumeContractsStr = 14;
+  string volumeSettlementStr = 15;
+  string volumeUSDStr = 16;
 
   string periodName = 9;
   string label = 11;
@@ -218,8 +228,14 @@ message SummaryUpdate {
   string lastStr = 10;
   string highStr = 11;
   string lowStr = 12;
-  string volumeBaseStr = 13;
+  // VolumeBaseStr is deprecated and maps to internal State.VolumeLegacy.
+  string volumeBaseStr = 13 [deprecated=true];
+  // VolumeBaseStrV2 maps to internal State.VolumeBase.
+  string volumeBaseStrV2 = 18;
   string volumeQuoteStr = 14;
+  string volumeContractsStr = 19;
+  string volumeSettlementStr = 20;
+  string volumeUSDStr = 21;
   string changeAbsoluteStr = 15;
   string changePercentStr = 16;
   string openInterestStr = 17;

@@ -4,6 +4,7 @@ package ProtobufStream;
 
 import "public/client/client.proto";
 import "public/markets/market.proto";
+import "public/markets/nft_collection.proto";
 import "public/markets/index.proto";
 import "public/markets/gts.proto";
 import "public/markets/pair.proto";
@@ -25,6 +26,8 @@ message StreamMessage {
     BulkMessage bulkMessage = 11;
     ProtobufMarkets.GTSeriesUpdateMessage gtsUpdate = 12;
     ListingsUpdateMessage listingsUpdate = 13;
+    ProtobufMarkets.NFTCollectionStatsUpdateMessage nftCollectionUpdate = 14;
+
   }
 }
 
