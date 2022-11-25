@@ -40,8 +40,12 @@ message Trade {
   int64 timestampNano = 10;
 
   string priceStr = 8;
-  string amountStr = 9;
+  string amountStr = 9 [deprecated=true];
+  string amountBaseStr = 15;
   string amountQuoteStr = 14;
+  string amountContractsStr = 16;
+  string amountSettlementStr = 17;
+  string amountUSDStr = 18;
 
   enum OrderSide {
     UNKNOWN = 0;
@@ -144,28 +148,28 @@ message OrderBookSpreadUpdate {
 
 // OrderBookLiquidityUpdate represents sums for various bips in the book
 message OrderBookLiquidityUpdate {
-    int64 timestamp = 1;
+  int64 timestamp = 1;
 
-    message OrderBookLiquiditySums {
-        string totalBase = 1;
-        string totalQuote = 2;
-    }
+  message OrderBookLiquiditySums {
+    string totalBase = 1;
+    string totalQuote = 2;
+  }
 
-    message OrderBookLiquidityUpdateSide {
-        OrderBookLiquiditySums bip25  = 1; // 0.25%
-        OrderBookLiquiditySums bip50  = 2; // 0.50%
-        OrderBookLiquiditySums bip75  = 3; // 0.75%
-        OrderBookLiquiditySums bip100 = 4; // 1.00%
-        OrderBookLiquiditySums bip150 = 5; // 1.50%
-        OrderBookLiquiditySums bip200 = 6; // 2.00%
-        OrderBookLiquiditySums bip250 = 7; // 2.50%
-        OrderBookLiquiditySums bip300 = 8; // 3.00%
-        OrderBookLiquiditySums bip400 = 9; // 4.00%
-        OrderBookLiquiditySums bip500 = 10; // 5.00%
-    }
+  message OrderBookLiquidityUpdateSide {
+    OrderBookLiquiditySums bip25  = 1; // 0.25%
+    OrderBookLiquiditySums bip50  = 2; // 0.50%
+    OrderBookLiquiditySums bip75  = 3; // 0.75%
+    OrderBookLiquiditySums bip100 = 4; // 1.00%
+    OrderBookLiquiditySums bip150 = 5; // 1.50%
+    OrderBookLiquiditySums bip200 = 6; // 2.00%
+    OrderBookLiquiditySums bip250 = 7; // 2.50%
+    OrderBookLiquiditySums bip300 = 8; // 3.00%
+    OrderBookLiquiditySums bip400 = 9; // 4.00%
+    OrderBookLiquiditySums bip500 = 10; // 5.00%
+  }
 
-    OrderBookLiquidityUpdateSide bid = 2;
-    OrderBookLiquidityUpdateSide ask = 3;
+  OrderBookLiquidityUpdateSide bid = 2;
+  OrderBookLiquidityUpdateSide ask = 3;
 }
 
 // TradesUpdate represents a set of new trades.
@@ -190,8 +194,15 @@ message Interval {
 
   OHLC ohlc = 2;
 
-  string volumeBaseStr = 6;
+  // volumeBaseStr is deprecated. That name is misleading: it's only in base
+  // for spot and vanilla futures; for other types of markets it can be
+  // denominated in other assets. Use volumeBaseStrV2 instead.
+  string volumeBaseStr = 6 [deprecated = true];
+  string volumeBaseStrV2 = 13;
   string volumeQuoteStr = 7;
+  string volumeContractsStr = 14;
+  string volumeSettlementStr = 15;
+  string volumeUSDStr = 16;
 
   string periodName = 9;
   string label = 11;
@@ -218,8 +229,15 @@ message SummaryUpdate {
   string lastStr = 10;
   string highStr = 11;
   string lowStr = 12;
-  string volumeBaseStr = 13;
+  // volumeBaseStr is deprecated. That name is misleading: it's only in base
+  // for spot and vanilla futures; for other types of markets it can be
+  // denominated in other assets. Use volumeBaseStrV2 instead.
+  string volumeBaseStr = 13 [deprecated=true];
+  string volumeBaseStrV2 = 18;
   string volumeQuoteStr = 14;
+  string volumeContractsStr = 19;
+  string volumeSettlementStr = 20;
+  string volumeUSDStr = 21;
   string changeAbsoluteStr = 15;
   string changePercentStr = 16;
   string openInterestStr = 17;

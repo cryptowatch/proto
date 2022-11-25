@@ -7,25 +7,69 @@ option go_package = "apiv2";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
+// TradingService is a GRPC Service that handles all trading related operations
+// accross multiple exchanges in a uniformed format.
 service TradingService {
+
+  // GetServerTime returns the current server time for the trading server. 
+  // This can be used to test connectivity to the trading service
+  // or this can be used as an application level ping
+  // to keep a websocket connection alive.
+  rpc GetServerTime(GetServerTimeRequest) returns (GetServerTimeResponse) {
+    option (google.api.http) = {
+      get: "/v2/server_time"
+    };
+  }
+
+  // GetExchangeInformation returns all exchange information for each exchange.
+  // example use cases:
+  //  - Determine what fields are needed to authenticate with the exchange.
+  //  - Find the exchanges the user is registred with.
+  //  - List the exchanges available with their ids for the user to use in the API.
   rpc GetExchangeInformation(GetExchangeInformationRequest) returns (GetExchangeInformationResponse) {
     option (google.api.http) = {
       get: "/v2/exchange_info"
     };
   }
 
+  // GetMarketInformation allows user to get all trading information for a specific market. Two Assets 
+  // trade on a given market; a market belongs to an exchange. 
+  //  Example of an asset (Bitcoin).
+  //  Example of a market (Bitcoin/Ethereum on kraken exchange).
+  // example use cases:
+  //  - determine trading ticks for a market
+  //  - determine if a market supports margin
   rpc GetMarketInformation(GetMarketInformationRequest) returns (GetMarketInformationResponse) {
     option (google.api.http) = {
       get: "/v2/market_info/{market_id}"
     };
   }
 
+  // GetAllMarketsInformation allows user to get all trading information for all markets supported on an exchange.
+  // example use cases:
+  //  - find supported markets for an exchange
+  //  - trading info for all markets on an exchange
   rpc GetAllMarketsInformation(GetAllMarketsInformationRequest) returns (GetAllMarketsInformationResponse) {
     option (google.api.http) = {
       get: "/v2/market_info"
     };
   }
 
+  // CreateOrder allows a user to place an order for a market; Creating an order does not mean a trade will occur,
+  // an order is simply the user's intent to make the trade. When an order is filled, a formal trade is made. 
+  // Since an order can be partially filled, this can result in multiple formal trades created to fulfill a single order. 
+  // Order can have many different types: limit, market, etc.
+  //  
+  // Synthetic order types are order types that cryptowatch manages for the user for order types that
+  // aren't supported natively on the exchange. Example, Iceberg order type may not be available
+  // on a specific exchange but we may still support it and allow the user to create that order 
+  // on the exchange that does not support it; Cryptowatch makes this feature possible by handling the logistics of the iceberg order 
+  // to allow the user to place their order on their desired exchange.
+  // But it is possible to have a specific order type that is supported by this exchange and can also be synthetically created 
+  // by Cryptowatch. Example, Iceberg order are supported natively by Binance and also by Cryptowach synthetic orders feature.
+  //  
+  // The following are the current synthetic order types and the exchanges cryptowatch allows the synthetic order type on:
+  // __Iceberg__ __Order__ __Type__: [kraken, coinbase, ftx, kucoin, bitfinex, binance, poloniex]
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {
     option (google.api.http) = {
       post: "/v2/orders/create"
@@ -33,6 +77,13 @@ service TradingService {
     };
   }
 
+  // CreateOrders allows a user to create a batch of orders. Each order can have different a market on different exchanges
+  // and each order will be created exactly as does CreateOrder method permits the user.
+  //  
+  // CreateOrders failures are handled as follow:
+  // if an order creation failed in the middle of the process, the rest of the orders are aborted and an error
+  // is returned to the user. Example: the user sent 3 orders to be created and the failure occurred on the second order
+  // creation, the third order will not be placed and only the first order is placed successfully.
   rpc CreateOrders(CreateOrdersRequest) returns (CreateOrdersResponse) {
     option (google.api.http) = {
       post: "/v2/orders/createmulti"
@@ -40,12 +91,49 @@ service TradingService {
     };
   }
 
+  // ReplaceOrder allows a user to replace an order for a different one. This method can be used in a variety of use cases:
+  //  - replace an entire order to a different order
+  //  - updating some values for an order such as amount, price, etc.
+  //  
+  // Some exchanges support replacing an order natively but some do not. For the exchanges that do not support
+  // replacing an order, we cancel the original order and replace it by creating a new one with
+  // the updated values provided in the ReplaceOrderRequest. 
+  // This method may result in multiple orders being returned since some orders will cause 
+  // multiple orders to be returned from the exchange. Example: Order type `ONE_CANCELS_OTHER` will
+  // return multiple orders from the exchange.
+  //   
+  // The following exchanges __do not__ support Replaceorder __natively__: 
+  // [kraken, binance, bitmex, bitstamp, bittrex, coinbase, ftx
+  // hitbtc, huboi, kucoin, okex]
+  //  
+  // ReplaceOrder possible failures:
+  // for exchanges that do not support replace order natively, we may cancel the old order and fail
+  // to create the new one. The user will know if the original order was cancelled part of the response.
+  rpc ReplaceOrder(ReplaceOrderRequest) returns (ReplaceOrderResponse) {
+    option (google.api.http) = {
+      post: "/v2/orders/replace"
+      body: "*"
+    };
+  }
+
+  // CancelOrder allows a user to cancel an existing open order. 
+  // If the order requested to be cancelled is one of the synthetic orders supported by cryptowatch,
+  // cancelling that order will cause cancelling the rest of the orders for that synthetic order.
   rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse) {
     option (google.api.http) = {
       delete: "/v2/orders/cancel/{order_id}"
     };
   }
 
+  // CancelAllOrders allows a user to batch cancel their open orders. A user
+  // may choose to provide the optional filters listed in CancelAllOrdersRequest to narrow
+  // down the orders they would like to cancel. Example, cancelling all orders on a specific exchange
+  // instead of all their orders on all exchanges.
+  //  
+  // CancelAllOrders failures are handled the same way CreateOrders failures are handled. If a failure
+  // occurred in the middle of the process, the remaining orders are not cancelled. However,
+  // if a failure occurred because an order had been cancelled previously on the exchange, we 
+  // ignore that failure and continue the process.
   rpc CancelAllOrders(CancelAllOrdersRequest) returns (CancelAllOrdersResponse) {
     option (google.api.http) = {
       post: "/v2/orders/cancelall"
@@ -53,40 +141,186 @@ service TradingService {
     };
   }
 
+  // GetOrder allows the user to fetch an existing order's information. 
   rpc GetOrder(GetOrderRequest) returns (GetOrderResponse) {
     option (google.api.http) = {
       get: "/v2/orders/id/{order_id}"
     };
   }
 
+  // ListOrders allows the user to list their existing orders. The user
+  // may choose any of the filters provided in ListOrdersRequest to narrow down the 
+  // list returned. 
   rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {
     option (google.api.http) = {
       get: "/v2/orders"
     };
   }
 
+  // ListTrades allows the user to list all of their trades. The user
+  // may choose to provide any of the filters provided in ListTradesRequest to narrow down the 
+  // list returned. 
+  //  
+  // Temporary workflow:
+  //  Currently, the total value is not the user's total number of trades but rather
+  //  the number of trades returned.
+  //  
+  // possible scenario:
+  //  A user may not see the most up-to-date trades that they have with the exchange
+  //  and that is due to possible failures occurring in the process of syncing the user
+  //  trades with the exchange. Failures can be the exchange not returning trades,
+  //  exchange has issues when cryptowatch requests to sync user trades,
+  //  exchange has downtime etc.
   rpc ListTrades(ListTradesRequest) returns (ListTradesResponse) {
     option (google.api.http) = {
       get: "/v2/trades"
     };
   }
 
+  // ListPositions allows the user to list their positions. The user
+  // may choose to provide any of the filters provided in ListPositionsRequest to narrow down the 
+  // list returned. 
+  //  
+  // possible scenario:
+  //  A user may not see the most up-to-date positions that they have with the exchange
+  //  and that is due to possible failures occurring in the process of syncing the user
+  //  positions with the exchange. Failures can be the exchange not returning positions,
+  //  exchange has issues when cryptowatch requests to sync user positions,
+  //  exchange has downtime etc.
   rpc ListPositions(ListPositionsRequest) returns (ListPositionsResponse) {
     option (google.api.http) = {
       get: "/v2/positions"
     };
   }
 
-  rpc ListExchangeWallets(ListExchangeWalletsRequest)
-      returns (ListExchangeWalletsResponse) {
+  // ListAvailableFilters allows user to get their current available filters based on their orders/trades/positions. The filters 
+  // are user specific since the data returned is based on the user's data. 
+  // For example, if user has only Ethereum and Bictoin orders, they should only get the set of (ETH, BTC) for orders filters.
+  rpc ListAvailableFilters(ListAvailableFiltersRequest) returns (ListAvailableFiltersResponse) {
+    option (google.api.http) = {
+      get: "/v2/available_filters"
+    };
+  }
+
+  // ListExchangeWallets allows user to get their current balances for all of their registered exchanges 
+  // or the balances narrowed to the filters provided in ListExchangeWalletsRequest.
+  //  
+  // possible scenario:
+  //  A user may not see the most up-to-date balance that they have with the exchange
+  //  and that is due to possible failures occurring in the process of syncing the user
+  //  balances with the exchange. Failures can be the exchange not returning balances,
+  //  exchange has issues when cryptowatch requests to sync user balances,
+  //  exchange has downtime etc.
+  rpc ListExchangeWallets(ListExchangeWalletsRequest) returns (ListExchangeWalletsResponse) {
     option (google.api.http) = {
       get: "/v2/wallets"
     };
   }
 
+  // ClosePosition allows the user to close an open position on an exchange. 
+  // Closing a position means taking the position back to zero.
+  //  
+  // possible failures:
+  //  A user may get a "not found" error for a position that 
+  //  exists on the exchange. Since Cryptowatch syncs with the exchange for the user positions
+  //  it is possible for numerous kind of errors to occur during the syncing
+  //  process that would restrict cryptowatch from getting a user's position.
+  //  Failures can be the exchange not returning position,
+  //  exchange has issues when cryptowatch requests to sync user positions,
+  //  exchange has downtime etc.
   rpc ClosePosition(ClosePositionRequest) returns (ClosePositionResponse) {
     option (google.api.http) = {
       delete: "/v2/positions/{position_id}"
+    };
+  }
+
+  // SettlePosition allows a user to settle their open position on an exchange. A valid 
+  // exchange position id must be provided. If an exchange id is provided as well,
+  // it must be an exchange that supports margin.
+  // Exchanges give traders the option to ‘settle’ the position to reduce their 
+  // liquidation risk by paying back the exchange the amount borrowed to originally open the position. 
+  //  
+  // possible failures:
+  //  A user may get a "not found" error for a position that 
+  //  exists on the exchange. Since Cryptowatch syncs with the exchange for the user positions
+  //  it is possible for numerous kind of errors to occur during the syncing
+  //  process that would restrict cryptowatch from getting a user's position.
+  //  Failures can be the exchange not returning position,
+  //  exchange has issues when cryptowatch requests to sync user positions,
+  //  exchange has downtime etc.
+  rpc SettlePosition(SettlePositionRequest) returns (SettlePositionResponse) {
+    option (google.api.http) = {
+      delete: "/v2/positions/settle/{position_id}"
+    };
+  }
+
+  // GetUserSettings allows the user to see their set settings on cryptowatch. 
+  rpc GetUserSettings(GetUserSettingsRequest) returns (GetUserSettingsResponse) {
+    option (google.api.http) = {
+      get: "/v2/user_settings"
+    };
+  }
+
+  // UpdateUserSettings allows the user to update their cryptowatch settings.
+  // This is mainly used to manipulate cryptowatch's trading user interface to the user's preference
+  rpc UpdateUserSettings(UpdateUserSettingsRequest) returns (UpdateUserSettingsResponse) {
+    option (google.api.http) = {
+      post: "/v2/user_settings"
+      body: "*"
+    };
+  }
+
+  // ListExchangeAccounts allows the user to list their registered exchange accounts
+  // with cryptowatch. If the user does not have an account registered with cryptowatch 
+  // for an exchange, the map will be empty for that exchange. If a user has at least 1 account, 
+  // it is guaranteed that one account is marked as the default account for that exchange.
+  rpc ListExchangeAccounts(ListExchangeAccountsRequest) returns (ListExchangeAccountsResponse) {
+    option (google.api.http) = {
+      get: "/v2/exchange_accounts"
+    };
+  }
+
+  // GetFeeSchedule allows a user to get their fee schedule for a market. The market's exchange 
+  // must be registered with cryptowatch with valid keys to be able to fetch the fee 
+  // schedule for that market. Also, fee schedules are synced with the exchange when a user
+  // requests their fee schedule, or if a user has an active session. The sync process only
+  // occur every 24 hours, if the user requests their fee schedule and it has been synced
+  // within the past 24 hours of the request, the user will get what cryptowatch 
+  // has for the fees schedule at that time; else, cryptowatch requests to sync the user
+  // fee schedule for that market and then return the new data.
+  rpc GetFeeSchedule(GetFeeScheduleRequest) returns (GetFeeScheduleResponse) {
+    option (google.api.http) = {
+      get: "/v2/fee_schedule"
+    };
+  }
+
+  // PlayOrders allows a user to play their paused orders. Not providing any argument will cause
+  // all of the user's paused orders to be played. Using the arguments provided 
+  // helps narrowing down the orders the user would like to be played.
+  //  
+  // PlayOrders failures are handled as CreateOrders failures:
+  // if playing an order failed in the middle of the process, the rest of the orders are aborted and an error
+  // is returned to the user. Example, the user sent 3 orders to be played and the failure occurred on the second order,
+  // the third order will not be played and only the first order is played successfully.
+  rpc PlayOrders(PlayOrdersRequest) returns (PlayOrdersResponse) {
+    option (google.api.http) = {
+      post: "/v2/play_orders"
+      body: "*"
+    };
+  }
+
+  // PauseOrders allows a user to pause their orders. Not providing any argument will cause
+  // all of the user's __open__ orders to be paused. Using the arguments provided 
+  // helps narrowing down the orders the user would like to be paused.
+  //  
+  // PauseOrders failures are handled as CreateOrders failures:
+  // if pausing an order failed in the middle of the process, the rest of the orders are not paused and an error
+  // is returned to the user. Example, the user sent 3 orders to be paused and the failure occurred on the second order,
+  // the third order will not be paused and only the first order is paused successfully.
+  rpc PauseOrders(PauseOrdersRequest) returns (PauseOrdersResponse) {
+    option (google.api.http) = {
+      post: "/v2/pause_orders"
+      body: "*"
     };
   }
 }
@@ -102,6 +336,7 @@ message TradingWebsocketRequest {
     GetAllMarketsInformationRequest get_all_markets_information_request = 4;
     CreateOrderRequest create_order_request = 5;
     CreateOrdersRequest create_orders_request = 6;
+    ReplaceOrderRequest replace_order_request = 20;
     CancelOrderRequest cancel_order_request = 7;
     CancelAllOrdersRequest cancel_all_orders_request = 8;
     GetOrderRequest get_order_request = 9;
@@ -110,11 +345,19 @@ message TradingWebsocketRequest {
     ListPositionsRequest list_positions_request = 12;
     ListExchangeWalletsRequest list_exchange_wallets_request = 13;
     ClosePositionRequest close_position_request = 14;
-    SubscribeToExchangesRequest subscribe_to_exchanges_request = 15;
+    SettlePositionRequest settle_position_request = 23;
+    SubscribeToExchangeAccountsRequest subscribe_to_exchange_accounts_request = 15;
     AddExchangeAPIKeyRequest add_exchange_api_key_request = 16;
     RevokeExchangeAPIKeyRequest revoke_exchange_api_key_request = 17;
     RevokeAllExchangeAPIKeysRequest revoke_all_exchange_api_keys_request = 18;
-    ListExchangeAPIKeysRequest list_exchange_api_keys_request = 19;
+    ListExchangeAccountsRequest list_exchange_accounts_request = 19;
+    GetUserSettingsRequest get_user_settings_request = 21;
+    UpdateUserSettingsRequest update_user_settings_request = 22;
+    GetServerTimeRequest get_server_time_request = 24;
+    GetFeeScheduleRequest get_fee_schedule_request = 25;
+    ListAvailableFiltersRequest list_available_filters_request = 26;
+    PlayOrdersRequest play_orders_request = 27;
+    PauseOrdersRequest pause_orders_request = 28;
   }
 }
 
@@ -135,21 +378,75 @@ message TradingWebsocketResponse {
     ListPositionsResponse list_positions_response = 12;
     ListExchangeWalletsResponse list_exchange_wallets_response = 13;
     ClosePositionResponse close_position_response = 14;
-    SubscribeToExchangesResponse subscribe_to_exchanges_response = 15;
+    SubscribeToExchangeAccountsResponse subscribe_to_exchange_accounts_response = 15;
     AddExchangeAPIKeyResponse add_exchange_api_key_response = 16;
     RevokeExchangeAPIKeyResponse revoke_exchange_api_key_response = 17;
     RevokeAllExchangeAPIKeysResponse revoke_all_exchange_api_keys_response = 18;
-    ListExchangeAPIKeysResponse list_exchange_api_keys_response = 19;
+    ListExchangeAccountsResponse list_exchange_accounts_response = 19;
     ErrorResponse error_response = 20;
+    ReplaceOrderResponse replace_order_response = 21;
+    GetUserSettingsResponse get_user_settings_response = 22;
+    UpdateUserSettingsResponse update_user_settings_response = 23;
+    SettlePositionResponse settle_position_response = 24;
+    GetServerTimeResponse get_server_time_response = 25;
+    ExchangeConnectionUpdate exchange_connection_update = 26;
+    MessageAcknowledgementResponse acknowledgement = 27;
+    MFAAuthenticationResult mfa_authentication_result = 28;
+    GetFeeScheduleResponse get_fee_schedule_response = 29;
+    ListAvailableFiltersResponse list_available_filters_response = 30;
+    PlayOrdersResponse play_orders_response = 31;
+    PauseOrdersResponse pause_orders_response = 32;
   }
 }
 
+message GetFeeScheduleRequest {
+  // The market id to get the fee schedule for.
+  // A cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets)
+  int32 market_id = 1;
+}
+
+message GetFeeScheduleResponse {
+  // makerFee is a fee for orders that provide liquidity.
+  // This fee is unique per user.
+  // Ex: "0.1" means 0.1% fee
+  string makerFee = 1;
+  // takerFee is a fee for orders that take away liquidity.
+  // This fee is unique per user.
+  // Ex: "0.1" means 0.1% fee
+  string takerFee = 2;
+  // represent when was the last time the user fee schedules were synced with the exchange
+  google.protobuf.Timestamp last_updated = 3;
+}
+// MessageAcknowledgementResponse is sent to acknowledge that broker has received and is currently processing a
+// request. It is only sent for specific requests, and it is only sent if the request has provided a request_id.
+// The specific requests for which broker will send an acknowledgement response are `CreateOrderRequest`, `CreateOrdersRequest`,
+// `ReplaceOrderRequest`, `CancelOrderRequest`, `CancelAllOrdersRequest`, `ClosePositionRequest`, `SettlePositionRequest`, 
+// `PlayOrdersRequest` and `PauseOrdersRequest`.
+message MessageAcknowledgementResponse {
+  // server_time is the current server time of the instance that served the user request
+  google.protobuf.Timestamp server_time = 1;
+}
+
+// GetServerTimeRequest is an empty request
+message GetServerTimeRequest {}
+
+message GetServerTimeResponse {
+  // server_time is the current server time of the instance that served the user request
+  google.protobuf.Timestamp server_time = 1;
+}
+
 message CreateOrderRequest {
+  // [optional] id of the exchange account to place the order through.
+  // If not provided, the default account will be used.
+  string exchange_account_id = 24;
+
   // Could be either 'Buy' or 'Sell'.
   Side side = 1;
 
-  // Could be any of the values defined in the 'OrderType' enum.
-  // It defines how we should place this order and usually which
+  // Could be any of the values defined in the 'OrderType' enum
+  // except `SETTLE_POSITION`. If you need to settle a position 
+  // make a request using `SettlePosition()`.
+  // Type will define how we should place this order and usually which
   // parameters we are going to use (if a stop loss, we'll use the
   // stop price, etc.). Default value is MARKET.
   OrderType type = 2;
@@ -165,25 +462,25 @@ message CreateOrderRequest {
   // Amount of base asset to buy or sell.
   string amount = 5;
 
-  // Quote asset price to buy or sell the base asset. Used for Limit orders.
+  // Quote asset price to buy or sell the base asset. Used for `LIMIT` orders.
   string price = 6;
 
-  // The stop price for a Stop Market or Stop Limit order.
+  // The stop price for a `Stop Market` or `Stop Limit` order.
   string stop_price = 7;
 
-  // The triggered limit price for a Stop Limit order.
+  // The limit order execution price for `STOP_LIMIT` order.
   string stop_limit_price = 8;
 
-  // The trigger price for a Market If Touched order.
+  // The trigger price for a `MARKET_IF_TOUCHED` order.
   string trigger_price = 9;
 
-  // The triggered limit price for a Limit If Touched order.
+  // The limit order execution price for `LIMIT_IF_TOUCHED` order.
   string execution_price = 10;
 
-  // The trailing offset price for a Trailing Stop Market order.
+  // The trailing offset price for a `TRAILING_STOP_MARKET` order.
   TrailingOffsetPrice trailing_stop_market_offset = 11;
 
-  // The limit price offset for a Trailing Stop Limit order.
+  // The limit price offset for a `TRAILING_STOP_LIMIT` order.
   TrailingOffsetPrice trailing_stop_limit_offset = 12;
 
   // [optional] Timestamp defining when the order should be placed.
@@ -215,20 +512,74 @@ message CreateOrderRequest {
   // [optional] If the order fills in its entirety, place the following
   // closing order.
   CreateOrderRequest closing_order = 20;
+
+  // [optional] Defines if the order should be immediately canceled, if it would increase the size of an open position.
+  // (default: false)
+  bool reduce_only = 21;
+
+  // [optional] An order type to trade in smaller predetermined quantities, called iceberg_quantity, in order to hide the total order quantity.
+  string iceberg_quantity = 22;
+
+  // [optional] Trigger price references are used in futures trading to denote the kind of price at which a trade action is to be taken, if supported for a market.
+  // (default: Default)
+  ReferencePrice reference_price = 23;
+
+  // [optional] Specify if an order is synthetic or not.
+  // (default: false)
+  bool synthetic = 25;
+
+  // We expect following be present in this field
+  // Key : "platform", Values = ["desktop", "web", "mobile", "bcli", "other"]
+  // This represents platform where trade was placed
+  //
+  //  Key: "tradeform", Values = ["legacy", "standard", "active", "ladder", "tui", "other"]
+  // This represents which trade form was used to place order
+  map<string, string> metadata = 26;
 }
 
 message CreateOrderResponse {
+  // CreateOrder may result in multiple orders returned since some order types can cause 
+  // multiple orders to be returned from the exchange. Example: Order type `ONE_CANCELS_OTHER` will return multiple orders from the exchange.
   repeated Order order = 1;
 }
 
-message GetExchangeInformationRequest {}
+message ReplaceOrderRequest {
+  // Order ID of the original order
+  string order_id = 1;
+
+  // New order to replace the original with
+  CreateOrderRequest order = 2;
+
+  // [optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across
+  // exchanges, there is a very small change that a user could have two orders with the same order ID, and end up
+  // replacing the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within
+  // an exchange. Could be found with the REST API under https://api.cryptowat.ch/exchanges.
+  int32 exchange_id = 3;
+}
+
+message ReplaceOrderResponse {
+  // Some exchanges don't have an atomic replace function, so broker manually cancels the original order and
+  // then places the new one. Because of this, it's possible the original order was canceled but the new order
+  // failed to place for some reason. The canceled field indicates whether the original order was cancelled or not.
+  bool canceled = 1;
+
+  // affected orders
+  repeated Order orders = 2;
+}
+
+message GetExchangeInformationRequest {
+  // if true, will only respond with information about exchanges the user is registered with.
+  // (exchanges that the user has keys setup for in Cryptowatch)
+  bool only_registered_exchanges = 1;
+}
 
 message GetExchangeInformationResponse {
+  // exchange_info is a map where the key is the exchange id and the value is the corresponding ExchangeInformation
   map<int32, ExchangeInformation> exchange_info = 1;
 }
 
 message ExchangeInformation {
-  // Unique ID for the exchange.
+  // Unique ID for the exchange. Could be found with the REST API under https://api.cryptowat.ch/exchanges.
   int32 exchange_id = 1;
 
   // Name of the exchange.
@@ -236,33 +587,48 @@ message ExchangeInformation {
 
   // The fields required in order to enter a new API key successfully.
   // For example:
-  //   - Kraken requires:         [key, secret]
-  //   - Coinbase Pro requires:   [key, secret, passphrase]
-  //   - etc.
+  //   - Kraken requires:         [api_key, api_secret]
+  //   - Coinbase Pro requires:   [api_key, api_secret, passphrase]
   repeated string fields = 3;
+
+  // information about any exchange accounts the user has registered.
+  // if there are accounts, it is guaranteed one of them is marked
+  // as the default account for the exchange. Default account is used
+  // for operations where user does not specify a specific exchange account, so 
+  // Cryptowatch perform the action using the exchange's default account.
+  ExchangeAccounts exchange_accounts = 4;
+
+  // information about the current exchange status
+  ExchangeConnectionUpdate connection = 5;
 }
 
 message GetMarketInformationRequest {
+  // the market id to get the information about. 
+  // A cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets)
   int32 market_id = 1;
 }
 
 message GetMarketInformationResponse {
-  MarketInformation market_info= 1;
+  MarketInformation market_info = 1;
 }
 
 message GetAllMarketsInformationRequest {
+  // The exchange to get all of its markets information.
+  // Exchange Ids can be found with the REST API under https://api.cryptowat.ch/exchanges.
   int32 exchange_id = 1;
 }
 
 message GetAllMarketsInformationResponse {
-  repeated MarketInformation markets_info= 1;
+  // list of market information
+  repeated MarketInformation markets_info = 1;
 }
 
 message MarketInformation {
+  // A cryptowatch market identifier (could be found with the REST API under https://api.cryptowat.ch/markets)
   int32 market_id = 1;
 
-  // ID of the exchange this market belongs to.
-  int32 exchange_id = 2;
+  // The exchange this market belongs to.
+  Exchange exchange = 2;
 
   // Symbol is a unique upper-case string identifier for the underlying instrument.
   string symbol = 3;
@@ -313,6 +679,9 @@ message MarketInformation {
 
   // Determines if this market supports iceberg option to limit orders.
   bool supports_iceberg = 18;
+
+  // Synthetic order types that this specific market supports.
+  repeated OrderType synthetic_order_types = 19;
 }
 
 enum MarginAction {
@@ -349,7 +718,7 @@ enum MarketType {
 
 enum ContractSchema {
   UNKNOWN_CONTRACT_SCHEMA = 0;  // contract schema isn't known
-  VANILLA = 1; 	// contract that is settled in its quote asset.
+  VANILLA = 1;  // contract that is settled in its quote asset.
   INVERSE = 2;  // contract that is settled in its base asset.
   QUANTO = 3;  // contract that is settled in an asset that is neither its base or quote.
 }
@@ -363,111 +732,358 @@ message TickSizes {
   // As an example, if a market specifies a base_min of 10, a base_max of 12,
   // and a base_tick_size of 0.5, then only the values [10, 10.5, 11, 11.5, 12]
   // may be used to specify the order amount.
+  //
+  // The min, max and tick_size are unique per market. A market belongs to an exchange so 
+  // the values for a market will differ between exchanges. Some exchanges do not offer
+  // this data and you may get -1 for the value indicating the exchange does not have this data.
 
-  string base_min = 1;
-  string base_max = 2;
-  string base_tick_size = 3;
+  string base_min = 1; // base asset minimum order size 
+  string base_max = 2; // base asset maximum order size
+  string base_tick_size = 3; // base asset tick size
 
-  string quote_min = 4;
-  string quote_max = 5;
-  string quote_tick_size = 6;
+  string quote_min = 4;  // quote asset minimum price
+  string quote_max = 5;  // quote asset maximum price
+  string quote_tick_size = 6;  // quote asset tick size
 }
 
 message CreateOrdersRequest {
+  // list of orders to be created
   repeated CreateOrderRequest orders = 1;
 }
 
 message CreateOrdersResponse {
+  // multiple orders can be returned even if only one order was sent in `CreateOrdersRequest`
+  // since some order types can result in multiple orders returned from the exchange.
   repeated Order orders = 1;
 }
 
 message CancelOrderRequest {
+  // order_id is the exchange's identifier for the order to be cancelled
   string order_id = 1;
+
+  // [optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across
+  // exchanges, there is a very small change that a user could have two orders with the same order ID, and end up
+  // cancelling the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within
+  // an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchange)
+  int32 exchange_id = 2;
 }
 
+// CancelOrderResponse is an empty response
 message CancelOrderResponse {}
 
 message CancelAllOrdersRequest {
-  // [optional] If specified, deletes all orders for this exchange only.
+  // [optional] If specified, deletes orders for this exchange only.
+  // (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
   int32 exchange_id = 1;
 
-  // [optional] If specified, deletes all orders belonging to this market only.
+  // [optional] If specified, deletes orders belonging to this market only.
+  // (could be found with the REST API under https://api.cryptowat.ch/markets)
   int32 market_id = 2;
+
+  // [optional] If specified, deletes orders belonging to this exchange account only.
+  string exchange_account_id = 3;
 }
 
-message CancelAllOrdersResponse {}
+// CancelAllOrdersResponse returns a list of failed order ids (key) with the error/reason for the failure (value).
+message CancelAllOrdersResponse {
+  map<string, ErrorResponse> failed_ids = 1;
+}
 
 message GetOrderRequest {
+  // order_id is the exchange's identifier for the order.
   string order_id = 1;
+
+  // [optional] The exchange ID that the order is on. Because order IDs are not guaranteed to be unique across
+  // exchanges, there is a very small change that a user could have two orders with the same order ID, and end up
+  // retrieving the wrong order. Providing the exchange_id removes that possibility, since order IDs are unique within
+  // an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchanges.)
+  int32 exchange_id = 2;
 }
 
 message GetOrderResponse {
   Order order = 1;
 }
 
-message ListOrdersRequest {
-  // Limits the number of orders shown, if unset, the default is set to 200.
-  int32 limit = 1;
 
-  // If specified, only retrieves orders for this exchange.
-  int32 exchange_id = 2;
-
-  // If specified, only retrieves orders for this market.
-  int32 market_id = 3;
-
-  // If specified, only lists orders belonging to a given order group, if it
-  // exists.
-  string group_id = 4;
-
-  // If specified, only retrieve orders that were opened after (strictly >)
-  // to this Timestamp.
-  google.protobuf.Timestamp timestamp = 5;
+enum OrdersSortKey {
+  ORDER_CREATION_TIME = 0;
+  ORDER_STATUS = 1;
+  ORDER_AMOUNT = 2;
+  ORDER_PRICE = 3;
+  ORDER_TRIGGER_PRICE = 4;
+  ORDER_MARKET = 5;
+  ORDER_TYPE = 6;
+  ORDER_SIDE = 7;
 }
 
+enum Sorting {
+  DESCENDING = 0;
+  ASCENDING = 1;
+}
+
+message ListOrdersRequest {
+  // [optional] Limits the number of orders shown, if unset, the default is set to 200.
+  int32 limit = 1;
+
+  // [optional] If specified, only retrieve only orders belonging to the exchange account
+  string exchange_account_id = 13;
+
+  // [optional] If specified, only retrieves orders for this exchange.
+  // (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
+  int32 exchange_id = 2;
+
+  // [optional] If specified, only retrieves orders for this market.
+  // (could be found with the REST API under https://api.cryptowat.ch/markets)
+  int32 market_id = 3;
+
+  // [optional] If specified, only lists orders belonging to a given order group, if it exists.
+  string group_id = 4;
+
+  // [optional] If specified, only retrieve orders that were executed after (strictly >)
+  google.protobuf.Timestamp start_timestamp = 5;
+
+  // [optional] If specified, only retrieve orders that were executed before (strictly <)
+  google.protobuf.Timestamp end_timestamp = 6;
+
+  // [optional] Used for pagination
+  int32 offset = 7;
+
+  // [optional] Could be either 'Buy' or 'Sell'.
+  OptionalSide side = 8;
+
+  // [optional] Type of order to filter on
+  OptionalOrderType type = 9;
+
+  // [optional] The quote asset for this market. (mapping could be found with the REST API under
+  // https://api.cryptowat.ch/assets)
+  int32 quote_asset_id = 10;
+
+  // [optional] The base asset for this market. (mapping could be found with the REST API under
+  // https://api.cryptowat.ch/assets)
+  int32 base_asset_id = 11;
+
+
+  // [optional] Filter by statuses
+  repeated Status statuses = 12;
+
+  // [optional] defaults to DESCENDING
+  // NOTE: Anything other than DESCENDING is disabled.
+  Sorting sorting = 14;
+
+  // [optional] defaults to CREATION_TIME
+  // NOTE: Anything other than CREATION_TIME is disabled.
+  OrdersSortKey sort_on = 15;
+}
+
+// OptionalOrderType helps cryotwatch determine if a user specified an order type.
+// Since the order types offered are enums, not sending an order type will default
+// to the default value 0. In this case, the request will be interpreted as the user
+// specified the order type that belongs to enum 0. To avoid the scenario above, 
+// OptionalOrderType is a wrapper around OrderType which will be evaluated if and only if valid flag is set.
+message OptionalOrderType {
+  // Valid needs to be set to true otherwise type will be ignored.
+  bool valid = 1;
+  // OrderType value
+  OrderType type = 2;
+}
+
+
 message ListOrdersResponse {
+  // list of orders that belong to the user
   repeated Order orders = 1;
+
+  // Total field is not the number of all orders ever, unless there were no filter criteria in the request.
+  // It is also not the length of the orders in the response.
+  //  
+  // It is the total number of possible results as defined by the filter criteria without pagination criteria. For 
+  // example, a user has 10 orders, 7 of them belongs to BTC/USD market. If the request is:
+  // `ListOrdersRequest {
+  //     limit=2
+  //     market_id=87 (BTC/USD)
+  //     offset=3
+  // }`
+  // `total` will be equal 7 and the `orders` field will contains 2 objects.
+  //  
+  // NB: ListOrdersResponse can be used as a websocket response in a update of orders, in this specific case `total`
+  // will represent the amount of orders that have been updated.
+  int32 total = 2;
+}
+
+
+enum TradesSortKey {
+  TRADE_EXECUTION_TIME = 0;
+  TRADE_EXTERNAL_ID = 1;
+  TRADE_ORDER_ID = 2;
+  TRADE_AMOUNT = 3;
+  TRADE_PRICE = 4;
+  TRADE_MARKET = 5;
+  TRADE_FEE = 6;
+  TRADE_SIDE = 7;
 }
 
 message ListTradesRequest {
-  // Limits the number of trades shown, if unset, the default is set to 200.
+  // [optional] Limits the number of trades shown, if unset, the default is set to 200.
   int32 limit = 1;
 
-  // If specified, only retrieves trades for this exchange.
+  // [optional] If sepcified, only retrieves trades for this exchange account.
+  string exchange_account_id = 10;
+
+  // [optional] If specified, only retrieves trades for this exchange.
+  // (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
   int32 exchange_id = 2;
 
-  // If specified, only retrieves trades for this market.
+  // [optional] If specified, only retrieves trades for this market.
+  // (could be found with the REST API under https://api.cryptowat.ch/markets)
   int32 market_id = 3;
 
-  // If specified, only retrieve trades that were executed after (strictly >)
-  // to this Timestamp.
-  google.protobuf.Timestamp timestamp = 4;
+  // [optional] If specified, only retrieve trades that were executed after (strictly >)
+  google.protobuf.Timestamp start_timestamp = 4;
+
+  // [optional] If specified, only retrieve trades that were executed before (strictly <)
+  google.protobuf.Timestamp end_timestamp = 5;
+
+  // [optional] Used for pagination
+  int32 offset = 6;
+
+  // [optional] Could be either 'Buy' or 'Sell'.
+  OptionalSide side = 7;
+
+  // [optional] The quote asset for this market.
+  int32 quote_asset_id = 8;
+
+  // [optional] The base asset for this market.
+  int32 base_asset_id = 9;
+
+  // [optional] Whether or not to consolidate trades per order
+  bool consolidate = 11;
+
+  // [optional] defaults to DESCENDING
+  // NOTE: Anything other than DESCENDING is disabled.
+  Sorting sorting = 14;
+
+  // [optional] defaults to TRADE_EXECUTION_TIME
+  // NOTE:  Anything other than TRADE_EXECUTION_TIME is disabled.
+  TradesSortKey sort_on = 15;
+}
+
+// OptionalSide helps cryotwatch determine if a user specified an order side.
+// Since the sides offered are enums, not sending an order type will default
+// to the default value 0. In this case, the request will be interpreted as the user
+// specified the order side that belongs to enum 0. To avoid the scenario above, 
+// OptionalSide is a wrapper around Side which will be evaluated if and only if valid flag is set.
+message OptionalSide {
+  // Valid needs to be set to true otherwise side will be ignored.
+  bool valid = 1;
+  // Side value
+  Side side = 2;
 }
 
 message ListTradesResponse {
+  // list of trades that belong to the user
   repeated Trade trades = 1;
+
+  // Total field is not the number of all trades ever, unless there were no filter criteria in the request.
+  // It is also not the length of the trades in the response.
+  //  
+  // It is the total number of possible results as defined by the filter criteria without pagination criteria. For 
+  // example, a user has 10 trades, 7 of them belongs to BTC/USD market. If the request is:
+  // `ListTradesRequest {
+  //     limit=2g
+  //     market_id=87 (BTC/USD)
+  //     offset=3
+  // }`
+  // `total` will be equal 7 and the `trades` field will contains 2 objects.
+  //  
+  // NB: ListTradesResponse can be used as a websocket response in a update of trades, in this specific case `total`
+  // will represent the amount of trades that have been updated.
+  int32 total = 2;
 }
 
 message ListPositionsRequest {
-  // Limits the number of positions shown, if unset, the default is set to 200.
+  // [optional] Limits the number of positions shown, if unset, the default is set to 200.
   int32 limit = 1;
 
-  // If specified, only retrieves positions for this exchange.
+  // [optional] If specified, only retrieves positions for this exchange account.
+  string exchange_account_id = 6;
+
+  // [optional] If specified, only retrieves positions for this exchange. 
+  // (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
   int32 exchange_id = 2;
 
-  // If specified, only retrieves positions for this market.
+  // [optional] If specified, only retrieves positions for this market.
+  // (could be found with the REST API under https://api.cryptowat.ch/markets)
   int32 market_id = 3;
 
-  // If specified, only retrieve positions that were opened after (strictly >)
+  // [optional] If specified, only retrieve positions that were opened after (strictly >)
   // to this Timestamp.
   google.protobuf.Timestamp timestamp = 4;
+
+  // [optional] Used for pagination
+  int32 offset = 5;
 }
 
 message ListPositionsResponse {
+  // list of positions that belong to the user
   repeated Position positions = 1;
+
+  // Total field is not the number of all positions ever, unless there were no filter criteria in the request.
+  // It is also not the length of the positions in the response.
+  //  
+  // It is the total number of possible results as defined by the filter criteria without pagination criteria. For 
+  // example, a user has 10 postions, 7 of them belongs to BTC/USD market. If the request is:
+  // ListPositionRequest {
+  //     limit=2
+  //     market_id=87 (BTC/USD)
+  //     offset=3
+  // }
+  // `total` will be equal 7 and the `positions` field will contains 2 objects.
+  int32 total = 2;
+}
+
+// ListAvailableFiltersRequest is an empty request
+message ListAvailableFiltersRequest {}
+
+// Filters are user independent data. Each user may see different 
+// filters based on the orders/trades/positions
+message Filters {
+  // All exchanges available to be filtered
+  repeated Exchange exchanges = 1;
+
+  // All markets availables to be filtered
+  repeated Market markets = 2;
+
+  // All order types availables to be filtered
+  // Only for orders
+  repeated OrderType types = 3;
+
+  // All base assets availables to be filtered
+  repeated Asset base_assets = 4;
+
+  // All quote assets availables to be filtered
+  repeated Asset quote_assets = 5;
+
+  // All order statuses availables to be filtered
+  // Only for orders
+  repeated Status statuses = 6;
+}
+
+// ListAvailableFiltersResponse is unique per user
+// since the response is depended upon the orders, trades 
+// and positions a user have.
+message ListAvailableFiltersResponse {
+  Filters orders_filters = 1; // orders filters a user have available
+  Filters trades_filters = 2; // trades filters a user have available
 }
 
 message ClosePositionRequest {
+  // position_id is the exchange's identifier for the position to close.
   string position_id = 1;
+
+  // [optional] The exchange ID that the position is on. Because position IDs are not guaranteed to be unique across
+  // exchanges, there is a very small change that a user could have two positions with the same position ID, and end up
+  // closing the wrong position. Providing the exchange_id removes that possibility, since position IDs are unique
+  // within an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchange)
+  int32 exchange_id = 2;
 }
 
 message ClosePositionResponse {
@@ -477,15 +1093,102 @@ message ClosePositionResponse {
   repeated Order orders = 1;
 }
 
+message SettlePositionRequest {
+  // the exchange's identifier for the position to settle
+  string position_id = 1;
+
+  // [optional] The exchange ID that the position is on. Because position IDs are not guaranteed to be unique across
+  // exchanges, there is a very small change that a user could have two positions with the same position ID, and end up
+  // closing the wrong position. Providing the exchange_id removes that possibility, since position IDs are unique
+  // within an exchange. (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
+  int32 exchange_id = 2;
+}
+
+message SettlePositionResponse {
+  // The orders created as a result of settling the position.
+  // Not guaranteed to be filled, some exchanges do not include
+  // this in the response.
+  repeated Order orders = 1;
+}
+
 message ListExchangeWalletsRequest {
-  // If specified, only returns the wallets and balances for that exchange.
+  // [optional] If specified, only returns the wallets and balances for that exchange.
+  // (Could be found with the REST API under https://api.cryptowat.ch/exchanges)
   int32 exchange_id = 1;
+
+  // [optional] If specified, only returns the wallets and balances for that exchange account.
+  string exchange_account_id = 2;
 }
 
 message ListExchangeWalletsResponse {
   // A map of exchange IDs associated with their complete wallet set and
   // balances information.
-  map<int32, Wallets> exchange_wallets = 1;
+  map<int32, ExchangeAccountWallets> exchange_account_wallets = 1;
+}
+
+// GetUserSettingsRequest is an empty request
+message GetUserSettingsRequest {}
+
+message GetUserSettingsResponse {
+  // cryptowatch settings
+  UserSettings settings = 1;
+}
+
+message UpdateUserSettingsRequest {
+  // the settings to update in cryptowatch
+  UserSettings settings = 1;
+}
+
+message UpdateUserSettingsResponse {}
+
+message UserSettings {
+  // Session timeout in seconds define how frequently user will need to
+  // reauthenticate current session
+  int32 session_timeout_seconds = 1;
+
+  // Allows you to change the order and related properties of the tab
+  repeated Tab tabs = 2;
+
+  // Privacy mode toggle allows a user to hide the value of their holdings and
+  // their PnL. This is recommended when working in public so that your account
+  // details are not visible to people glancing at your screen.
+  bool privacy_mode = 3;
+
+  // Consolidating fills toggle allows you to toggle between seeing order fills
+  // with all the constituent partial fills, or as one whole fill. For example,
+  // an order to buy 10 ETH/USD might have gotten filled over 20 orders of many
+  // sizes at one price, but a user might just want to see that they bought 10
+  // ETH/USD in one order and the average price.
+  bool consolidating_fills = 4;
+
+  // This is used to persist setting if we want to show positions for all pairs in cockpit
+  bool show_all_pairs_positions = 5;
+
+  // This is used to persist setting if we want to show open orders for all pairs in cockpit
+  bool show_all_pairs_open_order = 6;
+}
+
+
+message Tab {
+  // valid names are "open-orders",  "holdings",  "positions",  "historical-orders",  "trades"
+  string name = 1;
+  bool visibility = 2;
+  repeated Column columns = 3;
+}
+
+// column setting inside each tab
+message Column {
+  // name of column
+  string name = 1;
+  // is column fixed
+  bool fixed = 2;
+  // is column visible
+  bool visibility = 3;
+}
+
+message ExchangeAccountWallets {
+  // A map of exchange account IDs to the wallets for that exchange account.
+  map<string, Wallets> wallets = 2;
 }
 
 message Wallets {
@@ -494,9 +1197,11 @@ message Wallets {
   map<string, Balances> balances = 1;
 }
 
+// Balances represent all of the balances the user have accross 
+// all of their assets.
 message Balances {
-  // The list of asset balances for a given wallet. The key of the map
-  // is the asset ID, the value being the Balances for that asset.
+  // balances is a map of all of the user balances where the key of the map
+  // is the asset ID, the value being the Balance for that asset.
   map<int32, Balance> balances = 1;
 }
 
@@ -506,16 +1211,38 @@ message Balance {
   // The total balance owned for that asset.
   string total = 1;
 
-  // The available balance for this asset to use for trading.
+  // The available balance for this asset to use for trading. Ensure to checkout 
+  // the `virtual_available` balance as well
   string available = 2;
+
+  // The name of the asset
+  string asset_name = 3;
+
+  // The name of the exchange
+  string exchange_name = 4;
+
+  // The name of the exchange account for which this balance belongs to
+  string exchange_account_name = 5;
+
+  // virtual_available is the available balance including synthetic orders.
+  // If a user has any open synethetic order, this value
+  // will denote how much would they have left if the entire
+  // synthetic order was filled. 
+  // This will be useful for the user to know how much 
+  // to keep in their account so their synthetic orders can 
+  // completely be placed.
+  string virtual_available = 6;
+
+  // The symbol of the asset
+  string asset_symbol = 7;
 }
 
 message Exchange {
-  // The ID of the exchange the order was placed on. Could be found
+  // Cryptowatch identifier for the exchange. Could be found
   // with the REST API under https://api.cryptowat.ch/exchanges.
   int32 exchange_id = 1;
 
-  // Name of the exchange the order was placed on.
+  // Name of the exchange
   string exchange_name = 2;
 }
 
@@ -577,6 +1304,8 @@ enum OrderType {
   TRAILING_STOP_LIMIT = 7;
   SETTLE_POSITION = 8;
   ONE_CANCELS_OTHER = 9;
+  ICEBERG = 10;
+  TRIGGER_ENTRY = 11;
 }
 
 enum Status {
@@ -588,6 +1317,7 @@ enum Status {
   PARTIALLY_FILLED = 5; // The order has been partially filled.
   EXPIRED = 6;          // The order has expired (if it was set with an expiry date).
   REJECTED = 7;         // The order was not accepted by the engine and got rejected.
+  PAUSED = 8;           // The order has been paused and ready to be restarted.
 }
 
 enum TrailingOffsetType {
@@ -601,6 +1331,18 @@ enum TrailingOffsetType {
 message TrailingOffsetPrice {
   TrailingOffsetType type = 1;
   string value = 2;
+}
+
+enum ReferencePrice {
+  // Default type for an exchange
+  DEFAULT = 0;
+  // Mark Price is Index price + 30 seconds EMA (protection against freak trades)
+  // Note that mark is first option because it is also the default value if nothing is passed
+  MARK = 1;
+  // Index Price is the underlying benchmark which is based on collective prices from different exchange.
+  INDEX = 2;
+  // Last traded price for contract
+  LTP = 3;
 }
 
 // Order defines the information for an order after it has been placed on the
@@ -617,6 +1359,9 @@ message Order {
 
   // Group Identifier for the order. Appears if the order is part of an OCO.
   string group_id = 3;
+
+  // The exchange account this order belongs to.
+  string exchange_account_id = 35;
 
   // The exchange this order was placed on.
   Exchange exchange = 4;
@@ -640,8 +1385,9 @@ message Order {
   // supported by most exchanges.
   Status status = 9;
 
-  // The status of the order as returned by the exchange.
-  string status_string = 10;
+  // Field was previously used for status_string,
+  // which contained status of the order as returned by the exchange.
+  reserved 10;
 
   // Leverage value for a margin order.
   string leverage = 11;
@@ -664,19 +1410,19 @@ message Order {
   // The stop price for a Stop Market or Stop Limit order.
   string stop_price = 17;
 
-  // The limit price for a Stop Limit order.
+  // The limit order execution price for `STOP_LIMIT` order.
   string stop_limit_price = 18;
 
-  // The trigger price for a Market If Touched order.
+  // The trigger price for a `MARKET_IF_TOUCHED` order.
   string trigger_price = 19;
 
-  // The triggered limit price for a Limit If Touched order.
+  // The limit order execution price for `LIMIT_IF_TOUCHED` order.
   string execution_price = 20;
 
-  // The trailing offset price for a Trailing Stop Market order.
+  // The trailing offset price for a `TRAILING_STOP_MARKET` order.
   TrailingOffsetPrice trailing_stop_market_offset = 21;
 
-  // The limit price offset for a Trailing Stop Limit order.
+  // The limit price offset for a `TRAILING_STOP_LIMIT` order.
   TrailingOffsetPrice trailing_stop_limit_offset = 22;
 
   // The stop price for an OCO order.
@@ -707,6 +1453,20 @@ message Order {
 
   // Contains the details for the closing order if the parent order fills fully.
   Order closing_order = 31;
+
+  // [optional] Defines if the order should be immediately canceled, if it would increase the size of an open position.
+  // (default: false)
+  bool reduce_only = 32;
+
+  // An order type to trade in smaller predetermined quantities, called iceberg_quantity, in order to hide the total order quantity.
+  string iceberg_quantity = 33;
+
+  // [optional] Trigger price references are used in futures trading to denote the kind of price at which a trade action is to be taken, if supported for a market.
+  // (default: Default)
+  ReferencePrice reference_price = 34;
+
+  // If true, order is a synthetic order
+  bool synthetic = 36;
 }
 
 // Trade denotes the information after an order has been filled and becomes a
@@ -714,13 +1474,18 @@ message Order {
 message Trade {
   // Cryptowatch identifier for the trade, uniqueness is guaranteed by cryptowatch.
   // This ID could be used to interact with the trades through the API.
+  // empty (zero value) if is_consolidated is true
   string id = 1;
 
   // The ID of the trade, coming from the exchange itself or assigned by Cryptowatch.
+  // empty (zero value) if is_consolidated is true
   string external_id = 2;
 
   // The ID of the order, coming from the exchange itself or assigned by Cryptowatch.
   string order_external_id = 3;
+
+  // The exchange account this trade belongs to.
+  string exchange_account_id = 12;
 
   // The exchange this trade was executed on.
   Exchange exchange = 4;
@@ -729,6 +1494,7 @@ message Trade {
   Market market = 5;
 
   // The time at which the trade was executed, in millisecond precision.
+  // empty (zero value) if is_consolidated is true
   google.protobuf.Timestamp execution_time = 6;
 
   // Quote asset price that was used to buy or sell the base asset.
@@ -745,6 +1511,19 @@ message Trade {
 
   // The currency used to pay for the fees (could be base or quote).
   FeeCurrency fee_currency = 11;
+
+  // A consolidated trade aggregates all trades under the same order ID.
+  // It acts as if the related order created a single trade:
+  //  - fee(s) are added up
+  //  - price(s) are weighted averaged, weighted by the amount
+  //  - amount(s) are added up
+  //  - execution_time is set to its most recent constituent trades execution_time.
+  //  - id and external_id are ignored (zero'd value)
+  //  - other attributes (market, exchange, exchange_account_id, order_external_id, side, fee_currency) remain untouched
+  bool is_consolidated = 13;
+
+  // total = price * amount
+  string total = 14;
 }
 
 message Position {
@@ -754,6 +1533,9 @@ message Position {
 
   // The ID of the position coming from the exchange.
   string external_id = 2;
+
+  // The exchange account for which this position belongs to.
+  string exchange_account_id = 16;
 
   // The exchange for which this position is opened on.
   Exchange exchange = 3;
@@ -806,13 +1588,19 @@ message Position {
 
 // Some additional websocket-specific messages
 
-// Subscribe to receive all balance/order/trade/position changes on the given exchange.
-message SubscribeToExchangesRequest {
+// Subscribe to receive all balance/order/trade/position changes.
+message SubscribeToExchangeAccountsRequest {
+  // by specifying an exchange_id, a subscription for each exchange account the user has on the given exchange will started.
+  // Could be found with the REST API under https://api.cryptowat.ch/exchanges.
   repeated int32 exchange_ids = 1;
+
+  // by specifying an exchange_account_id, a subscription for that particular exchange account will be started.
+  repeated string exchange_account_ids = 2;
 }
 
-message SubscribeToExchangesResponse {
-  repeated int32 exchange_ids = 1;
+message SubscribeToExchangeAccountsResponse {
+  // which exchange accounts where subscribed to.
+  repeated string exchange_account_ids = 1;
 }
 
 message ErrorResponse {
@@ -822,12 +1610,12 @@ message ErrorResponse {
 
 message AddExchangeAPIKeyRequest {
   // The ID of the exchange we want to add an API key pair for.
+  // Could be found with the REST API under https://api.cryptowat.ch/exchanges.
   int32 exchange_id = 1;
 
-  // The account name for this API key pair, which will be used in order
-  // to remove the pair if needs be. If not provided, it will be assigned
-  // the 'default' value.
-  string account_name = 2;
+  // [optional] The exchange account to attach this API key too.
+  // By not specifying this, the keys will be attached to the default exchange account.
+  string exchange_account_id = 2;
 
   // The exchange key to register.
   string key = 3;
@@ -835,42 +1623,77 @@ message AddExchangeAPIKeyRequest {
   // The secret associated with the key.
   string secret = 4;
 
+  // [optional] The name of the sub-account to use with this key
+  string sub_account = 5;
+
   // meta_fields is a flexible list of parameters to pass on when registering
   // an API key. For example with Coinbase, a passphrase is necessary in order
   // to be able to use the API. For Bitstamp you want to add a `customer_id`.
-  // A full list of fields to pass on could be found with the GetExchangeInformation
+  // A full list of fields to pass on could be found with the `GetExchangeInformation()`
   // call which lists all the required fields for exchanges.
-  map<string, string> meta_fields = 5;
+  map<string, string> meta_fields = 6;
 }
 
 message AddExchangeAPIKeyResponse {
-  // The account name of the api key that was added.
-  string account_name = 1;
+  // The account name of the exchange account that the API key was attached too.
+  string exchange_account_name = 1;
 
-  // The first 4 characters of the key that was just added.
+  // The first 4 characters of the key that was just added. 
+  // This value is shortened for security purposes since it is 
+  // sensitive data.
   string shortened_key = 2;
 }
 
 message RevokeExchangeAPIKeyRequest {
-  // The ID of the exchange we want to revoke an API key for.
-  int32 exchange_id = 1;
-
-  // The account name for the API key to revoke.
-  string account_name = 2;
+  // the id of the exchange account from which to remove API keys
+  string exchange_account_id = 1;
 }
 
+// RevokeExchangeAPIKeyResponse is an empty response
 message RevokeExchangeAPIKeyResponse {}
 
+// RevokeAllExchangeAPIKeysRequest is an empty request
 message RevokeAllExchangeAPIKeysRequest {}
 
+// RevokeAllExchangeAPIKeysResponse is an empty response
 message RevokeAllExchangeAPIKeysResponse {}
 
-message ListExchangeAPIKeysRequest {}
+// ListExchangeAccountsRequest is an empty request
+message ListExchangeAccountsRequest{}
 
-message ListExchangeAPIKeysResponse {
-  // api_keys is a map of all exchanges registered for a user with their
-  // associated api key pairs/account names.
-  map<int32, ExchangeAPIKeysInformation> api_keys = 1;
+message ListExchangeAccountsResponse {
+  // exchange_accounts_by_exchange is a map of exchange ID to a the users
+  // exchange accounts for that particular exchange. If there 
+  // are exchange accounts, it is guaranteed that one account
+  // is set as the default account for the exchange.
+  map<int32, ExchangeAccounts> exchange_accounts_by_exchange = 1;
+}
+
+message ExchangeAccounts {
+  // exchange_accounts is a map of exchange account ID to the corresponding exchange account.
+  map<string, ExchangeAccount> exchange_accounts = 1;
+}
+
+message ExchangeAccount {
+  // cryptowatch identifier of this exchange account
+  string id = 1;
+
+  // the exchange that this exchange account belongs to
+  Exchange exchange = 2;
+
+  // whether this account is read only or not. Enforced by cryptowatch, not necessarily
+  // by the exchange API key permissions.
+  bool read_only = 3;
+
+  // human readable account name assigned by the user
+  string account_name = 4;
+
+  // whether this is the default exchange account for this exchange or not. Only one
+  // exchange account per exchange will be the default.
+  bool is_default = 5;
+
+  // the API keys attached to this account
+  ExchangeAPIKey api_key = 6;
 }
 
 message ExchangeAPIKeysInformation {
@@ -879,16 +1702,18 @@ message ExchangeAPIKeysInformation {
 }
 
 message ExchangeAPIKey {
-  // The account name for this exchange key pair.
-  string account_name = 1;
-
   // The shortened version of the key to identify it, it is shortened
   // because this is a sensitive information.
-  string shortened_key = 2;
+  string shortened_key = 1;
 
   // The status of the API key, whether it is valid or not. See the
   // `APIKeyStatus` enumeration for more information about the statuses.
-  APIKeyStatus status = 3;
+  APIKeyStatus status = 2;
+}
+
+message MFAAuthenticationResult {
+  // user's mfa authentication status with cryptowatch
+  MFAAuthenticationStatus status = 1;
 }
 
 enum APIKeyStatus {
@@ -896,5 +1721,113 @@ enum APIKeyStatus {
   INVALID_KEY = 1;    // The key pair is invalid, we cannot communicate with the exchange.
   UNPRIVILEGED = 2;   // The key pair is valid but has insufficient privileges set from the exchange website.
   NOT_EXCLUSIVE = 3;  // The key pair is potentially used elsewhere because we're getting an elevated amount
-                      // of nonce errors.
+  // of nonce errors.
+}
+
+// ExchangeConnectionUpdate represents Cryptowatch connection to the exchange.
+// Users connected to high performance trading platforms need to know the realtime 
+// status of an exchange prior to placing orders at that exchange. If an exchange is down 
+// or degraded for any reason, a trader may not want to risk their money by sending orders there.
+message ExchangeConnectionUpdate {
+  // `status` represent the general status of the exchange.
+  ExchangeStatus status = 1;
+
+  // exchange unique identifier
+  int32 exchange_id = 2;
+
+  // DEPRECATED, please use `user_connections` field instead.
+  // To maintain backwards compatibility:
+  //   - When sent as a response to a request, this field will contain the connection status of
+  //     the default exchange account.
+  //   - When pushed as an update, this field will contain the connection status of whichever exchange account the
+  //     update is for. If you have multiple subscriptions and need to disambiguate, please use `user_connections`.
+  UserConnectionStatus user_connection_status = 3 [deprecated = true];
+
+  // `user_connection_status` represent user specific connection status with the exchange for each exchange account,
+  // where the key is the exchange account ID and the value is the connection status for that exchange account.
+  // This is different than `status` since `status` represents the exchange's overall status. An exchange status may
+  // be `AVAILABLE` but the user's connection to the exchange isn't.
+  // Examples where user may not have a `CONNECTION_AVAILABLE` status even when the exchange is `AVAILABLE`:
+  // - user being rate limited
+  // - user key is revoked
+  // - user doesn't have a websocket connection to the exchange in the backend
+  map<string, UserConnectionStatus> user_connections = 4;
+}
+
+// UserConnectionStatus is user specific connection status to an exchange
+enum UserConnectionStatus {
+  // user connection to the exchange is unknown. Cryptowatch can not predetermine if the user calls to the exchange 
+  // will fail or succeed. This uncertainty occurs if the user does not have a session with cryptowatch 
+  // so cryptowatch can't keep track of their interactions to determine if their connection to the exchange is well.
+  USER_CONNECTION_UNKNOWN = 0;
+  // user connection to the exchange is working well as expected. No interuption or errors occured with the user flow
+  // and the exchange is responding properly for all of the user's specific trading requests.
+  USER_CONNECTION_AVAILABLE = 1;
+  // user connection to the exchange is unstable and have a higher probability of resulting in errors
+  // for operations performed on the exchange for the specific user. This status can occur for any 
+  // inconsistent errors occurring while the user perform their trading operations on the exchange.
+  // Example: if the user is rate limited by the exchange then their connection is degraded as some calls may error out depending 
+  // on how the exchange implements their rate limit.
+  USER_CONNECTION_DEGRADED = 2;
+  // the user connection to the exchange is unavailable and all calls made to the exchange 
+  // is expected to fail for the user. If this is the status then the user should 
+  // avoid making trading operations to the exchange until the status is updated to a 
+  // better value.
+  USER_CONNECTION_UNAVAILABLE = 3;
+}
+
+enum ExchangeStatus {
+  UNKNOWN = 0;     // exchange status is not known
+  AVAILABLE = 1;   // exchange is up and running - user should be able to make requests, provided API keys are valid
+  DEGRADED = 2;    // exchange is seeing degraded performance - user should be able to make requests, but they might take longer than usual or fail
+  UNAVAILABLE = 3; // exchange is currently unavailable - user should expect calls to fail
+}
+
+enum MFAAuthenticationStatus {
+  UNKNOWN_MFA_AUTH_STATUS = 0;
+  // AUTHENTICATED is returned when the user is authenticated with MFA.
+  AUTHENTICATED = 1;
+
+  // MFA_NOT_CONFIGURED is returned when the user does not have MFA configured whatsoever.
+  MFA_NOT_CONFIGURED = 2;
+
+  // MFA_EXPIRED is returned when the user has MFA, but the authentication
+  // has expired. In this case, we require them to authenticate again.
+  MFA_EXPIRED = 3;
+}
+
+// PlayOrdersRequest expects either of the filters to be specified. If none of them are set, we play all orders.
+message PlayOrdersRequest {
+  // providing an array of specific order IDs will only play those specific orders
+  repeated string order_ids = 1;
+  // providing the market_id will only play orders on that market
+  // Could be found with the REST API under https://api.cryptowat.ch/exchanges.
+  int32 market_id = 2;
+  // providing the exchange_id will only play orders on that exchange
+  // Could be found with the REST API under https://api.cryptowat.ch/markets.
+  int32 exchange_id = 3;
+}
+
+message PlayOrdersResponse {
+  repeated Order orders = 1; // array of modified orders
+  bool all_successful = 2; // boolean indicating whether all of the orders have been successfully played
+  map<string, ErrorResponse> failed_ids = 3; // list of failed order ids (key) with the error/reason for the failure (value).
+}
+
+// PauseOrdersRequest expects either of the filters to be specified. If none of them are set, we pause all orders.
+message PauseOrdersRequest {
+  // providing an array of specific order IDs will only pause those specific orders
+  repeated string order_ids = 1;
+  // providing the market_id will only pause orders on that market
+  // Could be found with the REST API under https://api.cryptowat.ch/exchanges.
+  int32 market_id = 2;
+  // providing the exchange_id will only pause orders on that exchange
+  // Could be found with the REST API under https://api.cryptowat.ch/markets.
+  int32 exchange_id = 3;
+}
+
+message PauseOrdersResponse {
+  repeated Order orders = 1; // array of modified orders
+  bool all_successful = 2; // boolean indicating whether all of the orders have been successfully paused
+  map<string, ErrorResponse> failed_ids = 3; // list of failed order ids (key) with the error/reason for the failure (value).
 }
